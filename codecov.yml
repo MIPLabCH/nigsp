@@ -1,0 +1,37 @@
+codecov:
+  branch: master
+  strict_yaml_branch: master
+  require_ci_to_pass: yes
+  bot: "codecov-io"
+  ci:
+    - "travis.org"
+  max_report_age: 48
+  disable_default_path_fixes: no
+
+coverage:
+  precision: 2
+  round: down
+  range: "60...90"
+
+parsers:
+  gcov:
+    branch_detection:
+      conditional: yes
+      loop: yes
+      method: no
+      macro: no
+
+ignore:
+  - "docs"
+  - "crispyoctobroccoli/_version.py"
+  - "**/__init__.py"
+  - "**/**/__init__.py"
+  - "crispyoctobroccoli/tests"
+  - "crispyoctobroccoli/due.py"
+  - ".*rc"
+  - ".github"
+
+comment:
+  layout: "reach,diff,flags,tree"
+  behavior: default
+  require_changes: no

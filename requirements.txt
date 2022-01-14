@@ -1,0 +1,6 @@
+nibabel
+nilearn
+pydra
+numpy>=1.9.3
+matplotlib>=3.1.1
+scipy
