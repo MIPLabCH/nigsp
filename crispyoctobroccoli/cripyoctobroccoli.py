@@ -196,19 +196,8 @@ def crispyoctobroccoli(outdir=None, lgr_degree='info'):
         outprefix = f'{outdir}{os.sep}'
         outext = ''
 
-    if scgraph.sdi is not None:
-        metric_data = scgraph.sdi
-        metric_name = 'sdi'
-    elif scgraph.gsdi is not None:
-        metric_data = scgraph.gsdi
-        metric_name = 'gsdi'
-
-    # Export original matrix
-    if outext in io.EXT_NIFTI:
-        data = unfold_atlas(metric_data, scgraph.atlas)
-        io.export_nifti(data, atlasimg, f'{outprefix}{metric_name}{outext}')
-    else:
-        io.export_mtx(metric_data, f'{outprefix}{metric_name}{outext}')
+    # Export non-thresholded metrics
+    blocks.export_metric(scgraph, outext, outprefix)
 
     # Export eigenvalues, eigenvectors, and split timeseries and eigenvectors
     for k in scgraph.split_keys:
@@ -221,31 +210,42 @@ def crispyoctobroccoli(outdir=None, lgr_degree='info'):
 
     # If required, create surrogates, test, and export masked metrics
     if test_vs_surrogates is not None:
+        if scgraph.sdi is not None:
+            metric_name = 'sdi'
+        elif scgraph.gsdi is not None:
+            metric_name = 'gsdi'
         scgraph = scgraph.create_surrogates(sc_type=test_vs_surrogates, n_surr=n_surr, seed=seed)
         scgraph = scgraph.test_significance(metric=metric_name, method=method, p=p, return_masked=True)
-        if outext in io.EXT_NIFTI:
-            # #!# Check that metric_data attrbution actually updated
-            data = unfold_atlas(metric_data, scgraph.atlas)
-            io.export_nifti(data, atlasimg, f'{outprefix}{metric_name}{outext}')
-        else:
-            io.export_mtx(metric_data, f'{outprefix}{metric_name}{outext}')
+        # Export thresholded metrics
+        blocks.export_metric(scgraph, outext, outprefix)
 
     # If possible, create plots!
     try:
-        import nilearn.plotting
-        import matplotlib.pyplot
+        import nilearn as _
+        import matplotlib as _
 
-        viz.
+        # Plot original SC and Laplacian
+        viz.plot_connectivity(scgraph.lapl_mtx, f'{outprefix}laplacian.png')
+        viz.plot_connectivity(scgraph.mtx, f'{outprefix}sc.png')
+        # Compute and plot FC
+        scgraph = scgraph.compute_fc(mean=True)
+        viz.plot_connectivity(scgraph.fc, f'{outprefix}fc.png')
+        for k in scgraph.split_keys:
+            viz.plot_connectivity(scgraph.fc_split[k],
+                                  f'{outprefix}fc_{k}{outext}')
+        # Plot timeseries
+        viz.plot_grayplot(scgraph.timeseries, f'{outprefix}grayplot.png')
+        for k in scgraph.split_keys:
+            viz.plot_grayplot(scgraph.ts_split[k],
+                              f'{outprefix}grayplot_{k}{outext}')
 
     except ImportError:
         LGR.warning('The necessary libraries for graphics (nilearn, matplotlib) '
                     'were not found. Skipping graphics.')
 
+    LGR.info('End of workflow, find results in {outdir}.')
 
-
-
-
-    return
+    return 0
 
 
 def _main(argv=None):
