@@ -14,7 +14,6 @@ from crispyoctobroccoli import timeseries as ts
 from crispyoctobroccoli.cli.run import _get_parser, _check_opt_conf
 # from crispyoctobroccoli.due import due, Doi
 from crispyoctobroccoli.objects import SCGraph
-from crispyoctobroccoli.nifti import unfold_atlas
 
 
 LGR = logging.getLogger(__name__)
@@ -43,8 +42,50 @@ def save_bash_call(fname, outdir):
     f.close()
 
 
-def crispyoctobroccoli(outdir=None, lgr_degree='info'):
+def crispyoctobroccoli(fname, scname, atlasname=None, outname=None, outdir=None,
+                       index='median', surr_type=None, n_surr=1000, method='Bernoulli',
+                       seed=None, lgr_degree='info'):
+    """
+    Main workflow for crispyoctobroccoli, following the methods described in [1]
 
+    Parameters
+    ----------
+    fname : str or os.PathLike
+        Path to the timeseries data file. It can be a text, nifti, or matlab file.
+        (and variants). To see the full list of support, check general documentation.
+    scname : str or os.PathLike
+        Description
+    atlasname : None, optional
+        Description
+    outname : None, optional
+        Description
+    outdir : None, optional
+        Description
+    index : str, optional
+        Description
+    surr_type : None, optional
+        Description
+    n_surr : int, optional
+        Description
+    method : None, optional
+        Description
+    seed : None, optional
+        Description
+    lgr_degree : str, optional
+        Description
+
+    Returns
+    -------
+    TYPE
+        Description
+
+    Raises
+    ------
+    NotImplementedError
+        Description
+    ValueError
+        Description
+    """
     # #### Logger preparation #### #
     fname = utils.if_declared_force_type(fname, list, stop=False, silent=True)
 
@@ -209,12 +250,12 @@ def crispyoctobroccoli(outdir=None, lgr_degree='info'):
     # #### Additional steps #### #
 
     # If required, create surrogates, test, and export masked metrics
-    if test_vs_surrogates is not None:
+    if surr_type is not None:
         if scgraph.sdi is not None:
             metric_name = 'sdi'
         elif scgraph.gsdi is not None:
             metric_name = 'gsdi'
-        scgraph = scgraph.create_surrogates(sc_type=test_vs_surrogates, n_surr=n_surr, seed=seed)
+        scgraph = scgraph.create_surrogates(sc_type=surr_type, n_surr=n_surr, seed=seed)
         scgraph = scgraph.test_significance(metric=metric_name, method=method, p=p, return_masked=True)
         # Export thresholded metrics
         blocks.export_metric(scgraph, outext, outprefix)

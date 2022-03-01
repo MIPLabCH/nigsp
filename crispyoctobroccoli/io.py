@@ -43,7 +43,7 @@ def check_ext(all_ext, fname, scan=False, remove=False):
     ----------
     all_ext : list
         All possible extensions to check within
-    fname : str or path
+    fname : str or os.PathLikeLike
         The filename to check
     scan : bool, optional
         Scan the given path to see if there is a file with that extension
@@ -57,7 +57,7 @@ def check_ext(all_ext, fname, scan=False, remove=False):
     obj_return : Uses a list to return variable amount of options.
         has_ext : boolean
             True if the extension is found, false otherwise
-        fname : str or os.path
+        fname : str or os.PathLike
             If `remove` is True, return (extensionless) fname
         ext : str
             If both `remove` and `has_ext` are True, returns also found extension
@@ -224,7 +224,7 @@ def load_txt(fname, shape=None):
 
     Parameters
     ----------
-    fname : str or os.path
+    fname : str or os.PathLike
         Path to the txt file
     shape : None, 'square', or 'rectangle', optional
         Shape of matrix, if empty, skip check
@@ -256,7 +256,7 @@ def load_mat(fname, shape=None):
 
     Parameters
     ----------
-    fname : str or os.path
+    fname : str or os.PathLike
         Path to the mat file
     shape : None, 'square', or 'rectangle'}, str, optional
         Shape of matrix, if empty, skip check
@@ -321,7 +321,7 @@ def load_xls(fname, shape=''):
 
     Parameters
     ----------
-    fname : str or os.path
+    fname : str or os.PathLike
         Path to the mat file
     shape : None, 'square', or 'rectangle'}, str, optional
         Shape of matrix, if empty, skip check
@@ -357,7 +357,7 @@ def export_nifti(data, img, fname):
         Data to be exported
     img : nib.img
         Nibabel image object
-    fname : str or path
+    fname : str or os.PathLike
         Name of the output file
     """
     try:
@@ -389,7 +389,7 @@ def export_mtx(data, fname, ext=None):
     ----------
     data : np.ndarray
         Data to be exported.
-    fname : str or path
+    fname : str or os.PathLike
         Name of the output file.
     ext : str or None, optional
         Selected extension for export.

@@ -33,13 +33,13 @@ def plot_connectivity(mtx, filename=None):
     ----------
     mtx : numpy.ndarray
         A (square) array with connectivity information inside.
-    filename : None, string, or os.PathLike, optional
+    filename : None, str, or os.PathLike, optional
         The path to save the plot on disk.
 
     Returns
     -------
-    None, string, or os.PathLike
-        The path to save the plot on disk.
+    0
+        If there are no errors.
 
     Raises
     ------
@@ -87,13 +87,13 @@ def plot_grayplot(timeseries, filename=None):
     timeseries : numpy.ndarray
         An array representing a timeseries. Time has to be encoded in the
         second dimension.
-    filename : None, string, or os.PathLike, optional
+    filename : None, str, or os.PathLike, optional
         The path to save the plot on disk.
 
     Returns
     -------
-    None, string, or os.PathLike
-        The path to save the plot on disk.
+    0
+        If there are no errors.
 
     Raises
     ------
@@ -136,16 +136,16 @@ def plot_nodes(ns, atlas, filename=None):
     ----------
     ns : numpy.ndarray
         A 1- or 2- D array that contains the value of the nodes.
-    atlas : string, os.PathLike, 3D Nifti1Image, or numpy.ndarray
+    atlas : str, os.PathLike, 3D Nifti1Image, or numpy.ndarray
         The 3d nifti image of an atlas, a string or path to its position,
         or a list of coordinates of the center of mass of parcels.
-    filename : None, string, or os.PathLike, optional
+    filename : None, str, or os.PathLike, optional
         The path to save the plot on disk.
 
     Returns
     -------
-    None, string, or os.PathLike
-        The path to save the plot on disk.
+    0
+        If there are no errors.
 
     Raises
     ------
