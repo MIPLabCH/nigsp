@@ -59,8 +59,8 @@ def mat_to_vol(data, shape=None, asdata=None):
     """
     if asdata:
         if shape:
-            print('Both shape and asdata were defined. '
-                  f'Overwriting shape {shape} with asdata {asdata.shape}')
+            LGR.warning('Both shape and asdata were defined. '
+                        f'Overwriting shape {shape} with asdata {asdata.shape}')
         shape = asdata.shape
     elif shape is None:
         raise ValueError('Both shape and asdata are empty. '
@@ -179,8 +179,9 @@ def apply_atlas(data, atlas, mask=None):
 
     Raises
     ------
-    ValueError
+    NotImplementedError
         If atlas is 4+ D
+    ValueError
         If atlas or mask have a different shape than the first dimensions of data
     """
     if mask is None:
@@ -192,13 +193,13 @@ def apply_atlas(data, atlas, mask=None):
     # #!# Add nilearn's fetching atlases utility
 
     if atlas.ndim > 3:
-        raise ValueError(f'Files with {atlas.ndim} dimensions are not supported as atlases.')
+        raise NotImplementedError(f'Files with {atlas.ndim} dimensions are not supported as atlases.')
     if data.shape[:mask.ndim] != mask.shape:
         raise ValueError(f'Cannot mask data with shape {data.shape} using mask '
                          f'with shape {mask.shape}')
     if data.shape[:atlas.ndim] != atlas.shape:
-        raise ValueError(f'Cannot apply atlas with shape {data.shape} on data '
-                         f'with shape {mask.shape}')
+        raise ValueError(f'Cannot apply atlas with shape {atlas.shape} on data '
+                         f'with shape {data.shape}')
     if (data.ndim-atlas.ndim) > 1:
         LGR.warning(f'returning volume with {data.ndim-atlas.ndim+1} dimensions.')
     else:
@@ -265,7 +266,7 @@ def unfold_atlas(data, atlas, mask=None):
         raise ValueError(f'Cannot use {mask.ndim}D mask on {atlas.ndim}D atlas.')
 
     if atlas.shape[:mask.ndim] != mask.shape:
-        raise ValueError(f'Cannot mask atlas with shape {data.shape} using mask '
+        raise ValueError(f'Cannot mask atlas with shape {atlas.shape} using mask '
                          f'with shape {mask.shape}')
     atlas = atlas*mask
 

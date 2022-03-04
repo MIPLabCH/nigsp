@@ -45,47 +45,89 @@ def save_bash_call(fname, outdir):
 
 def crispyoctobroccoli(fname, scname, atlasname=None, outname=None, outdir=None,
                        index='median', surr_type=None, n_surr=1000, method='Bernoulli',
-                       seed=None, lgr_degree='info'):
+                       p=0.1, seed=None, lgr_degree='info'):
     """
-    Main workflow for crispyoctobroccoli, following the methods described in [1]
+    Main workflow for crispyoctobroccoli, following the methods described in [1].
 
     Parameters
     ----------
     fname : str or os.PathLike
-        Path to the timeseries data file. It can be a text, nifti, or matlab file.
-        (and variants). To see the full list of support, check general documentation.
+        Path to the timeseries data file. It can be a text, nifti, or matlab file
+        (and variants). To see the full list of support, check the general documentation.
     scname : str or os.PathLike
-        Description
-    atlasname : None, optional
-        Description
-    outname : None, optional
-        Description
-    outdir : None, optional
-        Description
-    index : str, optional
-        Description
-    surr_type : None, optional
-        Description
+        Path to the structural connectivity data file. It can be a text, nifti, or matlab file
+        (and variants). To see the full list of support, check the general documentation.
+    atlasname : str, os.PathLike, or None, optional
+        Path to the atlas data file. It can be a text, nifti, or matlab file
+        (and variants). To see the full list of support, check the general documentation.
+    outname : str, os.PathLike, or None, optional
+        Path to the output file - or just its full name. It can be a text, nifti, or matlab file
+        (and variants). If an extension is *not* declared, or if it is not currently
+        supported, the program will automatically export a csv file.
+        To see the full list of support, check the general documentation.
+        It is *not* necessary to declare both this and `outdir` - the full path can
+        be specified here.
+    outdir : str, os.PathLike, or None, optional
+        Path to the output folder. If it doesn't exist, it will be created.
+        If both `outdir` and `outname` are declared, `outdir` overrides the path
+        specified in `outname` (but not the filename!)
+    index : 'median' or int, optional
+        The index of the eigenvector/harmonic of the graph to split the graph in
+        multiple parts, or the method to find this index. Currently supports
+        median energy split ('median'), which is the default.
+        Note that indexing is one-based (i.e. indexing starts at 1, not 0).
+    surr_type : 'informed', 'uninformed', or None, optional
+        The type of surrogates to create for statistical testing.
+        'Informed' surrogates are created using the empirical SC decomposition,
+        shuffling eigenvectors' signs. 'Uninformed' surrogates use a configuration
+        model of the same degree of the empirical SC instead.
+        If surr_type is None, no statistical test is run.
     n_surr : int, optional
-        Description
-    method : None, optional
-        Description
-    seed : None, optional
-        Description
-    lgr_degree : str, optional
-        Description
+        Number of surrogates to be created.
+    method : 'Bernoulli', 'frequentist', or None, optional
+        Method to use for statistical testing or empirical data vs surrogates.
+        Supported possibilities are 'Bernoulli', to test empirical data at
+        the group level against a random Bernoulli process,
+        or 'frequentist', to test empirical data at the group or subject level
+        against the plain surrogate distribution.
+    p : float (in range [0 1]), optional
+        The two-tailed p value to use for testing. Must be between 0 and 1.
+        The two tails will be tested against half of this value.
+    seed : int or None, optional
+        The seed to use to reinitialise the random number generator for
+        surrogates creation.
+        If `seed` is None, it will use internally specified seeds to guarantee
+        replicability. It's suggested either not specify it, or specify a different
+        one for each type of surrogate created.
+    lgr_degree : 'debug', 'info', or 'quiet', optional
+        The degree of verbosity of the logger. Default is 'info'.
 
     Returns
     -------
-    TYPE
-        Description
+    0
+        If there are no errors.
 
     Raises
     ------
     NotImplementedError
-        Description
+        If SC file is not of a supported type.
+        If timeseries file is not of a supported type.
+        If atlas file is not of a supported type.
+        If timeseries file is a nifti file but atlas file is not.
+        If statistical method is not within supported method (or None).
+        If surrogate type is not within supported type (or None).
     ValueError
-        Description
+        If `index` is not int or is not `median`.
+        If `p` is not in the range [0 1].
+        If the projected timeseries are not splitted to compute SDI or gSDI.
+
+    See also
+    --------
+    [1] Preti, M.G., Van De Ville, D. Decoupling of brain function from structure
+    reveals regional behavioral specialization in humans. Nat Commun 10, 4747 (2019).
+    https://doi.org/10.1038/s41467-019-12765-7
+
+    Configuration model: https://en.wikipedia.org/wiki/Configuration_model
     """
     # #### Logger preparation #### #
     fname = utils.if_declared_force_type(fname, list, stop=False, silent=True)
@@ -134,6 +176,8 @@ def crispyoctobroccoli(fname, scname, atlasname=None, outname=None, outdir=None,
     LGR.info(f'Currently running crispyoctobroccoli version {version_number}')
 
     # #### Check input #### #
+
+    # Check data files
     LGR.info(f'Input structural connectivity file: {scname}')
     sc_is = dict.fromkeys(io.EXT_DICT.keys(), False)
     LGR.info(f'Input functional file(s): {fname}')
@@ -141,6 +185,7 @@ def crispyoctobroccoli(fname, scname, atlasname=None, outname=None, outdir=None,
     atlas_is = dict.fromkeys(io.EXT_DICT.keys(), False)
     if atlasname:
         LGR.info(f'Input atlas file: {atlasname}')
+
     # Check inputs type
     for k in io.EXT_DICT.keys():
         for f in fname:
@@ -151,6 +196,19 @@ def crispyoctobroccoli(fname, scname, atlasname=None, outname=None, outdir=None,
         sc_is[k] = io.check_ext(io.EXT_DICT[k], scname)
         if atlasname:
             atlas_is[k] = io.check_ext(io.EXT_DICT[k], atlasname)
+
+    # Check that other inputs are supported
+    if index != 'median' and type(index) is not int:
+        raise ValueError(f'Index {index} of type {type(index)} is not valid.')
+    if method not in surr.STAT_METHOD and method is not None:
+        raise NotImplementedError(f'Method {method} is not supported. Supported '
+                                  f'methods are: {surr.STAT_METHOD}')
+    if surr_type not in surr.SURR_TYPE and surr_type is not None:
+        raise NotImplementedError(f'Surrogate type {surr_type} is not supported. '
+                                  f'Supported types are: {surr.SURR_TYPE}')
+    if p < 0 or p > 1:
+        raise ValueError(f'P value must be higher than 0 and lower than 1, but '
+                         f'p value {p} was provided instead.')
 
     # #### Read in data #### #
 
@@ -179,7 +237,7 @@ def crispyoctobroccoli(fname, scname, atlasname=None, outname=None, outdir=None,
         elif func_is['xls']:
             t = io.load_xls(fname, shape='rectangle')
         else:
-            raise ValueError('Functional files were not found, or are not of same type')
+            raise NotImplementedError(f'Input file {fname} is not of a supported type.')
 
         timeseries += [t[..., np.newaxis]]
 
@@ -193,11 +251,11 @@ def crispyoctobroccoli(fname, scname, atlasname=None, outname=None, outdir=None,
             raise NotImplementedError(f'Input file {atlasname} is not of a '
                                       'supported type.')
         elif atlas_is['1D']:
-            atlas = io.load_txt(atlasname, shape='square')
+            atlas = io.load_txt(atlasname)
         elif atlas_is['mat']:
-            atlas = io.load_mat(atlasname, shape='square')
+            atlas = io.load_mat(atlasname)
         elif atlas_is['xls']:
-            atlas = io.load_xls(atlasname, shape='square')
+            atlas = io.load_xls(atlasname)
     else:
         LGR.warning('Atlas not provided. Some functionalities might not work.')
 

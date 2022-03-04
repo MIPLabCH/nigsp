@@ -363,7 +363,7 @@ def export_nifti(data, img, fname):
     try:
         import nibabel as nib
     except ImportError:
-        raise ImportError('nibabel is required to import nifti files. '
+        raise ImportError('nibabel is required to export nifti files. '
                           'Please see install instructions.')
 
     for e in EXT_NIFTI:

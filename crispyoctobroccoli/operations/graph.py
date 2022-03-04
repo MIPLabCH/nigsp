@@ -45,7 +45,7 @@ def nodestrength(mtx, mean=False):
     Returns
     -------
     numpy.ndarray
-        Th enode strength.
+        The node strength.
     """
     ns = mtx.abs().sum(axis=0)
 

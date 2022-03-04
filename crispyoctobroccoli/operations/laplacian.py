@@ -61,6 +61,7 @@ def decomposition(mtx):
 
     idx = np.argsort(eigenval)
     eigenval = eigenval[idx]
+    # #!# Check that eigenvec has the right index and not inverted 
     eigenvec = eigenvec[:, idx]
 
     return eigenval, eigenvec
