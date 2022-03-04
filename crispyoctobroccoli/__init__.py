@@ -3,7 +3,7 @@
 import pkgutil
 
 from ._version import get_versions
-from .operations import graph, laplacian, nifti, sdi, surrogates, timeseries
+from .operations import graph, laplacian, metrics, nifti, surrogates, timeseries
 
 
 __version__ = get_versions()['version']

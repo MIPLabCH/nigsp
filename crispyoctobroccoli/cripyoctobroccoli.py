@@ -10,6 +10,7 @@ import numpy as np
 
 
 from crispyoctobroccoli import blocks, io, utils, viz, _version
+from crispyoctobroccoli import surrogates as surr
 from crispyoctobroccoli import timeseries as ts
 from crispyoctobroccoli.cli.run import _get_parser, _check_opt_conf
 # from crispyoctobroccoli.due import due, Doi
