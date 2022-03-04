@@ -91,9 +91,9 @@ class SCGraph():
         return self.symmetric_normalisation().decomposition()
 
     def compute_graph_energy(self, mean=False):
-        """Implement timeseries.graph_project for energy as class method."""
-        self.energy = operations.graph_project(self.timeseries, self.eigenvec,
-                                               energy=True, mean=mean)
+        """Implement timeseries.graph_fourier_transform for energy as class method."""
+        self.energy = operations.graph_fourier_transform(self.timeseries, self.eigenvec,
+                                                         energy=True, mean=mean)
         return self
 
     def split_graph(self):

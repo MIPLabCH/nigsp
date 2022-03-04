@@ -47,8 +47,8 @@ def normalise_ts(timeseries):
 
     return z
 
-
-def graph_project(timeseries, eigenvec, energy=True, mean=False):
+# #!# Fourier tranform per prendere i coefficienti
+def graph_fourier_transform(timeseries, eigenvec, energy=True, mean=False):
     """
     Projet a graph decomposition onto the timeseries.
 
@@ -207,10 +207,10 @@ def graph_filter(timeseries, eigenvec, freq_idx, keys=['low', 'high']):
                                                  dtype='float32'),
                                    eigenvec[:, freq_idx:])
 
-    proj = graph_project(timeseries, eigenvec)
+    fourier_coeff = graph_fourier_transform(timeseries, eigenvec)
 
     for k in keys:
-        ts_split[k] = graph_project(evec_split[k].T, proj)
+        ts_split[k] = graph_fourier_transform(fourier_coeff, evec_split[k].T)
 
     return evec_split, ts_split
 

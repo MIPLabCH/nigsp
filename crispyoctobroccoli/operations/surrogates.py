@@ -14,11 +14,13 @@ from math import factorial, floor
 
 import numpy as np
 
-from .timeseries import graph_project
+from .timeseries import graph_fourier_transform
 from .laplacian import decomposition
 
 
 LGR = logging.getLogger(__name__)
+SURR_TYPE = ['informed', 'uninformed']
+STAT_METHOD = ['Bernoulli', 'frequentist']
 
 # #!# Force all surrogates to return at the subject level (not group)?
 # #!# Allow for input of random sign matrix, if None call random sign.
@@ -115,21 +117,24 @@ def _create_surr(timeseries, eigenvec, n_surr, seed, stack):
     surr = np.empty_like(timeseries, dtype='float32')
     surr = surr[..., np.newaxis].repeat(n_surr, axis=-1)
 
-    LGR.info('Projecting the surrogate eigenvectors onto the timeseries.')
+    fourier_coeff = graph_fourier_transform(timeseries, eigenvec)
+
+    LGR.info('Projecting the timeseries onto the surrogate eigenvectors.')
     if stack:
         n_surr += 1
     for i in range(n_surr):
         if timeseries.ndim < 3 and rand_evec.ndim == timeseries.ndim+1:
-            surr[..., i] = graph_project(timeseries, rand_evec[..., i])
+            surr[..., i] = graph_fourier_transform(fourier_coeff, rand_evec[..., i].T)
         elif timeseries.ndim == 3:
             for j in range(timeseries.shape[2]):
                 # #!# Check if two conditions can be merged.
+                # #!# Change based on missing graph project
                 if rand_evec.ndim < 4:
-                    surr[:, :, j, i] = graph_project(timeseries[:, :, j],
-                                                     rand_evec[..., i])
+                    surr[:, :, j, i] = graph_fourier_transform(timeseries[:, :, j],
+                                                               rand_evec[..., i].T)
                 else:
-                    surr[:, :, j, i] = graph_project(timeseries[:, :, j],
-                                                     rand_evec[:, :, j, i])
+                    surr[:, :, j, i] = graph_fourier_transform(timeseries[:, :, j],
+                                                               rand_evec[:, :, j, i].T)
         else:
             raise NotImplementedError('No solution implemented for timeseries '
                                       f'of {timeseries.ndim} dimensions and '
@@ -137,7 +142,7 @@ def _create_surr(timeseries, eigenvec, n_surr, seed, stack):
     return surr
 
 
-def sc_informed(timeseries, eigenvec, n_surr=1000, seed=101, stack=False):
+def sc_informed(timeseries, eigenvec, n_surr=1000, seed=124, stack=False):
     """
     Create surrogates informed by the real structural connectivity.
 
@@ -309,8 +314,11 @@ def test_significance(surr, data=None, method='Bernoulli', p=0.1,
         # adjusted for the number of subjects in the surrogates.
         # Then find all parcels for which the real surrogate is higher or lower
         # than all surrogates in enough subjects.
+        # The +1 in thr is to be conservative on the number of subjects.
         thr = x[np.argwhere(y < p/surr.shape[0])]
         thr = np.floor(surr.shape[1] / 100 * thr)+1
+        # #!# This is one sided so FIX P
+        # #!# The last and first is just due to the number of surrogates but it should be frequentist.
         stat_mask = ((reord_surr[..., -1].sum(axis=1) > thr) +
                      (reord_surr[..., 0].sum(axis=1) > thr))
     elif method == 'frequentist':
