@@ -3,8 +3,6 @@
 
 import numpy as np
 
-from pytest import mark, raises
-
 from crispyoctobroccoli.operations import graph
 
 

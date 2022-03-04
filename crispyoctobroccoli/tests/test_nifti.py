@@ -3,7 +3,7 @@
 from numpy import prod, asarray, zeros, unique
 from numpy.random import rand
 
-from pytest import mark, raises
+from pytest import raises
 
 from crispyoctobroccoli.operations import nifti
 
