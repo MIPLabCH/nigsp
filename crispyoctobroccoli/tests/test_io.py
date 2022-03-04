@@ -1,12 +1,18 @@
 #!/usr/bin/env python3
 """Tests for io."""
 
+import sys
+
+from os import remove
 from os.path import isfile
 
-from numpy import empty, asarray, genfromtxt
+import nibabel
+import scipy
+import pymatreader
+
+from numpy import empty, asarray, genfromtxt, savetxt
 from numpy.random import rand
-from pymatreader import read_mat
-from pytest import fixture, mark, raises
+from pytest import mark, raises
 
 from crispyoctobroccoli import io
 
@@ -56,7 +62,7 @@ def test_check_nifti_dim(data):
     """Test check_nifti_dim."""
     data_out = io.check_nifti_dim('kaylee', data, dim=2)
 
-    assert data_out == data.squeeze()
+    assert all(data_out == data.squeeze())
     assert data_out.ndim == 2
 
 
@@ -66,9 +72,10 @@ def test_check_nifti_dim(data):
     (rand(3, 1, 4))
 ])
 def test_check_mtx_dim(data):
+    """Test check_mtx_dim."""
     data_out = io.check_mtx_dim('wash', data)
 
-    assert data_out == data
+    assert (data_out == data).all()
     assert data_out.ndim == 2
 
 
@@ -77,31 +84,48 @@ def test_check_mtx_dim(data):
     (rand(3, 3), 'square')
 ])
 def test_check_mtx_dim_cases(data, shape):
+    """Test check_mtx_dim for specific shapes."""
     data_out = io.check_mtx_dim('wash', data, shape=shape)
 
-    assert data_out.squeeze() == data
+    assert all(data_out.squeeze() == data)
     assert data_out.ndim == 2
 
 
 def test_load_nifti_get_mask():
+    """Test load_nifti_get_mask."""
     # #!#
     pass
 
 
 def test_load_txt():
-    # #!#
-    pass
+    """Test load_txt."""
+    a = rand(5)
+    n = 'zoe'
+    savetxt(n, a)
+    b = io.load_txt(n)
+
+    assert all(a == b)
+
+    remove(n)
 
 
 def test_load_mat():
-    # #!#
-    pass
+    a = rand(5)
+    b = 'likealeaf'
+    n = 'inthewind'
+
+    scipy.io.savemat(n, {'data': a, 'other': b})
+
+    c = io.load_mat(n)
+
+    assert all(a == c)
+    remove(n)
 
 
 def test_export_nifti():
     # #!# NEEDS IMAGE
-    # io.export_nifti(rand(3, 4, 5), img, 'Book')
-    # assert isfile('Book.nii.gz')
+    # io.export_nifti(rand(3, 4, 5), img, 'book')
+    # assert isfile('book.nii.gz')
     pass
 
 
@@ -113,18 +137,20 @@ def test_export_nifti():
     ('.mat', '.mat')
 ])
 def test_export_mtx(ext_in, ext_out):
-    # #!# NEED TO REMOVE DATA!!!
+    """Test export_mtx."""
     data = asarray[[1, 1, 2], [3, 5, 8]]
-    io.export_mtx(data, 'Serenity', ext=ext_in)
-    assert isfile(f'Serenity{ext_out}')
+    io.export_mtx(data, 'serenity', ext=ext_in)
+    assert isfile(f'serenity{ext_out}')
 
     if ext_out in ['.csv', '.tsv', '.1D']:
-        data_in = genfromtxt(f'Serenity{ext_out}')
+        data_in = genfromtxt(f'serenity{ext_out}')
 
     if ext_out in ['.mat']:
-        data_in = read_mat(f'Serenity{ext_out}')
+        data_in = pymatreader.read_mat(f'serenity{ext_out}')
 
     assert all(data_in == data)
+    # remove data
+    remove(f'serenity{ext_out}')
 
 
 # ### Break tests
@@ -153,65 +179,78 @@ def break_check_mtx_dim():
     assert 'river matrix has shape (3, 4)' in str(errorinfo.value)
 
 
+def break_load_nifti_get_mask():
+    sys.modules['nibabel'] = None
+    with raises(ImportError) as errorinfo:
+        io.load_nifti_get_mask('reavers')
+    assert 'is required' in str(errorinfo.value)
+    sys.modules['nibabel'] = nibabel
+
+
 def break_load_mat():
-    # #!# Need to test if pymatreader is not available!
-    pass
+    sys.modules['pymatreader'] = None
+    with raises(ImportError) as errorinfo:
+        io.load_mat('simon')
+    assert 'is required' in str(errorinfo.value)
+    sys.modules['pymatreader'] = pymatreader
+
+    a = 'heart'
+    n = 'ofgold'
+    scipy.io.savemat(n, {'data': a})
+
+    with raises(EOFError) as errorinfo:
+        io.load_mat(n)
+    assert f'{n} does not seem' in str(errorinfo.value)
+    remove(n)
 
 
 def break_load_xls():
     with raises(NotImplementedError) as errorinfo:
-        io.load_xls('simon')
+        io.load_xls('firefly')
     assert 'output is not' in str(errorinfo.value)
+
+
+def break_export_nifti():
+    sys.modules['nibabel'] = None
+    with raises(ImportError) as errorinfo:
+        io.export_nifti(rand(3), None, 'reavers')
+    assert 'is required' in str(errorinfo.value)
+    sys.modules['nibabel'] = nibabel
 
 
 def break_export_mtx():
-    # #!# Need to test if scipy is not available!
     with raises(NotImplementedError) as errorinfo:
-        io.export_mtx(rand(3, 4), 'simon', ext='.xls')
+        io.export_mtx(rand(3, 4), 'lostinthewoods', ext='.xls')
     assert 'output is not' in str(errorinfo.value)
 
+    sys.modules['scipy'] = None
+    with raises(ImportError) as errorinfo:
+        io.load_mat('lostinthewoods')
+    assert 'is required' in str(errorinfo.value)
+    sys.modules['scipy'] = scipy
+
+# ### Examples
 
 
+# @fixture(scope='function')
+# def loaded_lab_file(multifreq_lab_file):
+#     chtrig = 1
+#     header_lab, channels_lab = io.read_header_and_channels(multifreq_lab_file)
+
+#     # just a few quick checks to make sure the data loaded correctly
+#     assert len(channels_lab[0]) == 5
+#     assert 'Interval=' in header_lab[0]
+
+#     return header_lab, channels_lab, chtrig
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-### Examples
-
-
-@fixture(scope='function')
-def loaded_lab_file(multifreq_lab_file):
-    chtrig = 1
-    header_lab, channels_lab = io.read_header_and_channels(multifreq_lab_file)
-
-    # just a few quick checks to make sure the data loaded correctly
-    assert len(channels_lab[0]) == 5
-    assert 'Interval=' in header_lab[0]
-
-    return header_lab, channels_lab, chtrig
-
-
-def test_extract_header_items_errors(loaded_lab_file):
-    header, channels, chtrig = loaded_lab_file
-    # test file without header
-    with raises(AttributeError) as errorinfo:
-        io.extract_header_items(channels, header=[])
-    assert 'without header' in str(errorinfo.value)
-    # test when header is not valid
-    with raises(AttributeError) as errorinfo:
-        io.extract_header_items(channels, header=['hello', 'bye'])
-    assert 'supported yet for txt files' in str(errorinfo.value)
+# def test_extract_header_items_errors(loaded_lab_file):
+#     header, channels, chtrig = loaded_lab_file
+#     # test file without header
+#     with raises(AttributeError) as errorinfo:
+#         io.extract_header_items(channels, header=[])
+#     assert 'without header' in str(errorinfo.value)
+#     # test when header is not valid
+#     with raises(AttributeError) as errorinfo:
+#         io.extract_header_items(channels, header=['hello', 'bye'])
+#     assert 'supported yet for txt files' in str(errorinfo.value)
