@@ -10,6 +10,7 @@ LGR
 
 import logging
 
+from copy import deepcopy
 from math import factorial, floor
 
 import numpy as np
@@ -219,20 +220,22 @@ def sc_uninformed(timeseries, lapl_mtx, n_surr=1000, seed=98, stack=False):
     return _create_surr(timeseries, surr_eigenvec, n_surr, seed, stack)
 
 
-def test_significance(surr, data=None, method='Bernoulli', p=0.1,
+def test_significance(surr, data=None, method='Bernoulli', p=0.05,
                       return_masked=False, mean=False):
     """
     Test the significance of the empirical data against surrogates.
 
     Two methods are implemented, 'Bernoulli' and 'frequentist'.
-    - 'Bernoulli' is a group test. It tests that the number of subjects for
-      which the empirical data is higher (or lower) than all surrogates is at
-      the tail of a binomial cumulative distribution (where 'tail' is defined by p).
     - 'frequentist' is a group or single subject test. It tests that the
       empirical data are in the highest (or lowest) percentile (where the
-      percentile is defined by p).
+      percentile is defined by p/2).
+    - 'Bernoulli' is a group test. It tests that the number of subjects for
+      which the empirical data is higher (or lower) than a set of surrogates
+      (frequentist approach) is at the tail of a binomial cumulative
+      distribution (where 'tail' is defined by p).
 
-    Note that p is expressed as two-tails test.
+    Note that p is expressed as two-tails test for the frequentist approach and
+    a one-tail test for the Bernoulli approach.
 
     Both surr and data are expected to have first dimensions: observations x [subjects].
 
@@ -284,11 +287,20 @@ def test_significance(surr, data=None, method='Bernoulli', p=0.1,
     real_idx = surr.shape[-1]-1
     reord_surr = (np.argsort(surr, axis=-1) == real_idx)
 
+    LGR.info(f'Adopting {method} testing method.')
     # Testing both tails requires to split p
-    LGR.info(f'Testing for p={p} two-tails (p={p/2} each tail)')
-    p = p / 2
+    if method == 'frequentist':
+        LGR.info(f'Testing for p={p} two-tails (p={p/2} each tail)')
+        p = p / 2
+    elif method == 'Bernoulli':
+        bernoulli_p = deepcopy(p)
+        p = 0.05
+        LGR.info(f'Testing for p={bernoulli_p} one tail at the group level and '
+                 f'at p=0.1 two-tails (p=0.05 each tail) at the subect level.')
+    else:
+        raise NotImplementedError('Other testing methods than Bernoulli or '
+                                  'frequentist are not implemented at the moment.')
 
-    LGR.info(f'Adopting {method} method')
     if method == 'Bernoulli':
         # The following computes the CDF of a binomial distribution
         # Difference with scipy's binom.cdf (100 samples) is: 5.066394802133445e-06
@@ -311,18 +323,13 @@ def test_significance(surr, data=None, method='Bernoulli', p=0.1,
         # The +1 in thr is to be conservative on the number of subjects.
         thr = x[np.argwhere(y < p/surr.shape[0])]
         thr = np.floor(surr.shape[1] / 100 * thr)+1
-        # #!# This is one sided so FIX P
-        # #!# The last and first is just due to the number of surrogates but it should be frequentist.
-        stat_mask = ((reord_surr[..., -1].sum(axis=1) > thr) +
-                     (reord_surr[..., 0].sum(axis=1) > thr))
+        # real_idx serendipitously is the number of surrogates.
+        stat_mask = ((reord_surr[..., :floor(real_idx * p)].sum(axis=1) > thr) +
+                     (reord_surr[..., -floor(real_idx * p):].sum(axis=1) > thr))
     elif method == 'frequentist':
         # real_idx serendipitously is the number of surrogates.
         stat_mask = (reord_surr[..., :floor(real_idx * p)].any(axis=-1) +
                      reord_surr[..., -floor(real_idx * p):].any(axis=-1))
-    else:
-        raise NotImplementedError('Other testing methods than Bernoulli or '
-                                  'frequentist are not '
-                                  'implemented at the moment.')
 
     if return_masked:
         LGR.info('Returning masked empirical data')
