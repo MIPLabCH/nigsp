@@ -126,12 +126,11 @@ def _create_surr(timeseries, eigenvec, n_surr, seed, stack):
         elif timeseries.ndim == 3:
             for j in range(timeseries.shape[2]):
                 # #!# Check if two conditions can be merged.
-                # #!# Change based on missing graph project
                 if rand_evec.ndim < 4:
-                    surr[:, :, j, i] = graph_fourier_transform(timeseries[:, :, j],
+                    surr[:, :, j, i] = graph_fourier_transform(fourier_coeff,
                                                                rand_evec[..., i].T)
                 else:
-                    surr[:, :, j, i] = graph_fourier_transform(timeseries[:, :, j],
+                    surr[:, :, j, i] = graph_fourier_transform(fourier_coeff,
                                                                rand_evec[:, :, j, i].T)
         else:
             raise NotImplementedError('No solution implemented for timeseries '
