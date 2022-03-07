@@ -22,9 +22,6 @@ LGR = logging.getLogger(__name__)
 SURR_TYPE = ['informed', 'uninformed']
 STAT_METHOD = ['Bernoulli', 'frequentist']
 
-# #!# Force all surrogates to return at the subject level (not group)?
-# #!# Allow for input of random sign matrix, if None call random sign.
-
 
 def random_sign(eigenvec, n_surr=1000, seed=42, stack=False):
     """
@@ -52,6 +49,7 @@ def random_sign(eigenvec, n_surr=1000, seed=42, stack=False):
     NotImplementedError
         If eigenvec is 4+ D.
     """
+    # #!# Allow for input of random sign matrix, if None call random sign.
     if seed is not None:
         # Reinitialise the random seed for repeatability
         np.random.rand(seed)
@@ -212,7 +210,6 @@ def sc_uninformed(timeseries, lapl_mtx, n_surr=1000, seed=98, stack=False):
     symm_norm = np.eye(lapl_mtx.shape[0]) - lapl_mtx
     symm_norm_sum = symm_norm.sum(axis=-1)
 
-    # #!# Check with Giulia
     conf_model = np.outer(symm_norm_sum,
                           symm_norm_sum.T) / symm_norm.sum()
 
@@ -274,8 +271,6 @@ def test_significance(surr, data=None, method='Bernoulli', p=0.1,
         If any other method rather than those listed above is selected.
 
     """
-    # #!# Check the 100 in x if it's meaningful or not.
-    # #!# Invert test: check the equivalent of the subject number to get p.
     # #!# Check that the surrogate shape has parcels in the first axis!
     # If provided, append data to surr
     if data is not None:

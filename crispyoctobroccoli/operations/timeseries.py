@@ -47,7 +47,7 @@ def normalise_ts(timeseries):
 
     return z
 
-# #!# Fourier tranform per prendere i coefficienti
+
 def graph_fourier_transform(timeseries, eigenvec, energy=True, mean=False):
     """
     Projet a graph decomposition onto the timeseries.
@@ -99,9 +99,7 @@ def graph_fourier_transform(timeseries, eigenvec, energy=True, mean=False):
 
     if energy:
         # Compute energy of the spectral density
-        # #!# Check with Giulia the "absolute"
         energy = proj ** 2
-        # #!# Transfer average outside?
         if timeseries.ndim == 3 and mean:
             energy = energy.mean(axis=-1)
 
@@ -140,7 +138,6 @@ def median_cutoff_frequency_idx(energy):
     half_tot_auc = np.trapz(energy, axis=0)/2
     LGR.debug(f'Total AUC = {half_tot_auc*2}, targetting half of total AUC')
 
-    # #!# Check this step with Giulia to be sure of index.
     # Compute the AUC from first to one to last frequency,
     # skipping first component because AUC(1)=0.
     # Returns first idx for which AUC reaches half of total AUC.
@@ -277,7 +274,6 @@ def functional_connectivity(timeseries, mean=False):
             for i in range(timeseries.shape[-1]):
                 fcorr[..., i] = np.corrcoef(timeseries[..., i])
 
-            # #!# Transfer average outside?
             if mean:
                 fcorr = fcorr.mean(axis=-1)
             return fcorr

@@ -82,7 +82,6 @@ def sdi(ts_split, mean=True, keys=None):
     LGR.info('Computing Structural Decoupling Index')
     sdi = norm[keys[1]] / norm[keys[0]]
 
-    # #!# Transfer average outside?
     if sdi.ndim == 2 and mean:
         sdi = sdi.mean(axis=-1)
 
@@ -151,7 +150,6 @@ def gsdi(ts_split, mean=True, keys=None):
             if k != j:
                 gsdi[f'{k}_over_{j}'] = norm[k] / norm[j]
 
-    # #!# Transfer average outside?
     if gsdi[f'{k}_over_{j}'].ndim == 2 and mean:
         for k in gsdi.keys():
             gsdi[k] = gsdi[k].mean(axis=-1)
