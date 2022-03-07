@@ -9,12 +9,12 @@ import sys
 import numpy as np
 
 
-from crispyoctobroccoli import blocks, io, utils, viz, _version
-from crispyoctobroccoli import surrogates as surr
-from crispyoctobroccoli import timeseries as ts
-from crispyoctobroccoli.cli.run import _get_parser, _check_opt_conf
-# from crispyoctobroccoli.due import due, Doi
-from crispyoctobroccoli.objects import SCGraph
+from nigsp import blocks, io, utils, viz, _version
+from nigsp import surrogates as surr
+from nigsp import timeseries as ts
+from nigsp.cli.run import _get_parser, _check_opt_conf
+# from nigsp.due import due, Doi
+from nigsp.objects import SCGraph
 
 
 LGR = logging.getLogger(__name__)
@@ -31,23 +31,23 @@ def save_bash_call(fname, outdir):
         output directory
     """
     arg_str = ' '.join(sys.argv[1:])
-    call_str = f'crispyoctobroccoli {arg_str}'
+    call_str = f'nigsp {arg_str}'
     outdir = os.path.abspath(outdir)
     log_path = os.path.join(outdir, 'logs')
     os.makedirs(log_path, exist_ok=True)
     isotime = datetime.datetime.now().strftime('%Y-%m-%dT%H%M%S')
     fname, _ = io.check_ext('.nii.gz', os.path.basename(fname), remove=True)
     f = open(os.path.join(log_path,
-                          f'crispyoctobroccoli_call_{fname}_{isotime}.sh'), 'a')
+                          f'nigsp_call_{fname}_{isotime}.sh'), 'a')
     f.write(f'#!bin/bash \n{call_str}')
     f.close()
 
 
-def crispyoctobroccoli(fname, scname, atlasname=None, outname=None, outdir=None,
-                       index='median', surr_type=None, n_surr=1000, method='Bernoulli',
-                       p=0.1, seed=None, lgr_degree='info'):
+def nigsp(fname, scname, atlasname=None, outname=None, outdir=None,
+          index='median', surr_type=None, n_surr=1000, method='Bernoulli',
+          p=0.1, seed=None, lgr_degree='info'):
     """
-    Main workflow for crispyoctobroccoli, following the methods described in [1].
+    Main workflow for nigsp, following the methods described in [1].
 
     Parameters
     ----------
@@ -140,14 +140,14 @@ def crispyoctobroccoli(fname, scname, atlasname=None, outname=None, outdir=None,
             outdir = os.path.split(outname)[0]
         if common_path == '' or common_path == '/':
             common_path = '.'
-        outdir = os.path.join(common_path, 'crispyoctobroccoli')
+        outdir = os.path.join(common_path, 'nigsp')
 
     outdir = os.path.abspath(outdir)
     log_path = os.path.join(outdir, 'logs')
     os.makedirs(log_path, exist_ok=True)
 
     # Create logfile name
-    basename = 'crispyoctobroccoli_'
+    basename = 'nigsp_'
     extension = 'tsv'
     isotime = datetime.datetime.now().strftime('%Y-%m-%dT%H%M%S')
     logname = os.path.join(log_path, f'{basename}{isotime}.{extension}')
@@ -173,7 +173,7 @@ def crispyoctobroccoli(fname, scname, atlasname=None, outname=None, outdir=None,
                             handlers=[log_handler, sh], format='%(levelname)-10s %(message)s')
 
     version_number = _version.get_versions()['version']
-    LGR.info(f'Currently running crispyoctobroccoli version {version_number}')
+    LGR.info(f'Currently running nigsp version {version_number}')
 
     # #### Check input #### #
 
@@ -355,7 +355,7 @@ def _main(argv=None):
 
     save_bash_call(options.fname_func, options.outdir)
 
-    crispyoctobroccoli(**vars(options))
+    nigsp(**vars(options))
 
 
 if __name__ == '__main__':

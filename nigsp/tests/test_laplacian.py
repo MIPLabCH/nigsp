@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Tests for operations.metrics."""
+"""Tests for operations.laplacian."""
 
 from pytest import mark, raises
 
-from crispyoctobroccoli.operations import metrics
+from nigsp.operations import laplacian
 
 
 # ### Unit tests

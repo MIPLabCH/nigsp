@@ -21,7 +21,7 @@ from os.path import exists
 
 import numpy as np
 
-from crispyoctobroccoli.utils import if_declared_force_type
+from nigsp.utils import if_declared_force_type
 
 
 EXT_1D = ['.txt', '.csv', '.tsv', '.1d', '.par', '.tsv.gz', '.csv.gz']

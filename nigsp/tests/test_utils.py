@@ -5,7 +5,7 @@ from numpy import ndarray
 from numpy.random import rand
 from pytest import mark, raises
 
-from crispyoctobroccoli import utils
+from nigsp import utils
 
 
 # ### Unit tests

@@ -23,11 +23,11 @@ parsers:
 
 ignore:
   - "docs"
-  - "crispyoctobroccoli/_version.py"
+  - "nigsp/_version.py"
   - "**/__init__.py"
   - "**/**/__init__.py"
-  - "crispyoctobroccoli/tests"
-  - "crispyoctobroccoli/due.py"
+  - "nigsp/tests"
+  - "nigsp/due.py"
   - ".*rc"
   - ".github"
 

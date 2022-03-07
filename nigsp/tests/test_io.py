@@ -14,7 +14,7 @@ from numpy import empty, asarray, genfromtxt, savetxt
 from numpy.random import rand
 from pytest import mark, raises
 
-from crispyoctobroccoli import io
+from nigsp import io
 
 
 # ### Unit tests
@@ -228,29 +228,3 @@ def break_export_mtx():
         io.load_mat('lostinthewoods')
     assert 'is required' in str(errorinfo.value)
     sys.modules['scipy'] = scipy
-
-# ### Examples
-
-
-# @fixture(scope='function')
-# def loaded_lab_file(multifreq_lab_file):
-#     chtrig = 1
-#     header_lab, channels_lab = io.read_header_and_channels(multifreq_lab_file)
-
-#     # just a few quick checks to make sure the data loaded correctly
-#     assert len(channels_lab[0]) == 5
-#     assert 'Interval=' in header_lab[0]
-
-#     return header_lab, channels_lab, chtrig
-
-
-# def test_extract_header_items_errors(loaded_lab_file):
-#     header, channels, chtrig = loaded_lab_file
-#     # test file without header
-#     with raises(AttributeError) as errorinfo:
-#         io.extract_header_items(channels, header=[])
-#     assert 'without header' in str(errorinfo.value)
-#     # test when header is not valid
-#     with raises(AttributeError) as errorinfo:
-#         io.extract_header_items(channels, header=['hello', 'bye'])
-#     assert 'supported yet for txt files' in str(errorinfo.value)

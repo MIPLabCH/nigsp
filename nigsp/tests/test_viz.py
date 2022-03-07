@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Tests for blocks."""
+"""Tests for viz."""
 
 from pytest import mark, raises
 
-from crispyoctobroccoli import blocks
+from nigsp import viz
 
 
 # ### Unit tests

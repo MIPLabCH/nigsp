@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Tests for viz."""
+"""Tests for operations.metrics."""
 
 from pytest import mark, raises
 
-from crispyoctobroccoli import viz
+from nigsp.operations import metrics
 
 
 # ### Unit tests

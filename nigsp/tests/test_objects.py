@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Tests for operations.timeseries."""
+"""Tests for objects."""
 
 from pytest import mark, raises
 
-from crispyoctobroccoli.operations import timeseries
+from nigsp import objects
 
 
 # ### Unit tests

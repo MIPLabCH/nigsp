@@ -5,7 +5,7 @@ from numpy.random import rand
 
 from pytest import raises
 
-from crispyoctobroccoli.operations import nifti
+from nigsp.operations import nifti
 
 
 # ### Unit tests

@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Tests for operations.laplacian."""
+"""Tests for operations.surrogates."""
 
 from pytest import mark, raises
 
-from crispyoctobroccoli.operations import laplacian
+from nigsp.operations import surrogates
 
 
 # ### Unit tests

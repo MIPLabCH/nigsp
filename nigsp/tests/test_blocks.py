@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Tests for objects."""
+"""Tests for blocks."""
 
 from pytest import mark, raises
 
-from crispyoctobroccoli import objects
+from nigsp import blocks
 
 
 # ### Unit tests

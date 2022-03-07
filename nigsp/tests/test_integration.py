@@ -3,7 +3,7 @@
 
 from pytest import mark, raises
 
-import crispyoctobroccoli as cob
+from nigsp import nigsp
 
 
 # ### Integration tests

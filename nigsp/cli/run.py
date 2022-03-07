@@ -3,7 +3,7 @@
 
 import argparse
 
-from crispyoctobroccoli import __version__
+from nigsp import __version__
 
 
 def _get_parser():
@@ -17,7 +17,7 @@ def _get_parser():
     """
     parser = argparse.ArgumentParser(description=('%(prog)s, a tool to apply '
                                                   'Graph Signal Processing to '
-                                                  'MRI (funcitonal and structural),'
+                                                  'MRI (functional and structural),'
                                                   'and compute derivative metrics '
                                                   'such as the Structural Decoupling '
                                                   'Index and the coupled/decoupled FC.\n'
@@ -121,67 +121,10 @@ def _get_parser():
     return parser
 
 
-def _check_opt_conf(parser):
-    """
-    Check for particular configuration flags.
-    
-    Parameters
-    ----------
-    parser : argparse.ArgumentParser
-        A parser with a 'workflow_config' item inside.
-    
-    Returns
-    -------
-    parser : argparse.ArgumentParser
-        If parser.workflow_config is None, returns the unmodified
-        input parameter. Otherwise, set its items based on the flag.
-    
-    Raises
-    ------
-    NotImplementedError
-        If parser.workflow_config is not equal to a supported string.
-        Which shouldn't happen, because this function should not be 
-        called on its own.
-    """
-    if parser.workflow_config is not None:
-        if parser.workflow_config == 'brightspin':
-            parser.lag_max = 9
-            parser.lag_step = 0.3
-            parser.lagged_regression = True
-            parser.run_conv = True
-            parser.apply_filter = False
-        elif parser.workflow_config == 'brightspin-clinical':
-            parser.lag_max = 20
-            parser.lag_step = 0.3
-            parser.lagged_regression = True
-            parser.run_conv = True
-            parser.apply_filter = False
-        elif parser.workflow_config == 'baltimore':
-            parser.run_conv = False
-            parser.apply_filter = True
-            parser.lowcut = 0.02
-            parser.highcut = 0.04
-            parser.fname_co2 = ''
-            parser.lagged_regression = False
-        elif parser.workflow_config == 'baltimore-lag':
-            parser.run_conv = False
-            parser.apply_filter = True
-            parser.lowcut = 0.02
-            parser.highcut = 0.04
-            parser.fname_co2 = ''
-            parser.lagged_regression = True
-        else:
-            raise NotImplementedError(f'{parser.workflow_config} is not configured. '
-                                      'In fact, you shouldn\'t see this message at all.')
-
-    del parser.workflow_config
-    return parser
-
-
 if __name__ == '__main__':
-    raise RuntimeError('phys2cvr/cli/run.py should not be run directly;\n'
-                       'Please `pip install` phys2cvr and use the '
-                       '`phys2cvr` command')
+    raise RuntimeError('nigsp/cli/run.py should not be run directly;\n'
+                       'Please `pip install` nigsp and use the '
+                       '`nigsp` command')
 
 
 """

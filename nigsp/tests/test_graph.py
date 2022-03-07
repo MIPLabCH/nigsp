@@ -3,7 +3,7 @@
 
 import numpy as np
 
-from crispyoctobroccoli.operations import graph
+from nigsp.operations import graph
 
 
 # ### Unit tests
