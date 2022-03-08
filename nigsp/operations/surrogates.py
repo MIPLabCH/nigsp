@@ -15,8 +15,8 @@ from math import factorial, floor
 
 import numpy as np
 
-from .timeseries import graph_fourier_transform
-from .laplacian import decomposition
+from nigsp.operations.timeseries import graph_fourier_transform
+from nigsp.operations.laplacian import decomposition
 
 
 LGR = logging.getLogger(__name__)
