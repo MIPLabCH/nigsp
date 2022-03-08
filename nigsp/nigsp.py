@@ -45,7 +45,7 @@ def save_bash_call(fname, outdir):
 
 def nigsp(fname, scname, atlasname=None, outname=None, outdir=None,
           index='median', surr_type=None, n_surr=1000, method='Bernoulli',
-          p=0.1, seed=None, lgr_degree='info'):
+          p=0.05, seed=None, lgr_degree='info'):
     """
     Main workflow for nigsp, following the methods described in [1].
 
