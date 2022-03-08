@@ -343,7 +343,7 @@ def nigsp(fname, scname, atlasname=None, outname=None, outdir=None,
         LGR.warning('The necessary libraries for graphics (nilearn, matplotlib) '
                     'were not found. Skipping graphics.')
 
-    LGR.info('End of workflow, find results in {outdir}.')
+    LGR.info(f'End of workflow, find results in {outdir}.')
 
     return 0
 
