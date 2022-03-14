@@ -6,7 +6,7 @@ import numpy as np
 
 from pytest import mark, raises
 
-from nigsp import nigsp
+from nigsp.workflow import nigsp, _main
 
 
 # ### Integration tests
