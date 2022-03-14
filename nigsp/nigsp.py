@@ -35,11 +35,11 @@ def save_bash_call(fname, outdir, outname):
     if outdir is None:
         if outname is None:
             common_path = os.path.commonpath(fname)
+            if common_path == '' or common_path == '/':
+                common_path = '.'
+            outdir = os.path.join(common_path, 'nigsp')
         else:
             outdir = os.path.split(outname)[0]
-        if common_path == '' or common_path == '/':
-            common_path = '.'
-        outdir = os.path.join(common_path, 'nigsp')
 
     outdir = os.path.abspath(outdir)
     log_path = os.path.join(outdir, 'logs')
@@ -149,11 +149,11 @@ def nigsp(fname, scname, atlasname=None, outname=None, outdir=None,
     if outdir is None:
         if outname is None:
             common_path = os.path.commonpath(fname)
+            if common_path == '' or common_path == '/':
+                common_path = '.'
+            outdir = os.path.join(common_path, 'nigsp')
         else:
             outdir = os.path.split(outname)[0]
-        if common_path == '' or common_path == '/':
-            common_path = '.'
-        outdir = os.path.join(common_path, 'nigsp')
 
     outdir = os.path.abspath(outdir)
     log_path = os.path.join(outdir, 'logs')
