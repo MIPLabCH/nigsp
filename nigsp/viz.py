@@ -119,7 +119,9 @@ def plot_grayplot(timeseries, filename=None):
 
     LGR.info('Plotting grayplot.')
     plt.figure(figsize=FIGSIZE)
-    plt.imshow(timeseries, cmap='gray', vmin=0, vmax=255)
+    vmax = np.percentile(timeseries, 99)
+    vmin = np.percentile(timeseries, 1)
+    plt.imshow(timeseries, cmap='gray', vmin=vmin, vmax=vmax)
 
     if filename is not None:
         plt.savefig(filename, dpi=SET_DPI)

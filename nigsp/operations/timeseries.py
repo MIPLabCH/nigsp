@@ -12,7 +12,6 @@ import logging
 
 import numpy as np
 
-
 LGR = logging.getLogger(__name__)
 
 
@@ -100,7 +99,7 @@ def graph_fourier_transform(timeseries, eigenvec, energy=True, mean=False):
     if energy:
         # Compute energy of the spectral density
         energy = proj ** 2
-        if timeseries.ndim == 3 and mean:
+        if proj.ndim == 3 and mean:
             energy = energy.mean(axis=-1)
 
         return energy
@@ -134,7 +133,8 @@ def median_cutoff_frequency_idx(energy):
                                   f'{energy.ndim} dimensions, but arrays of more '
                                   'than 2 dimensions are not supported yet')
 
-    energy = energy.mean(axis=-1)
+    if energy.ndim == 2:
+        energy = energy.mean(axis=-1)
     half_tot_auc = np.trapz(energy, axis=0)/2
     LGR.debug(f'Total AUC = {half_tot_auc*2}, targetting half of total AUC')
 
@@ -150,6 +150,7 @@ def median_cutoff_frequency_idx(energy):
         if np.trapz(energy[:freq_idx]) >= half_tot_auc:
             break
 
+    LGR.info(f'Found {freq_idx} as splitting index')
     return freq_idx
 
 
@@ -199,14 +200,16 @@ def graph_filter(timeseries, eigenvec, freq_idx, keys=['low', 'high']):
     ts_split = dict.fromkeys(keys)
     evec_split['low'] = np.append(eigenvec[:, :freq_idx],
                                   np.zeros_like(eigenvec[:, freq_idx:],
-                                                dtype='float32'))
+                                                dtype='float32'), axis=-1)
     evec_split['high'] = np.append(np.zeros_like(eigenvec[:, :freq_idx],
                                                  dtype='float32'),
-                                   eigenvec[:, freq_idx:])
+                                   eigenvec[:, freq_idx:], axis=-1)
 
+    LGR.info('Compute graph fourier coefficients.')
     fourier_coeff = graph_fourier_transform(timeseries, eigenvec)
 
     for k in keys:
+        LGR.info(f'Compute {k} portion of timeseries.')
         ts_split[k] = graph_fourier_transform(fourier_coeff, evec_split[k].T)
 
     return evec_split, ts_split
@@ -267,10 +270,10 @@ def functional_connectivity(timeseries, mean=False):
             LGR.warning('Computing functional connectivity of a 1D array (== 1)!')
             return 1
         elif timeseries.ndim == 2:
-            return np.coffcoef(timeseries)
+            return np.corrcoef(timeseries)
         else:
-            fcorr = np.empty((timeseries.shape[0], timeseries.shape[0]),
-                             dtype='float32')
+            fcorr = np.empty((timeseries.shape[0], timeseries.shape[0],
+                              timeseries.shape[-1]), dtype='float32')
             for i in range(timeseries.shape[-1]):
                 fcorr[..., i] = np.corrcoef(timeseries[..., i])
 

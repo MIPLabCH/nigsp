@@ -17,7 +17,9 @@ LGR
 """
 
 import logging
-from os.path import exists
+
+from os import makedirs
+from os.path import exists, join
 
 import numpy as np
 
@@ -63,7 +65,7 @@ def check_ext(all_ext, fname, scan=False, remove=False):
             If both `remove` and `has_ext` are True, returns also found extension
     """
     has_ext = False
-    all_ext = if_declared_force_type(all_ext, 'list', stop=False, silent=True)
+    all_ext = if_declared_force_type(all_ext, list, stop=False, silent=True)
     for ext in all_ext:
         if fname.lower().endswith(ext):
             has_ext = True
@@ -82,11 +84,11 @@ def check_ext(all_ext, fname, scan=False, remove=False):
 
     if remove:
         if has_ext:
-            obj_return.append(fname[:-len(ext)], ext)  # case insensitive solution
+            obj_return += [fname[:-len(ext)], ext]  # case insensitive solution
         else:
-            obj_return.append(fname, '')
+            obj_return += [fname, '']
     else:
-        obj_return.append(fname)
+        obj_return += [fname]
 
     return obj_return[:]
 
@@ -146,8 +148,10 @@ def check_mtx_dim(fname, data, shape=None):
     Raises
     ------
     NotImplementedError
-        If `data` has less dimensions than 1 or more than 2.
+        If `data` has more than 3 dimensions.
+        If `shape` is not None but `data` is 3D.
     ValueError
+        If `data` is empty
         If `shape` == 'square' and `data` dimensions have different lenghts.
     """
     data = data.squeeze()
@@ -155,9 +159,12 @@ def check_mtx_dim(fname, data, shape=None):
 
     if data.shape[0] == 0:
         raise ValueError(f'{fname} is empty!')
-    if data.ndim > 2:
-        raise NotImplementedError('Only 1D and 2D matrices are supported.')
+    if data.ndim > 3:
+        raise NotImplementedError('Only matrices up to 3D are supported, but '
+                                  f'given matrix is {data.ndim}D.')
     if shape is not None:
+        if data.ndim > 2:
+            raise NotImplementedError('Cannot check shape of 3D matrix.')
         if data.ndim == 1 and shape == 'rectangle':
             data = data[..., np.newaxis]
             LGR.warning(f'Rectangular matrix required, but {fname} is a vector. '
@@ -239,7 +246,19 @@ def load_txt(fname, shape=None):
     check_mtx_dim
     """
     LGR.info(f'Loading {fname}.')
-    mtx = np.genfromtxt(fname)
+
+    _, _, ext = check_ext(EXT_1D, fname, scan=True, remove=True)
+
+    if ext in ['.csv', '.csv.gz']:
+        delimiter = ','
+    elif ext in ['.tsv', '.tsv.gz']:
+        delimiter = '\t'
+    elif ext in ['.txt', '.1d', '.par']:
+        delimiter = ' '
+    else:
+        delimiter = None
+
+    mtx = np.genfromtxt(fname, delimiter=delimiter)
 
     mtx = check_mtx_dim(fname, mtx, shape)
 
@@ -292,9 +311,12 @@ def load_mat(fname, shape=None):
 
     data_keys = []
     for k in data.keys():
-        LGR.info(f'Checking {fname} content for data (float array/matrices in MATLAB).')
-        if type(data[k]) is np.ndarray:
-            data_keys.append(k)
+        # Check data key only if it's not hidden
+        # (skip '__header__', '__version__', '__global__')
+        if '__' not in k:
+            LGR.info(f'Checking {fname} key {str(k)} content for data (float array/matrices in MATLAB).')
+            if type(data[k]) is np.ndarray:
+                data_keys.append(k)
 
     if len(data_keys) < 1:
         raise EOFError(f'{fname} does not seem to contain a numeric matrix.')
@@ -307,9 +329,8 @@ def load_mat(fname, shape=None):
         if data[k].size > data[key].size:
             key = k
 
-        LGR.info(f'Selected data from MATLAB variable {key}')
-        mtx = data[key]
-
+    LGR.info(f'Selected data from MATLAB variable {key}')
+    mtx = data[key]
     mtx = check_mtx_dim(fname, mtx, shape)
 
     return mtx
@@ -381,6 +402,42 @@ def export_nifti(data, img, fname):
     return 0
 
 
+def export_txt(data, fname, ext=None):
+    """
+    Export data into a text-like or mat file.
+
+    Parameters
+    ----------
+    data : np.ndarray
+        Data to be exported.
+    fname : str or os.PathLike
+        Name of the output file.
+    ext : str or None, optional
+        Selected extension for export.
+
+    Returns
+    -------
+    0
+        On a successful run
+    """
+    if ext in ['.csv', '.csv.gz', '', None]:
+        delimiter = ','
+    elif ext in ['.tsv', '.tsv.gz']:
+        delimiter = '\t'
+    elif ext in ['.txt', '.1d', '.par']:
+        delimiter = ' '
+
+    if data.ndim < 3:
+        np.savetxt(f'{fname}{ext}', data, fmt='%.6f', delimiter=delimiter)
+    elif data.ndim == 3:
+        makedirs(fname, exist_ok=True)
+        for i in range(data.shape[-1]):
+            np.savetxt(join(fname, f'{i:03d}{ext}'), data[:, :, i], fmt='%.6f',
+                       delimiter=delimiter)
+
+    return 0
+
+
 def export_mtx(data, fname, ext=None):
     """
     Export data into a text-like or mat file.
@@ -408,8 +465,16 @@ def export_mtx(data, fname, ext=None):
         If scipy is not installed or cannot be found.
     NotImplementedError
         Spreadheet output is not implemented yet.
+
+    Returns
+    -------
+    0
+        On a successful run
     """
-    ext = if_declared_force_type(ext, 'list', stop=False, silent=True)
+    if ext is None:
+        ext = ['']
+    else:
+        ext = if_declared_force_type(ext, list, stop=False, silent=True)
     for e in ext + EXT_ALL:
         has_ext, fname, ext = check_ext(e, fname, remove=True)
         if has_ext:
@@ -434,12 +499,8 @@ def export_mtx(data, fname, ext=None):
         savemat(f'{fname}.mat', {'data': data})
     elif ext in EXT_XLS:
         raise NotImplementedError('Spreadsheet output is not implemented yet')
-    elif ext in ['.csv', '.csv.gz']:
-        np.savetxt(f'{fname}{ext}', data, fmt='%.6f', delimiter=',')
-    elif ext in ['.tsv', '.tsv.gz']:
-        np.savetxt(f'{fname}{ext}', data, fmt='%.6f', delimiter='\t')
-    elif ext in ['.txt', '.1d', '.par']:
-        np.savetxt(f'{fname}{ext}', data, fmt='%.6f')
+    elif ext in EXT_1D:
+        export_txt(data, fname, ext)
     else:
         raise BrokenPipeError(f'This should not have happened: {ext} was the '
                               'selected extension.')

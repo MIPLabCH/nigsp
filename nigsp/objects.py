@@ -21,7 +21,7 @@ class SCGraph():
 
     def __init__(self, mtx, timeseries, atlas=None, filename=None, img=None,
                  eigenval=None, eigenvec=None, energy=None, lapl_mtx=None,
-                 index='median', eigenvec_split=None, ts_split=None, surr=None,
+                 index='median', evec_split=None, ts_split=None, surr=None,
                  surr_split=None, sdi=None, gsdi=None, fc=None, fc_split=None):
         """Initialise SCGraph (see class docstring)."""
         if mtx.shape[1] != mtx.shape[0]:
@@ -47,7 +47,7 @@ class SCGraph():
         self.energy = deepcopy(energy)
         self.lapl_mtx = deepcopy(lapl_mtx)
         self.index = deepcopy(index)
-        self.eigenvec_split = deepcopy(eigenvec_split)
+        self.evec_split = deepcopy(evec_split)
         self.ts_split = deepcopy(ts_split)
         self.surr = deepcopy(surr)
         self.surr_split = deepcopy(surr_split)
@@ -73,7 +73,7 @@ class SCGraph():
 
     @property
     def split_keys(self):
-        """Return the names of the splitted timeseries"""
+        """Return the names of the splitted timeseries."""
         return list(self.ts_split.keys())
 
     def symmetric_normalisation(self):
@@ -86,7 +86,7 @@ class SCGraph():
         self.eigenval, self.eigenvec = operations.decomposition(self.mtx)
         return self
 
-    def sructural_decomposition(self):
+    def structural_decomposition(self):
         """Implement both laplacian operations."""
         return self.symmetric_normalisation().decomposition()
 
@@ -114,12 +114,12 @@ class SCGraph():
         self.ns = operations.nodestrength(self.mtx, mean)
         return self
 
-    def compute_sdi(self, mean=True, keys=None):
+    def compute_sdi(self, mean=False, keys=None):
         """Implement sdi.sdi as class method."""
         self.sdi = operations.sdi(self.ts_split, mean, keys)
         return self
 
-    def compute_gsdi(self, mean=True, keys=None):
+    def compute_gsdi(self, mean=False, keys=None):
         """Implement sdi.gsdi as class method."""
         self.gsdi = operations.gsdi(self.ts_split, mean, keys)
         return self
@@ -168,13 +168,13 @@ class SCGraph():
     def compute_fc(self, mean=False):
         """Implement timeseries.functional_connectivity as class method."""
         if self.timeseries is not None:
-            LGR.info('Compute FC of original timeseries')
+            LGR.info('Compute FC of original timeseries.')
             self.fc = operations.functional_connectivity(self.timeseries, mean)
         if self.ts_split is not None:
             self.fc_split = dict.fromkeys(self.ts_split.keys())
-            LGR.info('Compute FC of split timeseries')
+            LGR.info('Compute FC of split timeseries.')
             for k in self.ts_split.keys():
-                LGR.info(f'Compute FC of {k} timeseries')
+                LGR.info(f'Compute FC of {k} timeseries.')
                 self.fc_split[k] = operations.functional_connectivity(self.ts_split[k],
                                                                       mean)
         return self

@@ -75,11 +75,10 @@ def sdi(ts_split, mean=True, keys=None):
         keys = [keys[check_keys.index('low')], keys[check_keys.index('high')]]
 
     norm = dict.fromkeys(keys)
-    LGR.info('Computing norm of timeseries')
     for k in keys:
         norm[k] = np.linalg.norm(ts_split[k], axis=1)
 
-    LGR.info('Computing Structural Decoupling Index')
+    LGR.info('Computing Structural Decoupling Index.')
     sdi = norm[keys[1]] / norm[keys[0]]
 
     if sdi.ndim == 2 and mean:

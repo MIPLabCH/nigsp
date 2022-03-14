@@ -8,20 +8,19 @@ import sys
 
 import numpy as np
 
-
 from nigsp import blocks, io, utils, viz, _version
 from nigsp import surrogates as surr
 from nigsp import timeseries as ts
-from nigsp.cli.run import _get_parser, _check_opt_conf
+from nigsp.cli.run import _get_parser
 # from nigsp.due import due, Doi
 from nigsp.objects import SCGraph
 
-
+import pdb
 LGR = logging.getLogger(__name__)
 LGR.setLevel(logging.INFO)
 
 
-def save_bash_call(fname, outdir):
+def save_bash_call(fname, outdir, outname):
     """
     Save the bash call into file `p2d_call.sh`.
 
@@ -30,15 +29,29 @@ def save_bash_call(fname, outdir):
     outdir : str or path, optional
         output directory
     """
+    fname = utils.if_declared_force_type(fname, list, stop=False, silent=True)
+
+    # Prepare folders
+    if outdir is None:
+        if outname is None:
+            common_path = os.path.commonpath(fname)
+        else:
+            outdir = os.path.split(outname)[0]
+        if common_path == '' or common_path == '/':
+            common_path = '.'
+        outdir = os.path.join(common_path, 'nigsp')
+
+    outdir = os.path.abspath(outdir)
+    log_path = os.path.join(outdir, 'logs')
+    os.makedirs(log_path, exist_ok=True)
     arg_str = ' '.join(sys.argv[1:])
     call_str = f'nigsp {arg_str}'
     outdir = os.path.abspath(outdir)
     log_path = os.path.join(outdir, 'logs')
     os.makedirs(log_path, exist_ok=True)
     isotime = datetime.datetime.now().strftime('%Y-%m-%dT%H%M%S')
-    fname, _ = io.check_ext('.nii.gz', os.path.basename(fname), remove=True)
     f = open(os.path.join(log_path,
-                          f'nigsp_call_{fname}_{isotime}.sh'), 'a')
+                          f'nigsp_call_{isotime}.sh'), 'a')
     f.write(f'#!bin/bash \n{call_str}')
     f.close()
 
@@ -181,21 +194,22 @@ def nigsp(fname, scname, atlasname=None, outname=None, outdir=None,
     LGR.info(f'Input structural connectivity file: {scname}')
     sc_is = dict.fromkeys(io.EXT_DICT.keys(), False)
     LGR.info(f'Input functional file(s): {fname}')
-    func_is = dict.fromkeys(io.EXT_DICT.keys(), [])
+    func_is = dict.fromkeys(io.EXT_DICT.keys(), '')
     atlas_is = dict.fromkeys(io.EXT_DICT.keys(), False)
     if atlasname:
         LGR.info(f'Input atlas file: {atlasname}')
 
     # Check inputs type
     for k in io.EXT_DICT.keys():
+        func_is[k] = []
         for f in fname:
-            func_is[k] += [io.check_ext(io.EXT_DICT[k], f)]
+            func_is[k] += [io.check_ext(io.EXT_DICT[k], f)[0]]
         # Check that func files are all of the same kind
         func_is[k] = all(func_is[k])
 
-        sc_is[k] = io.check_ext(io.EXT_DICT[k], scname)
+        sc_is[k] = io.check_ext(io.EXT_DICT[k], scname)[0]
         if atlasname:
-            atlas_is[k] = io.check_ext(io.EXT_DICT[k], atlasname)
+            atlas_is[k] = io.check_ext(io.EXT_DICT[k], atlasname)[0]
 
     # Check that other inputs are supported
     if index != 'median' and type(index) is not int:
@@ -211,16 +225,16 @@ def nigsp(fname, scname, atlasname=None, outname=None, outdir=None,
                          f'p value {p} was provided instead.')
 
     # #### Read in data #### #
-
+    pdb.set_trace()
     # Read in structural connectivity matrix
-    if (sc_is['1D'] and sc_is['mat'] and sc_is['xls']) is False:
-        raise NotImplementedError(f'Input file {scname} is not of a supported type.')
-    elif sc_is['1D']:
+    if sc_is['1D']:
         mtx = io.load_txt(scname, shape='square')
     elif sc_is['mat']:
         mtx = io.load_mat(scname, shape='square')
     elif sc_is['xls']:
         mtx = io.load_xls(scname, shape='square')
+    else:
+        raise NotImplementedError(f'Input file {scname} is not of a supported type.')
 
     # Read in functional timeseries, join them, and normalise them
     timeseries = []
@@ -231,17 +245,17 @@ def nigsp(fname, scname, atlasname=None, outname=None, outdir=None,
             raise NotImplementedError('To work with functional file(s) of nifti format, '
                                       'specify an atlas file in nifti format.')
         elif func_is['1D']:
-            t = io.load_txt(fname, shape='rectangle')
+            t = io.load_txt(f)
         elif func_is['mat']:
-            t = io.load_mat(fname, shape='rectangle')
+            t = io.load_mat(f)
         elif func_is['xls']:
-            t = io.load_xls(fname, shape='rectangle')
+            t = io.load_xls(f)
         else:
-            raise NotImplementedError(f'Input file {fname} is not of a supported type.')
+            raise NotImplementedError(f'Input file {f} is not of a supported type.')
 
         timeseries += [t[..., np.newaxis]]
 
-    timeseries = np.concatenate(timeseries, axis=-1)
+    timeseries = np.concatenate(timeseries, axis=-1).squeeze()
     timeseries = ts.normalise_ts(timeseries)
 
     # Read in atlas, if defined
@@ -271,8 +285,10 @@ def nigsp(fname, scname, atlasname=None, outname=None, outdir=None,
     # #### Compute SDI (split low vs high timeseries) and FC #### #
 
     # Run laplacian decomposition and actually filter timeseries.
-    scgraph = scgraph.structural_decomposition(scgraph)
-    scgraph = scgraph.compute_graph_energy(mean=True).split_graph(index)
+    LGR.info('Run laplacian decomposition of structural graph.')
+    scgraph = scgraph.structural_decomposition()
+    LGR.info('Compute the energy of the graph and split it in parts.')
+    scgraph = scgraph.compute_graph_energy(mean=True).split_graph()
 
     # If there are more than two splits in the timeseries, compute Generalised SDI
     # This should not happen in this moment.
@@ -284,6 +300,7 @@ def nigsp(fname, scname, atlasname=None, outname=None, outdir=None,
         raise ValueError('Data is not splitted enough to compute SDI or similar '
                          'indexes.')
 
+    LGR.info('Compute functional connectivity.')
     scgraph = scgraph.compute_fc(mean=True)
 
     # #### Output results (pt. 1) #### #
@@ -302,9 +319,11 @@ def nigsp(fname, scname, atlasname=None, outname=None, outdir=None,
     # Export eigenvalues, eigenvectors, and split timeseries and eigenvectors
     for k in scgraph.split_keys:
         io.export_mtx(scgraph.ts_split[k], f'{outprefix}timeseries_{k}{outext}')
-        io.export_mtx(scgraph.eigenvec_split[k], f'{outprefix}eigenvec_{k}{outext}')
-    io.export_mtx(scgraph.eigenvec[k], f'{outprefix}eigenvec{outext}')
-    io.export_mtx(scgraph.eigenval[k], f'{outprefix}eigenval{outext}')
+        io.export_mtx(scgraph.evec_split[k], f'{outprefix}eigenvec_{k}{outext}')
+        io.export_mtx(scgraph.fc_split[k], f'{outprefix}fc_{k}{outext}')
+    io.export_mtx(scgraph.fc, f'{outprefix}fc{outext}')
+    io.export_mtx(scgraph.eigenvec, f'{outprefix}eigenvec{outext}')
+    io.export_mtx(scgraph.eigenval, f'{outprefix}eigenval{outext}')
 
     # #### Additional steps #### #
 
@@ -314,10 +333,12 @@ def nigsp(fname, scname, atlasname=None, outname=None, outdir=None,
             metric_name = 'sdi'
         elif scgraph.gsdi is not None:
             metric_name = 'gsdi'
+        LGR.info(f'Test significant {metric_name} against structurally '
+                 f'{surr_type} surrogates.')
         scgraph = scgraph.create_surrogates(sc_type=surr_type, n_surr=n_surr, seed=seed)
         scgraph = scgraph.test_significance(metric=metric_name, method=method, p=p, return_masked=True)
         # Export thresholded metrics
-        blocks.export_metric(scgraph, outext, outprefix)
+        blocks.export_metric(scgraph, outext, f'{outprefix}mkd_')
 
     # If possible, create plots!
     try:
@@ -327,8 +348,7 @@ def nigsp(fname, scname, atlasname=None, outname=None, outdir=None,
         # Plot original SC and Laplacian
         viz.plot_connectivity(scgraph.lapl_mtx, f'{outprefix}laplacian.png')
         viz.plot_connectivity(scgraph.mtx, f'{outprefix}sc.png')
-        # Compute and plot FC
-        scgraph = scgraph.compute_fc(mean=True)
+        # Plot FC
         viz.plot_connectivity(scgraph.fc, f'{outprefix}fc.png')
         for k in scgraph.split_keys:
             viz.plot_connectivity(scgraph.fc_split[k],
@@ -351,9 +371,7 @@ def nigsp(fname, scname, atlasname=None, outname=None, outdir=None,
 def _main(argv=None):
     options = _get_parser().parse_args(argv)
 
-    options = _check_opt_conf(options)
-
-    save_bash_call(options.fname_func, options.outdir)
+    save_bash_call(options.fname, options.outdir, options.outname)
 
     nigsp(**vars(options))
 

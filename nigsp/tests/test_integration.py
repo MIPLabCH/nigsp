@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Integration test."""
-from os.path import isfile, isdir
+from os.path import isfile, isdir, join
 
 import numpy as np
 
@@ -25,13 +25,31 @@ def test_integration():
 
     # Check that files were created
     assert isdir('testdir')
-    assert isfile('testdir/')
-    assert isfile('testdir/')
-    assert isfile('testdir/')
-    assert isfile('testdir/')
-    assert isfile('testdir/')
-    assert isfile('testdir/')
+    assert isdir(join('testdir', 'fc'))
+    assert isdir(join('testdir', 'fc_high'))
+    assert isdir(join('testdir', 'fc_low'))
+    assert isdir(join('testdir', 'logs'))
+    assert isdir(join('testdir', 'timeseries_high'))
+    assert isdir(join('testdir', 'timeseries_low'))
+    assert isfile(join('testdir', 'fc', '000.csv'))
+    assert isfile(join('testdir', 'fc_high', '000.csv'))
+    assert isfile(join('testdir', 'fc_low', '000.csv'))
+    assert isfile(join('testdir', 'timeseries_high', '000.csv'))
+    assert isfile(join('testdir', 'timeseries_low', '000.csv'))
+    assert isfile(join('testdir', 'sc.png'))
+    assert isfile(join('testdir', 'sdi.png'))
+    assert isfile(join('testdir', 'fc.png'))
+    assert isfile(join('testdir', 'grayplot.png'))
+    assert isfile(join('testdir', 'fc_high.png'))
+    assert isfile(join('testdir', 'grayplot_high.png'))
 
+    sdi_int = np.genfromtxt(join('testdir', 'sdi.csv'))
+
+    fc = np.empty((sdi.shape[0], sdi.shape[0], 10))
+    for i in range(10):
+        fc[..., i] = np.genfromtxt(join('testdir', 'fc', f'{i:03d}.csv'))
+
+    mean_fc_int = fc.mean(axis=-1)
     # Check that results are comparable to matlab results
 
     assert (mean_fc_int - mean_fc).sum() < 0.000001
