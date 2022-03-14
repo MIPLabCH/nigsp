@@ -118,6 +118,25 @@ def _get_parser():
                                 'Default is Bernoulli.'),
                           default='Bernoulli')
 
+    optional = parser.add_argument_group('Other Optional Arguments')
+
+    opt_logl = optional.add_mutually_exclusive_group()
+    opt_logl.add_argument('-debug', '--debug',
+                          dest='lgr_degree',
+                          action='store_const',
+                          const='debug',
+                          help='Only print debugging info to log file.',
+                          default='info')
+    opt_logl.add_argument('-quiet', '--quiet',
+                          dest='lgr_degree',
+                          action='store_const',
+                          const='quiet',
+                          help='Only print warnings to log file.',
+                          default='info')
+    optional.add_argument('-h', '--help', action='help',
+                          help='Show this help message and exit')
+    optional.add_argument('-v', '--version', action='version',
+                          version=('%(prog)s ' + __version__))
     return parser
 
 
