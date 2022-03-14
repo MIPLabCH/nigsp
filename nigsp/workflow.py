@@ -35,14 +35,15 @@ def save_bash_call(fname, outdir, outname):
     if outdir is None:
         if outname is None:
             if len(fname) == 1:
-                common_path = os.path.dirname(fname[0])
+                outdir = os.path.dirname(fname[0])
             else:
-                common_path = os.path.commonpath(fname)
-            if common_path == '' or common_path == '/':
-                common_path = '.'
-            outdir = os.path.join(common_path, 'nigsp')
+                outdir = os.path.commonpath(fname)
         else:
             outdir = os.path.split(outname)[0]
+
+        if outdir == '' or outdir == '/':
+            outdir = '.'
+        outdir = os.path.join(outdir, 'nigsp')
 
     outdir = os.path.abspath(outdir)
     log_path = os.path.join(outdir, 'logs')
@@ -152,14 +153,15 @@ def nigsp(fname, scname, atlasname=None, outname=None, outdir=None,
     if outdir is None:
         if outname is None:
             if len(fname) == 1:
-                common_path = os.path.dirname(fname[0])
+                outdir = os.path.dirname(fname[0])
             else:
-                common_path = os.path.commonpath(fname)
-            if common_path == '' or common_path == '/':
-                common_path = '.'
-            outdir = os.path.join(common_path, 'nigsp')
+                outdir = os.path.commonpath(fname)
         else:
             outdir = os.path.split(outname)[0]
+
+        if outdir == '' or outdir == '/':
+            outdir = '.'
+        outdir = os.path.join(outdir, 'nigsp')
 
     outdir = os.path.abspath(outdir)
     log_path = os.path.join(outdir, 'logs')
@@ -213,9 +215,10 @@ def nigsp(fname, scname, atlasname=None, outname=None, outdir=None,
         # Check that func files are all of the same kind
         func_is[k] = all(func_is[k])
 
-        sc_is[k] = io.check_ext(io.EXT_DICT[k], scname)[0]
-        if atlasname:
-            atlas_is[k] = io.check_ext(io.EXT_DICT[k], atlasname)[0]
+        sc_is[k], _ = io.check_ext(io.EXT_DICT[k], scname)
+        # pdb.set_trace()
+        if atlasname is not None:
+            atlas_is[k], _ = io.check_ext(io.EXT_DICT[k], atlasname)
 
     # Check that other inputs are supported
     if index != 'median' and type(index) is not int:
@@ -231,7 +234,7 @@ def nigsp(fname, scname, atlasname=None, outname=None, outdir=None,
                          f'p value {p} was provided instead.')
 
     # #### Read in data #### #
-    pdb.set_trace()
+
     # Read in structural connectivity matrix
     if sc_is['1D']:
         mtx = io.load_txt(scname, shape='square')
@@ -241,6 +244,24 @@ def nigsp(fname, scname, atlasname=None, outname=None, outdir=None,
         mtx = io.load_xls(scname, shape='square')
     else:
         raise NotImplementedError(f'Input file {scname} is not of a supported type.')
+
+    # Read in atlas, if defined
+    if atlasname is not None:
+        if (atlas_is['1D'] or atlas_is['mat']
+                or atlas_is['xls'] or atlas_is['nifti']) is False:
+            raise NotImplementedError(f'Input file {atlasname} is not of a '
+                                      'supported type.')
+        elif atlas_is['1D']:
+            atlas = io.load_txt(atlasname)
+        elif atlas_is['nifti']:
+            atlas, _, atlasimg = io.load_nifti_get_mask(atlasname, ndim=3)
+        elif atlas_is['mat']:
+            atlas = io.load_mat(atlasname)
+        elif atlas_is['xls']:
+            atlas = io.load_xls(atlasname)
+    else:
+        LGR.warning('Atlas not provided. Some functionalities might not work.')
+        atlas = None
 
     # Read in functional timeseries, join them, and normalise them
     timeseries = []
@@ -264,30 +285,8 @@ def nigsp(fname, scname, atlasname=None, outname=None, outdir=None,
     timeseries = np.concatenate(timeseries, axis=-1).squeeze()
     timeseries = ts.normalise_ts(timeseries)
 
-    # Read in atlas, if defined
-    if atlasname is not None:
-        if (atlas_is['1D'] and atlas_is['mat']
-                and atlas_is['xls'] and atlas_is['nifti']) is False:
-            raise NotImplementedError(f'Input file {atlasname} is not of a '
-                                      'supported type.')
-        elif atlas_is['1D']:
-            atlas = io.load_txt(atlasname)
-        elif atlas_is['mat']:
-            atlas = io.load_mat(atlasname)
-        elif atlas_is['xls']:
-            atlas = io.load_xls(atlasname)
-    else:
-        LGR.warning('Atlas not provided. Some functionalities might not work.')
-
-    # #### Prepare SCGraph object #### #
-    scgraph_init = {'mtx': mtx, 'timeseries': timeseries}
-
-    if atlasname is not None:
-        scgraph_init['atlas'] = atlas
-        if atlas_is['nifti']:
-            scgraph_init['img'] = atlasimg
-
-    scgraph = SCGraph(**scgraph_init)
+    # #### Assign SCGraph object #### #
+    scgraph = SCGraph(mtx, timeseries, atlas=atlas)
     # #### Compute SDI (split low vs high timeseries) and FC #### #
 
     # Run laplacian decomposition and actually filter timeseries.
@@ -313,7 +312,7 @@ def nigsp(fname, scname, atlasname=None, outname=None, outdir=None,
 
     # Prepare outputs
     if outname is not None:
-        _, outprefix, outext = io.check_ext(io.EXT_ALL, fname, remove=True)
+        _, outprefix, outext = io.check_ext(io.EXT_ALL, outname, remove=True)
         outprefix = os.path.join(outdir, f'{os.path.split(outprefix)[1]}_')
     else:
         outprefix = f'{outdir}{os.sep}'
@@ -324,12 +323,12 @@ def nigsp(fname, scname, atlasname=None, outname=None, outdir=None,
 
     # Export eigenvalues, eigenvectors, and split timeseries and eigenvectors
     for k in scgraph.split_keys:
-        io.export_mtx(scgraph.ts_split[k], f'{outprefix}timeseries_{k}{outext}')
-        io.export_mtx(scgraph.evec_split[k], f'{outprefix}eigenvec_{k}{outext}')
-        io.export_mtx(scgraph.fc_split[k], f'{outprefix}fc_{k}{outext}')
-    io.export_mtx(scgraph.fc, f'{outprefix}fc{outext}')
-    io.export_mtx(scgraph.eigenvec, f'{outprefix}eigenvec{outext}')
-    io.export_mtx(scgraph.eigenval, f'{outprefix}eigenval{outext}')
+        io.export_mtx(scgraph.ts_split[k], f'{outprefix}timeseries_{k}', ext=outext)
+        io.export_mtx(scgraph.evec_split[k], f'{outprefix}eigenvec_{k}', ext=outext)
+        io.export_mtx(scgraph.fc_split[k], f'{outprefix}fc_{k}', ext=outext)
+    io.export_mtx(scgraph.fc, f'{outprefix}fc', ext=outext)
+    io.export_mtx(scgraph.eigenvec, f'{outprefix}eigenvec', ext=outext)
+    io.export_mtx(scgraph.eigenval, f'{outprefix}eigenval', ext=outext)
 
     # #### Additional steps #### #
 

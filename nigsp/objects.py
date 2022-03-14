@@ -83,7 +83,7 @@ class SCGraph():
 
     def decomposition(self):
         """Implement laplacian.decomposition as class method."""
-        self.eigenval, self.eigenvec = operations.decomposition(self.mtx)
+        self.eigenval, self.eigenvec = operations.decomposition(self.lapl_mtx)
         return self
 
     def structural_decomposition(self):

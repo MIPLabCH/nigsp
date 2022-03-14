@@ -41,9 +41,8 @@ def nifti_to_timeseries(fname, atlasname):
     _, atlasname = io.check_ext(io.EXT_NIFTI, atlasname, scan=True)
 
     data, mask, _ = io.load_nifti_get_mask(fname)
-    data = io.check_nifti_dim(fname, data, dim=4)
-    atlas, _, img = io.load_nifti_get_mask(atlasname)
-    atlas = io.check_nifti_dim(atlasname, atlas, dim=3)
+    atlas, amask, img = io.load_nifti_get_mask(atlasname, ndim=3)
+    mask *= amask
 
     timeseries = nifti.apply_atlas(data, atlas, mask)
 
@@ -51,6 +50,23 @@ def nifti_to_timeseries(fname, atlasname):
 
 
 def export_metric(scgraph, outext, outprefix):
+    """
+    Export the metrics computed within the library.
+
+    Parameters
+    ----------
+    scgraph : SCGraph object
+        The native object of this library.
+    outext : str
+        The desired extension for export - it will force the type of file created.
+    outprefix : str
+        The desired prefix for the export.
+
+    Returns
+    -------
+    0
+        If everything goes well
+    """
     if outext in io.EXT_NIFTI:
         try:
             import nibabel as _
@@ -62,7 +78,6 @@ def export_metric(scgraph, outext, outprefix):
             LGR.warning('A necessary atlas nifti image was not found. '
                         'Exporting metrics in CSV format instead.')
             outext = '.csv'
-
 
     if scgraph.sdi is not None:
         if outext in io.EXT_NIFTI:

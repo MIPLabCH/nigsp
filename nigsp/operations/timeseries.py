@@ -12,6 +12,7 @@ import logging
 
 import numpy as np
 
+import pdb
 LGR = logging.getLogger(__name__)
 
 
@@ -47,7 +48,7 @@ def normalise_ts(timeseries):
     return z
 
 
-def graph_fourier_transform(timeseries, eigenvec, energy=True, mean=False):
+def graph_fourier_transform(timeseries, eigenvec, energy=False, mean=False):
     """
     Projet a graph decomposition onto the timeseries.
 
@@ -93,14 +94,14 @@ def graph_fourier_transform(timeseries, eigenvec, energy=True, mean=False):
         for i in range(timeseries.shape[2]):
             proj[:, :, i] = eigenvec.conj().T @ np.squeeze(timeseries[:, :, i])
 
-        if timeseries.ndim == 3 and mean:
-            proj = proj.mean(axis=-1)
+        if timeseries.ndim == 3 and mean and not energy:
+            proj = proj.mean(axis=1)
 
     if energy:
         # Compute energy of the spectral density
         energy = proj ** 2
         if proj.ndim == 3 and mean:
-            energy = energy.mean(axis=-1)
+            energy = energy.mean(axis=1)
 
         return energy
 
@@ -116,6 +117,8 @@ def median_cutoff_frequency_idx(energy):
     ----------
     energy : numpy.ndarray
         The array representing the energy (power) spectral density of a timeseries.
+        this array can be 1D or 2D - if 2D it's assumed that the second dimension
+        represents subjects.
 
     Returns
     -------

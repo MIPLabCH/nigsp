@@ -176,7 +176,7 @@ def check_mtx_dim(fname, data, shape=None):
     return data
 
 
-def load_nifti_get_mask(fname, is_mask=False, mask_ndim=3):
+def load_nifti_get_mask(fname, is_mask=False, ndim=4):
     """
     Load a nifti file and returns its data, its image, and a 3d mask.
 
@@ -187,7 +187,7 @@ def load_nifti_get_mask(fname, is_mask=False, mask_ndim=3):
     is_mask : bool, optional
         If the file contains a mask.
         Default: False
-    mask_ndim : int
+    ndim : int
         The number of dimensions expected in the mask
 
     Returns
@@ -214,11 +214,11 @@ def load_nifti_get_mask(fname, is_mask=False, mask_ndim=3):
     data = img.get_fdata()
 
     if is_mask:
-        data = check_nifti_dim(fname, data, dim=mask_ndim)
+        data = check_nifti_dim(fname, data, dim=ndim)
         mask = (data != 0)
         LGR.info(f'{fname} loaded as mask.')
     else:
-        data = check_nifti_dim(fname, data)
+        data = check_nifti_dim(fname, data, dim=ndim)
         mask = data.any(axis=-1).squeeze()
         LGR.info(f'Data loaded from {fname}.')
 
@@ -420,12 +420,14 @@ def export_txt(data, fname, ext=None):
     0
         On a successful run
     """
-    if ext in ['.csv', '.csv.gz', '', None]:
+    if ext.lower() in ['.csv', '.csv.gz', '', None]:
         delimiter = ','
-    elif ext in ['.tsv', '.tsv.gz']:
+    elif ext.lower() in ['.tsv', '.tsv.gz']:
         delimiter = '\t'
-    elif ext in ['.txt', '.1d', '.par']:
+    elif ext.lower() in ['.txt', '.1d', '.par']:
         delimiter = ' '
+    else:
+        delimiter = None
 
     if data.ndim < 3:
         np.savetxt(f'{fname}{ext}', data, fmt='%.6f', delimiter=delimiter)
@@ -484,22 +486,22 @@ def export_mtx(data, fname, ext=None):
         LGR.warning('Extension not specified, or specified extension not '
                     'supported. Forcing export in CSV format.')
         ext = '.csv'
-    elif ext in EXT_NIFTI:
+    elif ext.lower() in EXT_NIFTI:
         LGR.warning('Found nifti extension, exporting data in .1D instead')
         ext = '.1D'
 
     LGR.info(f'Exporting data into {fname}{ext}.')
 
-    if ext == '.mat':
+    if ext.lower() == EXT_MAT:
         try:
             from scipy.io import savemat
         except ImportError:
             raise ImportError('To export .mat files, scipy is required. '
                               'Please install it.')
-        savemat(f'{fname}.mat', {'data': data})
-    elif ext in EXT_XLS:
+        savemat(f'{fname}{ext}', {'data': data})
+    elif ext.lower() in EXT_XLS:
         raise NotImplementedError('Spreadsheet output is not implemented yet')
-    elif ext in EXT_1D:
+    elif ext.lower() in EXT_1D:
         export_txt(data, fname, ext)
     else:
         raise BrokenPipeError(f'This should not have happened: {ext} was the '
