@@ -15,7 +15,7 @@ from nigsp.cli.run import _get_parser
 # from nigsp.due import due, Doi
 from nigsp.objects import SCGraph
 
-import pdb
+
 LGR = logging.getLogger(__name__)
 LGR.setLevel(logging.INFO)
 
@@ -216,7 +216,7 @@ def nigsp(fname, scname, atlasname=None, outname=None, outdir=None,
         func_is[k] = all(func_is[k])
 
         sc_is[k], _ = io.check_ext(io.EXT_DICT[k], scname)
-        # pdb.set_trace()
+
         if atlasname is not None:
             atlas_is[k], _ = io.check_ext(io.EXT_DICT[k], atlasname)
 
@@ -254,20 +254,20 @@ def nigsp(fname, scname, atlasname=None, outname=None, outdir=None,
         elif atlas_is['1D']:
             atlas = io.load_txt(atlasname)
         elif atlas_is['nifti']:
-            atlas, _, atlasimg = io.load_nifti_get_mask(atlasname, ndim=3)
+            atlas, _, img = io.load_nifti_get_mask(atlasname, ndim=3)
         elif atlas_is['mat']:
             atlas = io.load_mat(atlasname)
         elif atlas_is['xls']:
             atlas = io.load_xls(atlasname)
     else:
         LGR.warning('Atlas not provided. Some functionalities might not work.')
-        atlas = None
+        atlas, img = None, None
 
     # Read in functional timeseries, join them, and normalise them
     timeseries = []
     for f in fname:
         if func_is['nifti'] and atlas_is['nifti']:
-            t, atlas, atlasimg = blocks.nifti_to_timeseries(f, atlasname)
+            t, atlas, img = blocks.nifti_to_timeseries(f, atlasname)
         elif func_is['nifti'] and atlas_is['nifti'] is False:
             raise NotImplementedError('To work with functional file(s) of nifti format, '
                                       'specify an atlas file in nifti format.')
@@ -286,7 +286,7 @@ def nigsp(fname, scname, atlasname=None, outname=None, outdir=None,
     timeseries = ts.normalise_ts(timeseries)
 
     # #### Assign SCGraph object #### #
-    scgraph = SCGraph(mtx, timeseries, atlas=atlas)
+    scgraph = SCGraph(mtx, timeseries, atlas=atlas, img=img)
     # #### Compute SDI (split low vs high timeseries) and FC #### #
 
     # Run laplacian decomposition and actually filter timeseries.
@@ -298,8 +298,10 @@ def nigsp(fname, scname, atlasname=None, outname=None, outdir=None,
     # If there are more than two splits in the timeseries, compute Generalised SDI
     # This should not happen in this moment.
     if len(scgraph.split_keys) == 2:
+        metric_name = 'sdi'
         scgraph = scgraph.compute_sdi()
     elif len(scgraph.split_keys) > 2:
+        metric_name = 'gsdi'
         scgraph = scgraph.compute_gsdi()
     else:
         raise ValueError('Data is not splitted enough to compute SDI or similar '
@@ -319,15 +321,22 @@ def nigsp(fname, scname, atlasname=None, outname=None, outdir=None,
         outext = ''
 
     # Export non-thresholded metrics
+    LGR.info(f'Export non-thresholded version of {metric_name}.')
     blocks.export_metric(scgraph, outext, outprefix)
 
     # Export eigenvalues, eigenvectors, and split timeseries and eigenvectors
     for k in scgraph.split_keys:
+        LGR.info(f'Export {k} timeseries.')
         io.export_mtx(scgraph.ts_split[k], f'{outprefix}timeseries_{k}', ext=outext)
+        LGR.info(f'Export {k} eigenvectors.')
         io.export_mtx(scgraph.evec_split[k], f'{outprefix}eigenvec_{k}', ext=outext)
+        LGR.info(f'Export {k} FC (data).')
         io.export_mtx(scgraph.fc_split[k], f'{outprefix}fc_{k}', ext=outext)
+    LGR.info('Export original FC (data).')
     io.export_mtx(scgraph.fc, f'{outprefix}fc', ext=outext)
+    LGR.info('Export original eigenvectors.')
     io.export_mtx(scgraph.eigenvec, f'{outprefix}eigenvec', ext=outext)
+    LGR.info('Export original eigenvalues.')
     io.export_mtx(scgraph.eigenval, f'{outprefix}eigenval', ext=outext)
 
     # #### Additional steps #### #
@@ -338,7 +347,7 @@ def nigsp(fname, scname, atlasname=None, outname=None, outdir=None,
             metric_name = 'sdi'
         elif scgraph.gsdi is not None:
             metric_name = 'gsdi'
-        LGR.info(f'Test significant {metric_name} against structurally '
+        LGR.info(f'Test significant {metric_name} against {n_surr} structurally '
                  f'{surr_type} surrogates.')
         scgraph = scgraph.create_surrogates(sc_type=surr_type, n_surr=n_surr, seed=seed)
         scgraph = scgraph.test_significance(metric=metric_name, method=method, p=p, return_masked=True)
@@ -351,18 +360,34 @@ def nigsp(fname, scname, atlasname=None, outname=None, outdir=None,
         import matplotlib as _
 
         # Plot original SC and Laplacian
+        LGR.info('Plot laplacian matrix.')
         viz.plot_connectivity(scgraph.lapl_mtx, f'{outprefix}laplacian.png')
+        LGR.info('Plot structural connectivity matrix.')
         viz.plot_connectivity(scgraph.mtx, f'{outprefix}sc.png')
         # Plot FC
+        LGR.info('Plot original functional connectivity matrix.')
         viz.plot_connectivity(scgraph.fc, f'{outprefix}fc.png')
         for k in scgraph.split_keys:
+            LGR.info(f'Plot {k} functional connectivity matrix.')
             viz.plot_connectivity(scgraph.fc_split[k],
-                                  f'{outprefix}fc_{k}{outext}')
+                                  f'{outprefix}fc_{k}.png')
         # Plot timeseries
+        LGR.info('Plot original timeseries.')
         viz.plot_grayplot(scgraph.timeseries, f'{outprefix}grayplot.png')
         for k in scgraph.split_keys:
+            LGR.info(f'Plot {k} timeseries.')
             viz.plot_grayplot(scgraph.ts_split[k],
-                              f'{outprefix}grayplot_{k}{outext}')
+                              f'{outprefix}grayplot_{k}.png')
+
+        # Plot metric
+        if atlas is not None:
+            LGR.info(f'Plot {metric_name}.')
+            if scgraph.sdi is not None:
+                viz.plot_nodes(scgraph.sdi, atlas, f'{outprefix}sdi.png')
+            elif scgraph.gsdi is not None:
+                for k in scgraph.gsdi.keys():
+                    viz.plot_nodes(scgraph.gsdi[k], atlas,
+                                   f'{outprefix}gsdi_{k}.png')
 
     except ImportError:
         LGR.warning('The necessary libraries for graphics (nilearn, matplotlib) '
