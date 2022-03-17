@@ -365,7 +365,7 @@ def load_xls(fname, shape=''):
     NotImplementedError
         Spreadheet loading is not implemented yet.
     """
-    raise NotImplementedError('Spreadsheet output is not implemented yet')
+    raise NotImplementedError('Spreadsheet loading is not implemented yet')
 
 
 def export_nifti(data, img, fname):
@@ -395,7 +395,7 @@ def export_nifti(data, img, fname):
     if ext == '':
         ext = '.nii.gz'
 
-    LGR.info(f'Exporting data into {fname}{ext}.')
+    LGR.info(f'Exporting nifti data into {fname}{ext}.')
     out_img = nib.Nifti1Image(data, img.affine, img.header)
     out_img.to_filename(f'{fname}{ext}')
 
