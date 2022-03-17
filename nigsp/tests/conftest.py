@@ -51,30 +51,30 @@ def testdir(tmp_path_factory):
 
 
 @pytest.fixture
-def atlas(testpath):
-    return fetch_file('h6nj7', testpath,
+def atlas(testdir):
+    return fetch_file('h6nj7', testdir,
                       'atlas.nii.gz')
 
 
 @pytest.fixture
-def mean_fc(testpath):
-    return fetch_file('jrg8d', testpath,
+def mean_fc(testdir):
+    return fetch_file('jrg8d', testdir,
                       'mean_fc_matlab.tsv')
 
 
 @pytest.fixture
-def sdi(testpath):
-    return fetch_file('rs4dn', testpath,
+def sdi(testdir):
+    return fetch_file('rs4dn', testdir,
                       'SDI_matlab.tsv')
 
 
 @pytest.fixture
-def sc_mtx(testpath):
-    return fetch_file('vwh75', testpath,
+def sc_mtx(testdir):
+    return fetch_file('vwh75', testdir,
                       'sc.mat')
 
 
 @pytest.fixture
-def timeseries(testpath):
-    return fetch_file('ay8df', testpath,
+def timeseries(testdir):
+    return fetch_file('ay8df', testdir,
                       'func.mat')
