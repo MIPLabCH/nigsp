@@ -11,7 +11,7 @@ LGR
 import logging
 
 from copy import deepcopy
-from math import factorial, floor
+from math import factorial, floor, ceil
 
 import numpy as np
 
@@ -255,7 +255,8 @@ def test_significance(surr, data=None, method='Bernoulli', p=0.05,
         The probability threshold to adopt. Note that this is a two-tails test.
     return_masked : bool, optional
         If True, returns the masked data. If False, returns a mask that holds
-        True where the masked data are (inverse of numpy mask).
+        True where the good data are (inverse of numpy mask). Mask has the same
+        shape as data.
     mean : bool, optional
         If True, returns the average of the masked data along the last axis.
 
@@ -281,6 +282,10 @@ def test_significance(surr, data=None, method='Bernoulli', p=0.05,
                              f'{surr.shape[:data.ndim]} (last axis excluded)')
         surr = np.append(surr, data[..., np.newaxis], axis=-1)
 
+    if surr.ndim < 3:
+        LGR.warning(f'Warning: surrogate dimensions ({surr.ndim}) are less than '
+                    'the program expects - check that you mean to run a test on '
+                    'an average or that you have enough surrogates.')
     # Reorder the surrogate matrix, then find where the real surrogate is
     LGR.info('Reordering surrogates for test')
     real_idx = surr.shape[-1]-1
@@ -291,16 +296,47 @@ def test_significance(surr, data=None, method='Bernoulli', p=0.05,
     if method == 'frequentist':
         LGR.info(f'Testing for p={p} two-tails (p={p/2} each tail)')
         p = p / 2
+        # If there aren't enough surrogates, send a warning message on the real p
+        # Then update p
+        if 1/surr.shape[-1] > p:
+            LGR.warning('The generated surrogates are not enough to test for '
+                        f'the selected p ({p*2} two-tails), since at least '
+                        f'{ceil(1/p)-1} surrogates are required for the selected '
+                        f'p value. Testing for p={1/surr.shape[-1]} two-tails instead.')
+            p = 1 / surr.shape[-1]
+
     elif method == 'Bernoulli':
+        # If there aren't enough subjects, send a warning message on the real p
+        # Then update group level p
         bernoulli_p = deepcopy(p)
+        if 1/surr.shape[1] > bernoulli_p:
+            LGR.warning('The provided subjects are not enough to test for '
+                        f'p={bernoulli_p} one-tail at the group level, since '
+                        f'at least {ceil(1/bernoulli_p)} subjects are required.')
+            bernoulli_p = 1 / surr.shape[1]
+        # If there aren't enough surrogates, send a warning message on the real p
+        # Then update subject level p
         p = 0.05
-        LGR.info(f'Testing for p={bernoulli_p} one tail at the group level and '
-                 f'at p=0.1 two-tails (p=0.05 each tail) at the subect level.')
+        if 1/surr.shape[-1] > p:
+            LGR.warning('The generated surrogates are not enough to test for '
+                        f'p=0.1 two-tails at the subject level. '
+                        f'{ceil(1/p)-1} surrogates are required for p=0.1.')
+            p = 1 / surr.shape[-1]
+
+        LGR.info(f'Testing for p={bernoulli_p} one-tail at the group level and '
+                 f'at p={p*2} two-tails (p={p} each tail) at the subject level.')
     else:
         raise NotImplementedError('Other testing methods than Bernoulli or '
                                   'frequentist are not implemented at the moment.')
 
-    if method == 'Bernoulli':
+    # First, and no matter what, apply frequentist approach to find where
+    # the real data index (real_idx) is at the extremes of the matrix last axis
+    # (with tolerance on the extremes depending on p).
+    # real_idx serendipitously is the number of surrogates.
+    stat_mask = (reord_surr[..., :floor(real_idx * p)+1].any(axis=-1) +
+                 reord_surr[..., -floor(real_idx * p)-1:].any(axis=-1))
+
+    if method == 'Bernoulli' and surr.shape[1] > 1 and surr.ndim >= 3:
         # The following computes the CDF of a binomial distribution
         # Difference with scipy's binom.cdf (100 samples) is: 5.066394802133445e-06
         # #!# See if there is a quicker way to get this (probably invert testing)
@@ -310,33 +346,38 @@ def test_significance(surr, data=None, method='Bernoulli', p=0.05,
                  (1 - p) ** (n - x))
             return f
 
-        x = np.arange(0, 101, 1)
+        x = np.arange(0, 100, 1)
         # Generate the PMF of the binomial distribution
         y = np.asarray([_pmf(i, 100, p) for i in x], dtype='float32')
         # Generate the CDF, then invert it.
         y = 1 - np.cumsum(y)
         # Find the number of subjects necessary to be statistically significant,
         # adjusted for the number of subjects in the surrogates.
-        # Then find all parcels for which the real surrogate is higher or lower
+        # Then find all parcels for which the real data is higher or lower
         # than all surrogates in enough subjects.
         # The +1 in thr is to be conservative on the number of subjects.
-        thr = x[np.argwhere(y < p/surr.shape[0])]
+        # bernoulli_p/surr.shape[0] is a Bonferroni correction.
+        thr = x[y < bernoulli_p/surr.shape[0]][0]
         thr = np.floor(surr.shape[1] / 100 * thr)+1
-        # real_idx serendipitously is the number of surrogates.
-        stat_mask = ((reord_surr[..., :floor(real_idx * p)].sum(axis=1) > thr) +
-                     (reord_surr[..., -floor(real_idx * p):].sum(axis=1) > thr))
-    elif method == 'frequentist':
-        # real_idx serendipitously is the number of surrogates.
-        stat_mask = (reord_surr[..., :floor(real_idx * p)].any(axis=-1) +
-                     reord_surr[..., -floor(real_idx * p):].any(axis=-1))
+        # On top of the frequentist approach, find the parcels that pop up
+        # in the frequentist approach for enough subjects.
+        stat_mask = stat_mask.sum(axis=1) > thr
+        # repeat stat_mask for the number of subjects.
+        stat_mask = stat_mask[..., np.newaxis].repeat(surr.shape[1], axis=-1)
+    elif surr.shape[1] == 1 and surr.ndim >= 3:
+        LGR.warning('The "Bernoulli" method is a group test that requires '
+                    'multiple subjects to be run.')
+    elif surr.ndim < 3:
+        LGR.warning('The dimensionality of the data is not enough to run '
+                    'the "Bernoulli" method.')
 
     if return_masked:
         LGR.info('Returning masked empirical data')
-        stat_mask = surr[stat_mask, :, -1].squeeze()
+        stat_mask = (surr[..., -1] * stat_mask).squeeze()
 
-        if mean and stat_mask.ndim == 2:
+        if mean and stat_mask.ndim >= 2:
             LGR.info('Returning average')
-            stat_mask = stat_mask.mean(axis=-1)
+            stat_mask = stat_mask.mean(axis=1)
     else:
         LGR.info('Returning mask')
 
