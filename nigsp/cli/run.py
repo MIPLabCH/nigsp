@@ -85,7 +85,7 @@ def _get_parser():
     opt_stat = parser.add_argument_group('Optional Arguments for statistical test')
 
     opt_surr_type = opt_stat.add_mutually_exclusive_group()
-    opt_surr_type.add_argument('-sci', '--informed_surrogates',
+    opt_surr_type.add_argument('-sci', '--informed-surrogates',
                                dest='surr_type',
                                action='store_const',
                                const='informed',
@@ -94,7 +94,7 @@ def _get_parser():
                                      'the next one is selected, statistical test '
                                      'will be skipped'),
                                default=None)
-    opt_surr_type.add_argument('-scu', '--uninformed_surrogates',
+    opt_surr_type.add_argument('-scu', '--uninformed-surrogates',
                                dest='surr_type',
                                action='store_const',
                                const='uninformed',
@@ -103,11 +103,18 @@ def _get_parser():
                                      'the previous one is selected, statistical test '
                                      'will be skipped'),
                                default=None)
-    opt_stat.add_argument('-n', '--surrogates_number',
+    opt_stat.add_argument('-n', '--surrogates-number',
                           dest='n_surr',
                           type=int,
                           help=('Number of surrogates to create. Default is 1000.'),
                           default=1000)
+    opt_stat.add_argument('-seed', '--random-seed',
+                          dest='seed',
+                          type=int,
+                          help=('The seed to initialise. If None, internal '
+                                'seeds will be used depending on workflow, '
+                                'granting replicability. Default is None.'),
+                          default=None)
     opt_stat.add_argument('-method', '--statistical-method',
                           dest='method',
                           type=str,
