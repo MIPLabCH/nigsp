@@ -207,7 +207,7 @@ def break_load_mat():
 def break_load_xls():
     with raises(NotImplementedError) as errorinfo:
         io.load_xls('firefly')
-    assert 'output is not' in str(errorinfo.value)
+    assert 'loading is not' in str(errorinfo.value)
 
 
 def break_export_nifti():
