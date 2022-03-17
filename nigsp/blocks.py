@@ -88,10 +88,10 @@ def export_metric(scgraph, outext, outprefix):
     elif scgraph.gsdi is not None:
         for k in scgraph.gsdi.keys():
             if outext in io.EXT_NIFTI:
-                data = nifti.unfold_atlas(scgraph.gsdi, scgraph.atlas)
+                data = nifti.unfold_atlas(scgraph.gsdi[k], scgraph.atlas)
                 io.export_nifti(data, scgraph.img, f'{outprefix}gsdi_{k}{outext}')
             else:
-                io.export_mtx(scgraph.gsdi, f'{outprefix}gsdi_{k}{outext}')
+                io.export_mtx(scgraph.gsdi[k], f'{outprefix}gsdi_{k}{outext}')
 
     return 0
 
