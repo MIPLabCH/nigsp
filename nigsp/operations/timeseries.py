@@ -12,7 +12,8 @@ import logging
 
 import numpy as np
 
-import pdb
+from nigsp.utils import prepare_ndim_iteration
+
 LGR = logging.getLogger(__name__)
 
 
@@ -77,30 +78,24 @@ def graph_fourier_transform(timeseries, eigenvec, energy=False, mean=False):
     -------
     np.ndarray
         Returns either the projection of the graph on the timeseries, or its energy.
-
-    Raises
-    ------
-    NotImplementedError
-        If the timeseries has more than 3 dimensions.
     """
-    if timeseries.ndim > 3:
-        raise NotImplementedError(f'Provided timeseries has {timeseries.ndim} '
-                                  'dimensions, but timeseries arrays of more '
-                                  'than 3 dimensions are not supported yet')
-    elif timeseries.ndim < 3:
+    timeseries = timeseries.squeeze()
+    if timeseries.ndim < 3:
         proj = eigenvec.conj().T @ timeseries
     else:
-        proj = np.empty_like(timeseries, dtype='float32')
-        for i in range(timeseries.shape[2]):
-            proj[:, :, i] = eigenvec.conj().T @ np.squeeze(timeseries[:, :, i])
+        temp_ts, proj = prepare_ndim_iteration(timeseries, 2)
+        for i in range(temp_ts.shape[-1]):
+            proj[:, :, i] = eigenvec.conj().T @ np.squeeze(temp_ts[:, :, i])
+        if timeseries.ndim > 3:
+            proj = proj.reshape(timeseries.shape)
 
-        if timeseries.ndim == 3 and mean and not energy:
-            proj = proj.mean(axis=1)
+    if timeseries.ndim > 2 and mean and not energy:
+        proj = proj.mean(axis=1)
 
     if energy:
         # Compute energy of the spectral density
         energy = proj ** 2
-        if proj.ndim == 3 and mean:
+        if proj.ndim > 2 and mean:
             energy = energy.mean(axis=1)
 
         return energy
@@ -258,30 +253,25 @@ def functional_connectivity(timeseries, mean=False):
         -------
         numpy.ndarray
             FC matrix
-
-        Raises
-        ------
-        NotImplementedError
-            If timeseries is 4+ D.
         """
         timeseries = timeseries.squeeze()
-        if timeseries.ndim > 3:
-            raise NotImplementedError(f'Provided timeseries has {timeseries.ndim} '
-                                      'dimensions, but timeseries arrays of more '
-                                      'than 3 dimensions are not supported yet')
-        elif timeseries.ndim < 2:
+        if timeseries.ndim < 2:
             LGR.warning('Computing functional connectivity of a 1D array (== 1)!')
             return 1
         elif timeseries.ndim == 2:
             return np.corrcoef(timeseries)
         else:
-            fcorr = np.empty((timeseries.shape[0], timeseries.shape[0],
-                              timeseries.shape[-1]), dtype='float32')
-            for i in range(timeseries.shape[-1]):
-                fcorr[..., i] = np.corrcoef(timeseries[..., i])
+            # reshape the array to allow reiteration on unknown dimensions of timeseries 
+            temp_ts, _ = prepare_ndim_iteration(timeseries, 2)
+            fcorr = np.empty(([temp_ts.shape[0]] * 2 + [temp_ts.shape[-1]]), dtype='float32')
+            for i in range(temp_ts.shape[-1]):
+                fcorr[:, :, i] = np.corrcoef(temp_ts[..., i])
+
+            if timeseries.ndim > 3:
+                fcorr = fcorr.reshape(timeseries.shape)
 
             if mean:
-                fcorr = fcorr.mean(axis=-1)
+                fcorr = fcorr.mean(axis=2)
             return fcorr
 
     if type(timeseries) is dict:

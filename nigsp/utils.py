@@ -10,7 +10,7 @@ LGR
 
 import logging
 
-from numpy import asarray, ndarray
+from numpy import asarray, ndarray, prod, empty
 
 
 LGR = logging.getLogger(__name__)
@@ -82,6 +82,35 @@ def if_declared_force_type(var, dtype, varname='an input variable', stop=True,
 
     else:
         return var
+
+
+def prepare_ndim_iteration(data, idx):
+    """
+    Reshape data to have idx+1 dimensions.
+
+    This should allow iterations over unknown numbers of dimensions above idx
+    when needed.
+
+    Parameters
+    ----------
+    data : np.ndarray
+        The data to reiterate over
+    idx : int
+        The number of dimensions that should be fixed
+
+    Returns
+    -------
+    np.ndarray, np.ndarray
+        The reshaped data and an empty array like it.
+    """
+    if data.ndim > idx+1:
+        new_shape = list(data.shape[:idx]) + [prod(data.shape[idx:])]
+        temp_data = data.reshape(new_shape)
+        temp_empty = empty(new_shape, dtype='float32')
+
+        return temp_data, temp_empty
+    else:
+        return data, empty(data.shape, dtype='float32')
 
 
 """
