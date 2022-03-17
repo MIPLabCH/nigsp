@@ -276,15 +276,15 @@ def unfold_atlas(data, atlas, mask=None):
         raise ValueError(f'Cannot unfold data with shape {data.shape} on atlas '
                          f'with {len(labels)} parcels')
 
-    LGR.info('Unmasking data into atlas-like volume.')
+    LGR.info(f'Unmasking data into atlas-like volume of {3+data.ndim-1} dimensions.')
     out = np.zeros_like(atlas, dtype='float32')
-    if data.ndim > 1:
-        for ax in range((atlas.ndim-1), data.ndim):
-            if data.shape[ax] > 1:
-                out = out[..., np.newaxis].repeat(data.shape[ax], axis=-1)
+
+    for ax in range(1, data.ndim):
+        if data.shape[ax] > 1:
+            out = out[..., np.newaxis].repeat(data.shape[ax], axis=-1)
 
     for n, l in enumerate(labels):
-        out[atlas == l] = data[n, :]
+        out[atlas == l] = data[n, ...]
 
     return out
 
