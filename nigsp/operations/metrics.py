@@ -18,7 +18,7 @@ import numpy as np
 LGR = logging.getLogger(__name__)
 
 
-def sdi(ts_split, mean=True, keys=None):
+def sdi(ts_split, mean=False, keys=None):
     """
     Compute the Structural Decoupling Index (SDI).
 
@@ -81,13 +81,13 @@ def sdi(ts_split, mean=True, keys=None):
     LGR.info('Computing Structural Decoupling Index.')
     sdi = norm[keys[1]] / norm[keys[0]]
 
-    if sdi.ndim == 2 and mean:
-        sdi = sdi.mean(axis=-1)
+    if sdi.ndim >= 2 and mean:
+        sdi = sdi.mean(axis=1)
 
     return sdi
 
 
-def gsdi(ts_split, mean=True, keys=None):
+def gsdi(ts_split, mean=False, keys=None):
     """Compute the generalised SDI.
 
     Parameters
@@ -149,9 +149,9 @@ def gsdi(ts_split, mean=True, keys=None):
             if k != j:
                 gsdi[f'{k}_over_{j}'] = norm[k] / norm[j]
 
-    if gsdi[f'{k}_over_{j}'].ndim == 2 and mean:
+    if gsdi[f'{k}_over_{j}'].ndim >= 2 and mean:
         for k in gsdi.keys():
-            gsdi[k] = gsdi[k].mean(axis=-1)
+            gsdi[k] = gsdi[k].mean(axis=1)
 
     return gsdi
 
