@@ -10,7 +10,9 @@ LGR
 
 import logging
 
-from nigsp import io
+from numpy import ndarray
+
+from nigsp import io, viz
 from nigsp.operations import nifti
 
 
@@ -92,6 +94,47 @@ def export_metric(scgraph, outext, outprefix):
                 io.export_nifti(data, scgraph.img, f'{outprefix}gsdi_{k}{outext}')
             else:
                 io.export_mtx(scgraph.gsdi[k], f'{outprefix}gsdi_{k}{outext}')
+
+    return 0
+
+
+def plot_metric(scgraph, outprefix, atlas=None):
+    """
+    If possible, plot metrics as markerplot.
+
+    Parameters
+    ----------
+    scgraph : SCGraph object
+        The internal object containing all data.
+    outprefix : str
+        The prefix of the png file to export
+    img : 3DNiftiImage or None, optional
+        The nifti image of the atlas
+    atlas : 3D Nifti1Image, numpy.ndarray, or None, optional
+        Either a nifti image containing a valid atlas or a set of parcel coordinates.
+    """
+    # Check that atlas format is supported.
+    try:
+        atlas.header
+        atlas_plot = atlas
+    except AttributeError:
+        try:
+            atlas.min()
+            if atlas.ndim == 2 and atlas.shape[1] == 3:
+                atlas_plot = atlas
+        except AttributeError:
+            LGR.warning('The provided atlas is not in a format supported for '
+                        'markerplots.')
+            atlas_plot = None
+
+    # If it is, plot.
+    if atlas_plot is not None:
+        if scgraph.sdi is not None:
+            viz.plot_nodes(scgraph.sdi, atlas_plot, f'{outprefix}sdi.png')
+        elif scgraph.gsdi is not None:
+            for k in scgraph.gsdi.keys():
+                viz.plot_nodes(scgraph.gsdi[k], atlas_plot,
+                               f'{outprefix}gsdi_{k}.png')
 
     return 0
 
