@@ -341,19 +341,6 @@ def nigsp(fname, scname, atlasname=None, outname=None, outdir=None,
 
     # #### Additional steps #### #
 
-    # If required, create surrogates, test, and export masked metrics
-    if surr_type is not None:
-        if scgraph.sdi is not None:
-            metric_name = 'sdi'
-        elif scgraph.gsdi is not None:
-            metric_name = 'gsdi'
-        LGR.info(f'Test significant {metric_name} against {n_surr} structurally '
-                 f'{surr_type} surrogates.')
-        scgraph = scgraph.create_surrogates(sc_type=surr_type, n_surr=n_surr, seed=seed)
-        scgraph = scgraph.test_significance(metric=metric_name, method=method, p=p, return_masked=True)
-        # Export thresholded metrics
-        blocks.export_metric(scgraph, outext, f'{outprefix}mkd_')
-
     # If possible, create plots!
     try:
         import nilearn as _
@@ -379,19 +366,46 @@ def nigsp(fname, scname, atlasname=None, outname=None, outdir=None,
             viz.plot_grayplot(scgraph.ts_split[k],
                               f'{outprefix}grayplot_{k}.png')
 
-        # Plot metric
-        if atlas is not None:
-            LGR.info(f'Plot {metric_name}.')
-            if scgraph.sdi is not None:
-                viz.plot_nodes(scgraph.sdi, atlas, f'{outprefix}sdi.png')
-            elif scgraph.gsdi is not None:
-                for k in scgraph.gsdi.keys():
-                    viz.plot_nodes(scgraph.gsdi[k], atlas,
-                                   f'{outprefix}gsdi_{k}.png')
+        if atlasname is not None:
+            LGR.info(f'Plot {metric_name} markerplot.')
+            if img is not None:
+                blocks.plot_metric(scgraph, outprefix, img)
+            elif atlas is not None:
+                blocks.plot_metric(scgraph, outprefix, atlas)
 
     except ImportError:
         LGR.warning('The necessary libraries for graphics (nilearn, matplotlib) '
                     'were not found. Skipping graphics.')
+
+    # If required, create surrogates, test, and export masked metrics
+    if surr_type is not None:
+        outprefix += 'mkd_'
+        if scgraph.sdi is not None:
+            metric_name = 'sdi'
+        elif scgraph.gsdi is not None:
+            metric_name = 'gsdi'
+        LGR.info(f'Test significant {metric_name} against {n_surr} structurally '
+                 f'{surr_type} surrogates.')
+        scgraph = scgraph.create_surrogates(sc_type=surr_type, n_surr=n_surr,
+                                            seed=seed)
+        scgraph = scgraph.test_significance(metric=metric_name, method=method,
+                                            p=p, return_masked=True)
+        # Export thresholded metrics
+        blocks.export_metric(scgraph, outext, outprefix)
+
+        try:
+            import nilearn as _
+            import matplotlib as _
+
+            if atlasname is not None:
+                LGR.info(f'Plot {metric_name} markerplot.')
+                if img is not None:
+                    blocks.plot_metric(scgraph, outprefix, img)
+                elif atlas is not None:
+                    blocks.plot_metric(scgraph, outprefix, atlas)
+
+        except ImportError:
+            pass
 
     LGR.info(f'End of workflow, find results in {outdir}.')
 
