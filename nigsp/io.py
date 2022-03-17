@@ -474,13 +474,14 @@ def export_mtx(data, fname, ext=None):
         On a successful run
     """
     if ext is None:
-        ext = ['']
-    else:
-        ext = if_declared_force_type(ext, list, stop=False, silent=True)
-    for e in ext + EXT_ALL:
-        has_ext, fname, ext = check_ext(e, fname, remove=True)
-        if has_ext:
-            break
+        # Check if extension was provided in fname.
+        for e in EXT_ALL:
+            has_ext, fname, ext = check_ext(e, fname, remove=True)
+            if has_ext:
+                break
+    elif ext not in EXT_ALL:
+        # Check if extension is supported.
+        ext = None
 
     if ext in [None, '']:
         LGR.warning('Extension not specified, or specified extension not '
