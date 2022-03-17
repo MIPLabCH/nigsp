@@ -59,14 +59,14 @@ def plot_connectivity(mtx, filename=None):
         raise ValueError('Cannot plot connectivity matrices for matrix of '
                          'dimensions > 3.')
     elif mtx.ndim == 3:
-        LGR.warning('Given matrix has 3 dimensions, averaging across last '
+        LGR.warning('Since matrix is 3D, averaging across last '
                     'dimension.')
         mtx = mtx.mean(axis=-1)
 
     if mtx.shape[0] != mtx.shape[1]:
         LGR.warning('Given matrix is not a square matrix!')
 
-    LGR.info('Plotting connectivity matrix.')
+    LGR.info('Creating connectivity plot.')
     plt.figure(figsize=FIGSIZE)
     plt.imshow(mtx, cmap='RdBu')
 
@@ -113,11 +113,11 @@ def plot_grayplot(timeseries, filename=None):
         raise ValueError('Cannot plot grayplots for timeseries of '
                          'dimensions > 3.')
     elif timeseries.ndim == 3:
-        LGR.warning('Given timeseries has 3 dimensions, averaging across last '
+        LGR.warning('Since timeseries is 3D, averaging across last '
                     'dimension.')
         timeseries = timeseries.mean(axis=-1)
 
-    LGR.info('Plotting grayplot.')
+    LGR.info('Creating grayplot.')
     plt.figure(figsize=FIGSIZE)
     vmax = np.percentile(timeseries, 99)
     vmin = np.percentile(timeseries, 1)
