@@ -45,7 +45,7 @@ def fetch_file(osf_id, path, filename):
 
 
 @pytest.fixture(scope='session')
-def testpath(tmp_path_factory):
+def testdir(tmp_path_factory):
     """ Test path that will be used to download all files """
     return tmp_path_factory.getbasetemp()
 
