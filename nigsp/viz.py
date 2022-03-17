@@ -182,6 +182,9 @@ def plot_nodes(ns, atlas, filename=None):
         coord = find_parcellation_cut_coords(atlas)
     except:
         if type(atlas) is np.ndarray:
+            if atlas.ndim > 2 or atlas.shape[1] != 3:
+                raise NotImplementedError('Only atlases in nifti format or '
+                                          'list of coordinates are supported.')
             coord = atlas
         else:
             try:
@@ -205,7 +208,7 @@ def plot_nodes(ns, atlas, filename=None):
     if ns.shape[0] != coord.shape[0]:
         raise ValueError('Node array and coordinates array have different length.')
 
-    LGR.info('Plotting connectivity matrix.')
+    LGR.info('Creating markerplot.')
     plt.figure(figsize=FIGSIZE)
     plot_markers(ns, coord)
 
