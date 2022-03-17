@@ -125,12 +125,11 @@ def _create_surr(timeseries, eigenvec, n_surr, seed, stack):
         if timeseries.ndim < 3 and rand_evec.ndim == timeseries.ndim+1:
             surr[..., i] = graph_fourier_transform(fourier_coeff, rand_evec[..., i].T)
         elif timeseries.ndim == 3:
-            for j in range(timeseries.shape[2]):
-                # #!# Check if two conditions can be merged.
-                if rand_evec.ndim < 4:
-                    surr[:, :, j, i] = graph_fourier_transform(fourier_coeff,
-                                                               rand_evec[..., i].T)
-                else:
+            if rand_evec.ndim < 4:
+                surr[..., i] = graph_fourier_transform(fourier_coeff,
+                                                       rand_evec[..., i].T)
+            else:
+                for j in range(rand_evec.shape[2]):
                     surr[:, :, j, i] = graph_fourier_transform(fourier_coeff,
                                                                rand_evec[:, :, j, i].T)
         else:
