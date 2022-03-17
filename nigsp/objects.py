@@ -14,6 +14,7 @@ from copy import deepcopy
 
 from nigsp import operations
 
+
 LGR = logging.getLogger(__name__)
 
 
@@ -126,33 +127,33 @@ class SCGraph():
 
     def create_surrogates(self, sc_type='informed', n_surr=1000, seed=None):
         """Implement surrogates.sc_informed and sc_uninformed as class method."""
-        args = {'n_surr': n_surr}
+        sc_args = {'timeseries': self.timeseries, 'n_surr': n_surr}
         if seed is not None:
-            args['seed'] = seed
+            sc_args['seed'] = seed
 
         if sc_type == 'informed':
-            args['eigenvec'] = self.eigenvec
-            self.surr = operations.sc_informed(**args)
+            sc_args['eigenvec'] = self.eigenvec
+            self.surr = operations.sc_informed(**sc_args)
         elif sc_type == 'uninformed':
-            args['lapl_mtx'] = self.lapl_mtx
-            self.surr = operations.sc_uninformed(**args)
+            sc_args['lapl_mtx'] = self.lapl_mtx
+            self.surr = operations.sc_uninformed(**sc_args)
         else:
             return ValueError(f'Unknown option {sc_type} for surrogate creation. '
                               'Declared type must be either \'informed\' or '
                               '\'uninformed\'')
         return self
 
-    def test_significance(self, metric='sdi', method='Bernoulli', p=0.1,
+    def test_significance(self, metric='sdi', method='Bernoulli', p=0.05,
                           return_masked=False, mean=False):
         """Implement surrogates.test_significance as class method."""
         _, self.surr_split = operations.graph_filter(self.surr,
                                                      self.eigenvec,
                                                      self.index)
         if metric == 'sdi':
-            surr_sdi = operations.sdi(self.surr, mean, keys=None)
+            surr_sdi = operations.sdi(self.surr_split, mean, keys=None)
             metric_data = self.sdi
         elif metric == 'gsdi':
-            surr_sdi = operations.gsdi(self.surr, mean, keys=None)
+            surr_sdi = operations.gsdi(self.surr_split, mean, keys=None)
             metric_data = self.gsdi
         # #!# Check that this attribution works (should)
         metric_data = operations.test_significance(surr_sdi, metric_data,
