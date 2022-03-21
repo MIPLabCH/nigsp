@@ -479,7 +479,7 @@ def export_mtx(data, fname, ext=None):
             has_ext, fname, ext = check_ext(e, fname, remove=True)
             if has_ext:
                 break
-    elif ext not in EXT_ALL:
+    elif ext.lower() not in EXT_ALL:
         # Check if extension is supported.
         ext = None
 
@@ -493,7 +493,7 @@ def export_mtx(data, fname, ext=None):
 
     LGR.info(f'Exporting data into {fname}{ext}.')
 
-    if ext.lower() == EXT_MAT:
+    if ext.lower() in EXT_MAT:
         try:
             from scipy.io import savemat
         except ImportError:
