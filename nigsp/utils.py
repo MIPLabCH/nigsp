@@ -46,42 +46,38 @@ def if_declared_force_type(var, dtype, varname='an input variable', stop=True,
     TypeError
         If variable var is not of type and stop is True
     """
-    if var:
-        if type(var) is not dtype and stop:
-            if varname != 'an input variable':
-                varname = f'variable {varname}'
-            raise TypeError(f'{varname} is not of type {dtype}')
+    if type(var) is not dtype and stop:
+        if varname != 'an input variable':
+            varname = f'variable {varname}'
+        raise TypeError(f'{varname} is not of type {dtype}')
 
-        if dtype is int:
-            tmpvar = int(var)
-        elif dtype is float:
-            tmpvar = float(var)
-        elif dtype is str:
-            tmpvar = str(var)
-        elif dtype is ndarray:
-            tmpvar = asarray(var)
-        elif dtype is list:
-            if type(var) is list:
-                tmpvar = var
-            else:
-                tmpvar = [var]
+    if dtype is int:
+        tmpvar = int(var)
+    elif dtype is float:
+        tmpvar = float(var)
+    elif dtype is str:
+        tmpvar = str(var)
+    elif dtype is ndarray:
+        tmpvar = asarray(var)
+    elif dtype is list:
+        if type(var) is list:
+            tmpvar = var
         else:
-            raise NotImplementedError(f'Type {dtype.__name__} not supported')
-
-        if type(tmpvar) is not type(var):
-            if varname != 'an input variable':
-                varname = f'variable {varname}'
-            msg = f'Changing type of {varname} from {type(var)} to {dtype}'
-
-            if silent:
-                LGR.debug(msg)
-            else:
-                LGR.warning(msg)
-
-        return tmpvar
-
+            tmpvar = [var]
     else:
-        return var
+        raise NotImplementedError(f'Type {dtype.__name__} not supported')
+
+    if type(tmpvar) is not type(var):
+        if varname != 'an input variable':
+            varname = f'variable {varname}'
+        msg = f'Changing type of {varname} from {type(var)} to {dtype}'
+
+        if silent:
+            LGR.debug(msg)
+        else:
+            LGR.warning(msg)
+
+    return tmpvar
 
 
 def prepare_ndim_iteration(data, idx):
