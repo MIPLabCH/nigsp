@@ -3,9 +3,10 @@
     "git-tag",
     "conventional-commits",
     "first-time-contributor",
-    "released"
+    ["released", {"label": "Released", "prereleaseLabel": "Prereleased"}],
+    ["pr-body-labels", { "disabledLabels": ["release", "Release", "Released", "Prereleased", "Skip release"] }]
   ],
-  "owner": "smoia",
+  "owner": "MIPLabCH",
   "repo": "nigsp",
   "name": "Stefano Moia",
   "email": "s.moia.research@gmail.com",
@@ -183,6 +184,20 @@
     {
       "name": "Wontfix",
       "description": "This will not be worked on",
+      "releaseType": "none",
+      "overwrite": true,
+      "color": "#ffffff"
+    },
+    {
+      "name": "Released",
+      "description": "This PR has been released!",
+      "releaseType": "none",
+      "overwrite": true,
+      "color": "#ffffff"
+    },
+    {
+      "name": "Prereleased",
+      "description": "This PR has been released in a prerelease",
       "releaseType": "none",
       "overwrite": true,
       "color": "#ffffff"
