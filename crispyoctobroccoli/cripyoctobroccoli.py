@@ -5,15 +5,17 @@ import datetime
 import logging
 import os
 import sys
-from copy import deepcopy
-from shutil import copy as cp
 
 import numpy as np
 
-from crispyoctobroccoli import io, utils, viz, _version
+
+from crispyoctobroccoli import blocks, io, utils, viz, _version
+from crispyoctobroccoli import timeseries as ts
 from crispyoctobroccoli.cli.run import _get_parser, _check_opt_conf
-from crispyoctobroccoli.due import due, Doi
-from crispyoctobroccoli._version import get_versions
+# from crispyoctobroccoli.due import due, Doi
+from crispyoctobroccoli.objects import SCGraph
+from crispyoctobroccoli.nifti import unfold_atlas
+
 
 LGR = logging.getLogger(__name__)
 LGR.setLevel(logging.INFO)
@@ -41,15 +43,21 @@ def save_bash_call(fname, outdir):
     f.close()
 
 
-def crispyoctobroccoli(outdir='', lgr_degree='info'):
+def crispyoctobroccoli(outdir=None, lgr_degree='info'):
 
-    ##### Logger preparation #####
+    # #### Logger preparation #### #
+    fname = utils.if_declared_force_type(fname, list, stop=False, silent=True)
 
-    # Prepare folder
-    if outdir:
-        outdir = os.path.abspath(outdir)
-    else:
-        outdir = os.path.join(os.path.split(fname_func)[0], 'crispyoctobroccoli')
+    # Prepare folders
+    if outdir is None:
+        if outname is None:
+            common_path = os.path.commonpath(fname)
+        else:
+            outdir = os.path.split(outname)[0]
+        if common_path == '' or common_path == '/':
+            common_path = '.'
+        outdir = os.path.join(common_path, 'crispyoctobroccoli')
+
     outdir = os.path.abspath(outdir)
     log_path = os.path.join(outdir, 'logs')
     os.makedirs(log_path, exist_ok=True)
@@ -80,27 +88,159 @@ def crispyoctobroccoli(outdir='', lgr_degree='info'):
         logging.basicConfig(level=logging.INFO,
                             handlers=[log_handler, sh], format='%(levelname)-10s %(message)s')
 
-    LGR.info(f'Currently running crispyoctobroccoli version {get_versions()['version']}')
-    LGR.info(f'Input file is {fname_func}')
+    version_number = _version.get_versions()['version']
+    LGR.info(f'Currently running crispyoctobroccoli version {version_number}')
 
+    # #### Check input #### #
+    LGR.info(f'Input structural connectivity file: {scname}')
+    sc_is = dict.fromkeys(io.EXT_DICT.keys(), False)
+    LGR.info(f'Input functional file(s): {fname}')
+    func_is = dict.fromkeys(io.EXT_DICT.keys(), [])
+    atlas_is = dict.fromkeys(io.EXT_DICT.keys(), False)
+    if atlasname:
+        LGR.info(f'Input atlas file: {atlasname}')
+    # Check inputs type
+    for k in io.EXT_DICT.keys():
+        for f in fname:
+            func_is[k] += [io.check_ext(io.EXT_DICT[k], f)]
+        # Check that func files are all of the same kind
+        func_is[k] = all(func_is[k])
 
-    ##### Check input #####
+        sc_is[k] = io.check_ext(io.EXT_DICT[k], scname)
+        if atlasname:
+            atlas_is[k] = io.check_ext(io.EXT_DICT[k], atlasname)
 
-    # Check func type and read it
-    func_is_1d = io.check_ext(EXT_1D, fname_func)
-    func_is_nifti = io.check_ext(EXT_NIFTI, fname_func)
+    # #### Read in data #### #
 
-    # Check that all input values have right type
-    tr = io.if_declared_force_type(tr, 'float', 'tr')
-    freq = io.if_declared_force_type(freq, 'float', 'freq')
-    trial_len = io.if_declared_force_type(trial_len, 'int', 'trial_len')
-    n_trials = io.if_declared_force_type(n_trials, 'int', 'n_trials')
-    highcut = io.if_declared_force_type(highcut, 'float', 'highcut')
-    lowcut = io.if_declared_force_type(lowcut, 'float', 'lowcut')
-    lag_max = io.if_declared_force_type(lag_max, 'float', 'lag_max')
-    lag_step = io.if_declared_force_type(lag_step, 'float', 'lag_step')
-    l_degree = io.if_declared_force_type(l_degree, 'int', 'l_degree')
-    scale_factor = io.if_declared_force_type(scale_factor, 'float', 'scale_factor')
+    # Read in structural connectivity matrix
+    if (sc_is['1D'] and sc_is['mat'] and sc_is['xls']) is False:
+        raise NotImplementedError(f'Input file {scname} is not of a supported type.')
+    elif sc_is['1D']:
+        mtx = io.load_txt(scname, shape='square')
+    elif sc_is['mat']:
+        mtx = io.load_mat(scname, shape='square')
+    elif sc_is['xls']:
+        mtx = io.load_xls(scname, shape='square')
+
+    # Read in functional timeseries, join them, and normalise them
+    timeseries = []
+    for f in fname:
+        if func_is['nifti'] and atlas_is['nifti']:
+            t, atlas, atlasimg = blocks.nifti_to_timeseries(f, atlasname)
+        elif func_is['nifti'] and atlas_is['nifti'] is False:
+            raise NotImplementedError('To work with functional file(s) of nifti format, '
+                                      'specify an atlas file in nifti format.')
+        elif func_is['1D']:
+            t = io.load_txt(fname, shape='rectangle')
+        elif func_is['mat']:
+            t = io.load_mat(fname, shape='rectangle')
+        elif func_is['xls']:
+            t = io.load_xls(fname, shape='rectangle')
+        else:
+            raise ValueError('Functional files were not found, or are not of same type')
+
+        timeseries += [t[..., np.newaxis]]
+
+    timeseries = np.concatenate(timeseries, axis=-1)
+    timeseries = ts.normalise_ts(timeseries)
+
+    # Read in atlas, if defined
+    if atlasname is not None:
+        if (atlas_is['1D'] and atlas_is['mat']
+                and atlas_is['xls'] and atlas_is['nifti']) is False:
+            raise NotImplementedError(f'Input file {atlasname} is not of a '
+                                      'supported type.')
+        elif atlas_is['1D']:
+            atlas = io.load_txt(atlasname, shape='square')
+        elif atlas_is['mat']:
+            atlas = io.load_mat(atlasname, shape='square')
+        elif atlas_is['xls']:
+            atlas = io.load_xls(atlasname, shape='square')
+    else:
+        LGR.warning('Atlas not provided. Some functionalities might not work.')
+
+    # #### Prepare SCGraph object #### #
+    scgraph_init = {'mtx': mtx, 'timeseries': timeseries}
+
+    if atlasname is not None:
+        scgraph_init['atlas'] = atlas
+        if atlas_is['nifti']:
+            scgraph_init['img'] = atlasimg
+
+    scgraph = SCGraph(**scgraph_init)
+    # #### Compute SDI (split low vs high timeseries) and FC #### #
+
+    # Run laplacian decomposition and actually filter timeseries.
+    scgraph = scgraph.structural_decomposition(scgraph)
+    scgraph = scgraph.compute_graph_energy(mean=True).split_graph(index)
+
+    # If there are more than two splits in the timeseries, compute Generalised SDI
+    # This should not happen in this moment.
+    if len(scgraph.split_keys) == 2:
+        scgraph = scgraph.compute_sdi()
+    elif len(scgraph.split_keys) > 2:
+        scgraph = scgraph.compute_gsdi()
+    else:
+        raise ValueError('Data is not splitted enough to compute SDI or similar '
+                         'indexes.')
+
+    scgraph = scgraph.compute_fc(mean=True)
+
+    # #### Output results (pt. 1) #### #
+
+    # Prepare outputs
+    if outname is not None:
+        _, outprefix, outext = io.check_ext(io.EXT_ALL, fname, remove=True)
+        outprefix = os.path.join(outdir, f'{os.path.split(outprefix)[1]}_')
+    else:
+        outprefix = f'{outdir}{os.sep}'
+        outext = ''
+
+    if scgraph.sdi is not None:
+        metric_data = scgraph.sdi
+        metric_name = 'sdi'
+    elif scgraph.gsdi is not None:
+        metric_data = scgraph.gsdi
+        metric_name = 'gsdi'
+
+    # Export original matrix
+    if outext in io.EXT_NIFTI:
+        data = unfold_atlas(metric_data, scgraph.atlas)
+        io.export_nifti(data, atlasimg, f'{outprefix}{metric_name}{outext}')
+    else:
+        io.export_mtx(metric_data, f'{outprefix}{metric_name}{outext}')
+
+    # Export eigenvalues, eigenvectors, and split timeseries and eigenvectors
+    for k in scgraph.split_keys:
+        io.export_mtx(scgraph.ts_split[k], f'{outprefix}timeseries_{k}{outext}')
+        io.export_mtx(scgraph.eigenvec_split[k], f'{outprefix}eigenvec_{k}{outext}')
+    io.export_mtx(scgraph.eigenvec[k], f'{outprefix}eigenvec{outext}')
+    io.export_mtx(scgraph.eigenval[k], f'{outprefix}eigenval{outext}')
+
+    # #### Additional steps #### #
+
+    # If required, create surrogates, test, and export masked metrics
+    if test_vs_surrogates is not None:
+        scgraph = scgraph.create_surrogates(sc_type=test_vs_surrogates, n_surr=n_surr, seed=seed)
+        scgraph = scgraph.test_significance(metric=metric_name, method=method, p=p, return_masked=True)
+        if outext in io.EXT_NIFTI:
+            # #!# Check that metric_data attrbution actually updated
+            data = unfold_atlas(metric_data, scgraph.atlas)
+            io.export_nifti(data, atlasimg, f'{outprefix}{metric_name}{outext}')
+        else:
+            io.export_mtx(metric_data, f'{outprefix}{metric_name}{outext}')
+
+    # If possible, create plots!
+    try:
+        import nilearn.plotting
+        import matplotlib.pyplot
+
+        viz.
+
+    except ImportError:
+        LGR.warning('The necessary libraries for graphics (nilearn, matplotlib) '
+                    'were not found. Skipping graphics.')
+
 
 
 
@@ -123,7 +263,7 @@ if __name__ == '__main__':
 
 
 """
-Copyright 2021, Stefano Moia.
+Copyright 2022, Stefano Moia.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
