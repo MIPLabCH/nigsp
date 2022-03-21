@@ -6,7 +6,7 @@
     "released"
   ],
   "owner": "smoia",
-  "repo": "crispy-octo-broccoli",
+  "repo": "nigsp",
   "name": "Stefano Moia",
   "email": "s.moia.research@gmail.com",
   "labels": [
@@ -43,12 +43,20 @@
       "color": "#d73a4a"
     },
     {
+      "name": "Refactoring",
+      "changelogTitle": "💻 Refactored",
+      "description": "Improve nonfunctional attributes and bump up a minor version  (0.+1.0)",
+      "releaseType": "minor",
+      "overwrite": true,
+      "color": "#9494ff"
+    },
+    {
       "name": "Documentation",
       "changelogTitle": "📝 Documentation",
       "description": "This issue or PR is about the documentation ",
       "releaseType": "none",
       "overwrite": true,
-      "color": "#1D70CF"
+      "color": "#1d70cf"
     },
     {
       "name": "Testing",
@@ -68,7 +76,7 @@
     },
     {
       "name": "Outreach",
-      "changelogTitle": "🖋️  Outreach",
+      "changelogTitle": "🖋️ Outreach",
       "description": "Issue about outreaching of any form",
       "releaseType": "none",
       "overwrite": true,
@@ -86,7 +94,98 @@
       "description": "For PR only, trigger a release at the merge",
       "releaseType": "release",
       "overwrite": true,
-      "color": "#FFFFFF"
+      "color": "#ffffff"
+    },
+    {
+      "name": "Discussion",
+      "description": "Discussion of a concept or implementation, needs to stay open",
+      "releaseType": "none",
+      "overwrite": true,
+      "color": "#1c778c"
+    },
+    {
+      "name": "Duplicate",
+      "description": "This issue or pull request already exists",
+      "releaseType": "none",
+      "overwrite": true,
+      "color": "#cfd3d7"
+    },
+    {
+      "name": "Enhancement",
+      "description": "New feature or request",
+      "releaseType": "none",
+      "overwrite": true,
+      "color": "#a2eeef"
+    },
+    {
+      "name": "Good First Issue",
+      "description": "A good first issue to tackle to get comfortable with the project",
+      "releaseType": "none",
+      "overwrite": true,
+      "color": "#4e2a84"
+    },
+    {
+      "name": "Hacktoberfest",
+      "description": "Issue/PR for hacktoberfest. Completing this issue/PR might not grant the all-contributor recognition",
+      "releaseType": "none",
+      "overwrite": true,
+      "color": "#ff7518"
+    },
+    {
+      "name": "hacktoberfest-accepted",
+      "description": "To accept a PR for the aims of the hacktoberfest",
+      "releaseType": "none",
+      "overwrite": true,
+      "color": "#ff7518"
+    },
+    {
+      "name": "BrainHack",
+      "description": "This issue is suggested for BrainHack participants!",
+      "releaseType": "none",
+      "overwrite": true,
+      "color": "#000000"
+    },
+    {
+      "name": "Help wanted",
+      "description": "A pair of extra eyes are needed here!",
+      "releaseType": "none",
+      "overwrite": true,
+      "color": "#57db1a"
+    },
+    {
+      "name": "Invalid",
+      "description": "This just doesn't seem right",
+      "releaseType": "skip",
+      "overwrite": true,
+      "color": "#960018"
+    },
+    {
+      "name": "Paused",
+      "description": "Issue should not be worked on until the resolution of other issues or Pull Requests",
+      "releaseType": "none",
+      "overwrite": true,
+      "color": "#f7c38c"
+    },
+    {
+      "name": "Question",
+      "description": "Request information about the project. For users only",
+      "releaseType": "none",
+      "overwrite": true,
+      "color": "#d876e3"
+    },
+    {
+      "name": "Urgent",
+      "description": "If you don't know where to start, start here!",
+      "releaseType": "none",
+      "overwrite": true,
+      "color": "#fff200"
+    },
+    {
+      "name": "Wontfix",
+      "description": "This will not be worked on",
+      "releaseType": "none",
+      "overwrite": true,
+      "color": "#ffffff"
     }
   ]
 }

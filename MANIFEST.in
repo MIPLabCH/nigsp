@@ -1,4 +1,4 @@
 include README.* LICENSE setup* MANIFEST.in requirements.txt
 
 include versioneer.py
-include cripyoctobroccoli/_version.py
+include nigsp/_version.py
