@@ -5,7 +5,6 @@ import shutil
 from os.path import isfile, isdir, join
 
 import numpy as np
-import pytest
 
 from nigsp.workflow import _main
 

@@ -31,7 +31,7 @@ def test_nodestrength():
     """Text nodestrength with random matrix."""
     a = np.random.rand(3, 3)
     a = a - a.mean()
-    b = a.abs()
+    b = np.abs(a)
     s = b.sum(axis=0)
     f = s.mean(axis=-1)
 

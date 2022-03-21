@@ -15,8 +15,8 @@ def test_vol_to_mat():
     c = b.reshape(a.shape, order='F')
 
     assert b.ndim == 2
-    assert all(b.shape == ((prod(a.shape[:-1])), a.shape[-1]))
-    assert all(a == c)
+    assert b.shape == ((prod(a.shape[:-1])), a.shape[-1])
+    assert (a == c).all()
 
     a = rand(3, 4, 5)
     b = nifti.vol_to_mat(a)
@@ -24,7 +24,7 @@ def test_vol_to_mat():
 
     assert b.ndim == 1
     assert b.shape == prod(a.shape)
-    assert all(a == c)
+    assert (a == c).all()
 
 
 def test_mat_to_vol():
@@ -34,13 +34,13 @@ def test_mat_to_vol():
 
     assert c.ndim == 4
     assert c.shape == a.shape
-    assert all(a == c)
+    assert (a == c).all()
 
     c = nifti.mat_to_vol(b, shape=a.shape)
 
     assert c.ndim == 4
     assert c.shape == a.shape
-    assert all(a == c)
+    assert (a == c).all()
 
     c = nifti.mat_to_vol(b, shape=(6, 2, 5, 6), asdata=a)
 
@@ -52,26 +52,26 @@ def test_apply_mask():
     a = rand(3, 3)
 
     b = nifti.apply_mask(a, m)
-    assert (b == a[1, :])
+    assert (b == a[1, :]).all()
 
 
 def test_unmask():
     m = asarray([0, 1, 0])
     a = rand(3)
-    b = zeros([3, 3])
+    b = zeros([3, 3], dtype='float32')
     b[1, :] = a
 
     c = nifti.unmask(a, m, shape=b.shape)
 
     assert c.ndim == 2
     assert c.shape == b.shape
-    assert all(c == b)
+    assert (c == b).all()
 
     c = nifti.unmask(a, m, asdata=b)
 
     assert c.ndim == 2
     assert c.shape == b.shape
-    assert all(c == b)
+    assert (c == b).all()
 
     c = nifti.unmask(a, m, shape=(2, 2), asdata=b)
 
@@ -82,31 +82,31 @@ def test_apply_atlas():
     m = asarray([0, 1, 1, 1, 1, 1])
     a = asarray([1, 2, 2, 3, 3, 0])
     d = rand(6, 10)
-    c = zeros((3, 10))
-    cm = zeros((2, 10))
+    c = zeros((3, 10), dtype='float32')
+    cm = zeros((2, 10), dtype='float32')
     c[0, :] = d[0, :]
     c[1, :] = d[1:3, :].mean(axis=0)
-    c[2, :] = d[4:6, :].mean(axis=0)
+    c[2, :] = d[3:5, :].mean(axis=0)
     cm[0, :] = d[1:3, :].mean(axis=0)
-    cm[1, :] = d[4:6, :].mean(axis=0)
+    cm[1, :] = d[3:5, :].mean(axis=0)
 
     r = nifti.apply_atlas(d, a)
     rm = nifti.apply_atlas(d, a, mask=m)
 
     assert r.ndim == 2
     assert r.shape == c.shape
-    assert all(r == c)
+    assert (r == c).all()
     assert rm.shape == cm.shape
-    assert all(rm == cm)
+    assert (rm == cm).all()
 
 
 def test_unfold_atlas():
     m = asarray([0, 1, 1, 1, 1, 1])
     a = asarray([1, 2, 2, 3, 3, 0])
-    c = rand((3, 10))
-    cm = rand((2, 10))
-    da = zeros((6, 10))
-    dm = zeros((6, 10))
+    c = rand(3, 10)
+    cm = rand(2, 10)
+    da = zeros((6, 10), dtype='float32')
+    dm = zeros((6, 10), dtype='float32')
     label = unique(a)
     label = label[label > 0]
     for n, l in enumerate(label):
@@ -120,9 +120,9 @@ def test_unfold_atlas():
 
     assert r.ndim == 2
     assert r.shape == da.shape
-    assert all(r == da)
+    assert (r == da).all()
     assert rm.shape == dm.shape
-    assert all(rm == dm)
+    assert (rm == dm).all()
 
 
 # ### Break tests

@@ -62,7 +62,7 @@ def test_check_nifti_dim(data):
     """Test check_nifti_dim."""
     data_out = io.check_nifti_dim('kaylee', data, dim=2)
 
-    assert all(data_out == data.squeeze())
+    assert (data_out == data.squeeze()).all()
     assert data_out.ndim == 2
 
 
@@ -75,7 +75,7 @@ def test_check_mtx_dim(data):
     """Test check_mtx_dim."""
     data_out = io.check_mtx_dim('wash', data)
 
-    assert (data_out == data).all()
+    assert (data_out == data.squeeze()).all()
     assert data_out.ndim == 2
 
 
@@ -87,7 +87,7 @@ def test_check_mtx_dim_cases(data, shape):
     """Test check_mtx_dim for specific shapes."""
     data_out = io.check_mtx_dim('wash', data, shape=shape)
 
-    assert all(data_out.squeeze() == data)
+    assert (data_out.squeeze() == data).all()
     assert data_out.ndim == 2
 
 
@@ -104,7 +104,7 @@ def test_load_txt():
     savetxt(n, a)
     b = io.load_txt(n)
 
-    assert all(a == b)
+    assert (a == b).all()
 
     remove(n)
 
@@ -118,7 +118,7 @@ def test_load_mat():
 
     c = io.load_mat(n)
 
-    assert all(a == c)
+    assert (a == c).all()
     remove(n)
 
 
@@ -138,17 +138,20 @@ def test_export_nifti():
 ])
 def test_export_mtx(ext_in, ext_out):
     """Test export_mtx."""
-    data = asarray[[1, 1, 2], [3, 5, 8]]
+    data = asarray([[1, 1, 2], [3, 5, 8]])
     io.export_mtx(data, 'serenity', ext=ext_in)
     assert isfile(f'serenity{ext_out}')
 
-    if ext_out in ['.csv', '.tsv', '.1D']:
+    if ext_out in ['.csv']:
+        data_in = genfromtxt(f'serenity{ext_out}', delimiter=',')
+    if ext_out in ['.tsv', '.1D']:
         data_in = genfromtxt(f'serenity{ext_out}')
 
     if ext_out in ['.mat']:
         data_in = pymatreader.read_mat(f'serenity{ext_out}')
+        data_in = data_in['data']
 
-    assert all(data_in == data)
+    assert (data_in == data).all()
     # remove data
     remove(f'serenity{ext_out}')
 

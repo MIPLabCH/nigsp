@@ -10,7 +10,6 @@ from nigsp import utils
 
 # ### Unit tests
 @mark.parametrize('var, dtype', [
-    ('', int),
     (6, int),
     (4.2, float),
     ('hello', str),
