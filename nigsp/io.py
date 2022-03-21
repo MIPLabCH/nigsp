@@ -492,14 +492,13 @@ def export_mtx(data, fname, ext=None):
         ext = '.1D'
 
     LGR.info(f'Exporting data into {fname}{ext}.')
-
     if ext.lower() in EXT_MAT:
         try:
-            from scipy.io import savemat
+            import scipy
         except ImportError:
             raise ImportError('To export .mat files, scipy is required. '
                               'Please install it.')
-        savemat(f'{fname}{ext}', {'data': data})
+        scipy.io.savemat(f'{fname}{ext}', {'data': data})
     elif ext.lower() in EXT_XLS:
         raise NotImplementedError('Spreadsheet output is not implemented yet')
     elif ext.lower() in EXT_1D:
