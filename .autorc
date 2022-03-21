@@ -6,7 +6,7 @@
     ["released", {"label": "Released", "prereleaseLabel": "Prereleased"}],
     ["pr-body-labels", { "disabledLabels": ["release", "Release", "Released", "Prereleased", "Skip release"] }]
   ],
-  "owner": "smoia",
+  "owner": "MIPLabCH",
   "repo": "nigsp",
   "name": "Stefano Moia",
   "email": "s.moia.research@gmail.com",
