@@ -57,8 +57,8 @@ def mat_to_vol(data, shape=None, asdata=None):
     ValueError
         If both shape and asdata are empty.
     """
-    if asdata:
-        if shape:
+    if asdata is not None:
+        if shape is not None:
             LGR.warning('Both shape and asdata were defined. '
                         f'Overwriting shape {shape} with asdata {asdata.shape}')
         shape = asdata.shape
@@ -135,8 +135,8 @@ def unmask(data, mask, shape=None, asdata=None):
         mask do not match.
         If the mask shape does not match the first (mask)
     """
-    if asdata:
-        if shape:
+    if asdata is not None:
+        if shape is not None:
             LGR.warning('Both shape and asdata were defined. '
                         f'Overwriting shape {shape} with asdata {asdata.shape}')
         shape = asdata.shape
@@ -147,7 +147,7 @@ def unmask(data, mask, shape=None, asdata=None):
     if shape[:mask.ndim] != mask.shape:
         raise ValueError(f'Cannot unmask data into shape {shape} using mask '
                          f'with shape {mask.shape}')
-    if data.shape[0] != mask.sum():
+    if data.ndim > 1 and (data.shape[0] != mask.sum()):
         raise ValueError('Cannot unmask data with first dimension '
                          f'{data.shape[0]} using mask with '
                          f'{mask.sum()} entries)')
@@ -185,7 +185,7 @@ def apply_atlas(data, atlas, mask=None):
         If atlas or mask have a different shape than the first dimensions of data
     """
     if mask is None:
-        mask = (data != 0)
+        mask = (data != 0).any(axis=-1)
     else:
         # Ensure that mask is boolean
         mask = (mask != 0)
