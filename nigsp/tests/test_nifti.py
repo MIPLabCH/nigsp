@@ -126,13 +126,13 @@ def test_unfold_atlas():
 
 
 # ### Break tests
-def break_mat_to_vol():
+def test_break_mat_to_vol():
     with raises(ValueError) as errorinfo:
         nifti.mat_to_vol(rand(3))
     assert 'Both shape' in str(errorinfo.value)
 
 
-def break_apply_mask():
+def test_break_apply_mask():
     a = rand(3, 2, 5)
     m = rand(2, 2)
     with raises(ValueError) as errorinfo:
@@ -141,7 +141,7 @@ def break_apply_mask():
     assert f'shape {m.shape}' in str(errorinfo.value)
 
 
-def break_unmask():
+def test_break_unmask():
     a = rand(6, 5)
     m = rand(3)
     b = rand(2, 3, 5)
@@ -162,12 +162,11 @@ def break_unmask():
 
     m = asarray([0, 0, 1, 0, 1, 1])
     with raises(ValueError) as errorinfo:
-        nifti.unmask(a, m, shape=(3, 2, 5))
-    assert f'dimension {a.shape[0]}' in str(errorinfo.value)
+        nifti.unmask(a, m, shape=(6, 5))
     assert f'{m.sum()} entries' in str(errorinfo.value)
 
 
-def break_apply_atlas():
+def test_break_apply_atlas():
     d = rand(2, 3, 4, 5)
     a = rand(3, 2, 4)
     b = rand(2, 3, 4)
@@ -187,22 +186,22 @@ def break_apply_atlas():
     assert f'shape {d.shape}' in str(errorinfo.value)
 
 
-def break_unfold_atlas():
+def test_break_unfold_atlas():
     d = rand(6, 5)
     a = rand(2, 3, 4)
     m = rand(3)
     with raises(ValueError) as errorinfo:
-        nifti.apply_atlas(d, a, m)
-    assert f'{m.shape}D mask on {a.shape}D atlas' in str(errorinfo.value)
+        nifti.unfold_atlas(d, a, m)
+    assert f'{m.ndim}D mask on {a.ndim}D atlas' in str(errorinfo.value)
 
     m = rand(3, 3)
     with raises(ValueError) as errorinfo:
-        nifti.apply_atlas(d, a, m)
+        nifti.unfold_atlas(d, a, m)
     assert f'atlas with shape {a.shape}' in str(errorinfo.value)
-    assert f'mask with shape {m.shape}' in str(errorinfo.value)
+    assert 'mask with shape (3, 3, 1)' in str(errorinfo.value)
 
     a = asarray([0, 1, 2])
     with raises(ValueError) as errorinfo:
-        nifti.apply_atlas(d, a)
+        nifti.unfold_atlas(d, a)
     assert f'data with shape {d.shape}' in str(errorinfo.value)
     assert '2 parcels' in str(errorinfo.value)

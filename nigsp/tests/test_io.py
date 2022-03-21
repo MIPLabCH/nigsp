@@ -161,28 +161,28 @@ def test_export_mtx(ext_in, ext_out):
     (rand(3)),
     (rand(3, 4, 2))
 ])
-def break_check_nifti_dim(data):
+def test_break_check_nifti_dim(data):
     """Break check_nifti_dim."""
     with raises(ValueError) as errorinfo:
         io.check_nifti_dim('jayne', data, dim=2)
     assert f'jayne is {data.ndim}D' in str(errorinfo.value)
 
 
-def break_check_mtx_dim():
+def test_break_check_mtx_dim():
     with raises(ValueError) as errorinfo:
         io.check_mtx_dim('river', empty(0))
     assert 'river is empty' in str(errorinfo.value)
 
     with raises(NotImplementedError) as errorinfo:
-        io.check_mtx_dim('river', rand(3, 4, 5))
-    assert '2D matrices are' in str(errorinfo.value)
+        io.check_mtx_dim('river', rand(3, 4, 5, 6))
+    assert '3D are supported' in str(errorinfo.value)
 
     with raises(ValueError) as errorinfo:
         io.check_mtx_dim('river', rand(3, 4), shape='square')
     assert 'river matrix has shape (3, 4)' in str(errorinfo.value)
 
 
-def break_load_nifti_get_mask():
+def test_break_load_nifti_get_mask():
     sys.modules['nibabel'] = None
     with raises(ImportError) as errorinfo:
         io.load_nifti_get_mask('reavers')
@@ -190,7 +190,7 @@ def break_load_nifti_get_mask():
     sys.modules['nibabel'] = nibabel
 
 
-def break_load_mat():
+def test_break_load_mat():
     sys.modules['pymatreader'] = None
     with raises(ImportError) as errorinfo:
         io.load_mat('simon')
@@ -207,13 +207,13 @@ def break_load_mat():
     remove(n)
 
 
-def break_load_xls():
+def test_break_load_xls():
     with raises(NotImplementedError) as errorinfo:
         io.load_xls('firefly')
     assert 'loading is not' in str(errorinfo.value)
 
 
-def break_export_nifti():
+def test_break_export_nifti():
     sys.modules['nibabel'] = None
     with raises(ImportError) as errorinfo:
         io.export_nifti(rand(3), None, 'reavers')
@@ -221,13 +221,13 @@ def break_export_nifti():
     sys.modules['nibabel'] = nibabel
 
 
-def break_export_mtx():
+def test_break_export_mtx():
     with raises(NotImplementedError) as errorinfo:
         io.export_mtx(rand(3, 4), 'lostinthewoods', ext='.xls')
     assert 'output is not' in str(errorinfo.value)
 
     sys.modules['scipy'] = None
     with raises(ImportError) as errorinfo:
-        io.load_mat('lostinthewoods')
+        io.export_mtx(rand(3, 4), 'lostinthewoods', ext='.mat')
     assert 'is required' in str(errorinfo.value)
     sys.modules['scipy'] = scipy
