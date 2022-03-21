@@ -37,15 +37,15 @@ def test_if_declared_force_type(var, dtype):
     ('hi', list),
     ([1, 1, 2, 3, 5], ndarray)
 ])
-def break_if_declared_force_type(var, dtype):
+def test_break_if_declared_force_type(var, dtype):
     """Break if_declared_force_type."""
     with raises(TypeError) as errorinfo:
         utils.if_declared_force_type(var, dtype)
     assert 'is not of type' in str(errorinfo.value)
 
 
-def break_if_declared_force_type_dtype():
+def test_break_if_declared_force_type_dtype():
     """Break if_declared_force_type."""
     with raises(NotImplementedError) as errorinfo:
-        utils.if_declared_force_type(6, bool)
+        utils.if_declared_force_type(6, bool, stop=False)
     assert 'not supported' in str(errorinfo.value)
