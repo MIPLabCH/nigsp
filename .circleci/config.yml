@@ -10,6 +10,7 @@ orbs:
   # so you dont have to copy and paste it everywhere.
   # See the orb documentation here: https://circleci.com/developer/orbs/orb/circleci/python
   python: circleci/python@2.0.3
+  codecov: codecov/codecov@3.2.2
 
 # Define a job to be invoked later in a workflow.
 # See: https://circleci.com/docs/2.0/configuration-reference/#jobs
@@ -22,6 +23,7 @@ jobs:
     # Change the version below to your required version of python
     docker:
       - image: cimg/python:3.7
+    working_directory: /tmp/src/nigsp
     resource_class: medium
     # Checkout the code as the first step. This is a dedicated CircleCI step.
     # The python orb's install-packages step will install the dependencies from a Pipfile via Pipenv by default.
@@ -39,10 +41,15 @@ jobs:
       - run:
           name: Run tests
           # This assumes pytest is installed via the install-package step above
-          command: pytest
+          command: |
+            pytest --cov=./ --cov-report=xml
+            mkdir /tmp/src/coverage
+            mv /tmp/src/nigsp/coverage.xml /tmp/src/coverage/.coverage.py37
+
   test310: 
     docker:
       - image: cimg/python:3.10
+    working_directory: /tmp/src/nigsp
     resource_class: medium
     steps:
       - checkout
@@ -54,7 +61,30 @@ jobs:
       - run:
           name: Run tests
           # This assumes pytest is installed via the install-package step above
-          command: pytest
+          command: |
+            pytest --cov=./ --cov-report=xml
+            mkdir /tmp/src/coverage
+            mv /tmp/src/nigsp/coverage.xml /tmp/src/coverage/.coverage.py310
+
+  merge_coverage:
+    working_directory: /tmp/src/nigsp
+    docker:
+      - image: continuumio/miniconda3
+    steps:
+      - attach_workspace:
+          at: /tmp
+      - checkout
+      - run:
+          name: Merge coverage files
+          command: |
+            apt-get install -yqq curl
+            cd /tmp/src/coverage/
+            coverage combine
+            coverage xml
+      - store_artifacts:
+          path: /tmp/src/coverage
+      - codecov/upload:
+          file: /tmp/src/coverage/coverage.xml
 
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
@@ -64,3 +94,8 @@ workflows:
     jobs:
       - test37
       - test310
+      - merge_coverage:
+          requires:
+            - test37
+            - test310
+
