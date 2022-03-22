@@ -44,7 +44,9 @@ jobs:
           command: |
             pytest --cov=./ --cov-report=xml
             mkdir /tmp/src/coverage
-            mv /tmp/src/nigsp/coverage.xml /tmp/src/coverage/.coverage.py37
+            mv ./coverage.xml /tmp/src/coverage/.coverage.py37
+      - store_artifacts:
+          path: /tmp/src/coverage
 
   test310: 
     docker:
@@ -64,20 +66,26 @@ jobs:
           command: |
             pytest --cov=./ --cov-report=xml
             mkdir /tmp/src/coverage
-            mv /tmp/src/nigsp/coverage.xml /tmp/src/coverage/.coverage.py310
+            mv ./coverage.xml /tmp/src/coverage/.coverage.py310
+      - store_artifacts:
+          path: /tmp/src/coverage
 
   merge_coverage:
     working_directory: /tmp/src/nigsp
     docker:
-      - image: continuumio/miniconda3
+      - image: cimg/python:3.10
+    resource_class: medium
     steps:
       - attach_workspace:
           at: /tmp
       - checkout
+      - python/install-packages:
+          args: coverage
+          pkg-manager: pip
       - run:
           name: Merge coverage files
           command: |
-            apt-get install -yqq curl
+            sudo apt update && sudo apt install curl
             cd /tmp/src/coverage/
             coverage combine
             coverage xml
