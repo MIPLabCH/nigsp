@@ -32,7 +32,7 @@ jobs:
       # Install Pillow first to avoid jpsg and zlib issues
       - run:
           name: Install dependencies
-          command: sudo apt install libjpeg8 zlib1g
+          command: sudo apt update && sudo apt install libjpeg8 zlib1g
       - python/install-packages:
           path-args: .[test]
           pkg-manager: pip-dist
