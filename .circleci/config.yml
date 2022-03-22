@@ -14,7 +14,7 @@ orbs:
 # Define a job to be invoked later in a workflow.
 # See: https://circleci.com/docs/2.0/configuration-reference/#jobs
 jobs:
-  test37: # This is the name of the job, feel free to change it to better match what you're trying to do!
+  test36: # This is the name of the job, feel free to change it to better match what you're trying to do!
     # These next lines defines a Docker executors: https://circleci.com/docs/2.0/executor-types/
     # You can specify an image from Dockerhub or use one of the convenience images from CircleCI's Developer Hub
     # A list of available CircleCI Docker convenience images are available here: https://circleci.com/developer/images/image/cimg/python
@@ -30,9 +30,9 @@ jobs:
     steps:
       - checkout
       # Install Pillow first to avoid jpsg and zlib issues
-      - python/install-packages:
-          args: 'Pillow --no-binary :all:'
-          pkg-manager: pip
+      - run:
+          name: Install dependencies
+          command: apt install libjpeg8 zlib1g
       - python/install-packages:
           path-args: .[test]
           pkg-manager: pip-dist
@@ -63,5 +63,5 @@ workflows:
   build_test: # This is the name of the workflow, feel free to change it to better match your workflow.
     # Inside the workflow, you define the jobs you want to run.
     jobs:
-      - test37
+      - test36
       - test310
