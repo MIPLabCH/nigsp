@@ -18,7 +18,7 @@ jobs:
     # These next lines defines a Docker executors: https://circleci.com/docs/2.0/executor-types/
     # You can specify an image from Dockerhub or use one of the convenience images from CircleCI's Developer Hub
     # A list of available CircleCI Docker convenience images are available here: https://circleci.com/developer/images/image/cimg/python
-    # The executor is the environment in which the steps below will be executed - below will use a python 3.10.2 container
+    # The executor is the environment in which the steps below will be executed - below will use a python 3.6.14 container
     # Change the version below to your required version of python
     docker:
       - image: cimg/python:3.6.14
@@ -29,6 +29,10 @@ jobs:
     # CircleCI will report the results back to your VCS provider.
     steps:
       - checkout
+      # Install Pillow first to avoid jpsg and zlib issues
+      - python/install-packages:
+          args: 'Pillow --no-binary :all:'
+          pkg-manager: pip
       - python/install-packages:
           path-args: .[test]
           pkg-manager: pip-dist
