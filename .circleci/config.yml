@@ -42,7 +42,7 @@ jobs:
           name: Run tests
           # This assumes pytest is installed via the install-package step above
           command: |
-            pytest --cov=./
+            pytest --cov=./nigsp
             mkdir /tmp/src/coverage
             mv ./.coverage /tmp/src/coverage/.coverage.py37
       - store_artifacts:
@@ -69,7 +69,7 @@ jobs:
       - run:
           name: Run tests
           command: |
-            pytest --cov=./
+            pytest --cov=./nigsp
             mkdir /tmp/src/coverage
             mv ./.coverage /tmp/src/coverage/.coverage.py310
       - store_artifacts:

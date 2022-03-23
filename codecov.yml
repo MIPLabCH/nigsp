@@ -21,13 +21,12 @@ parsers:
 
 ignore:
   - "docs"
-  - "nigsp/_version.py"
+  - "tests"
+  - "_version.py"
+  - "__init__.py"
   - "**/__init__.py"
-  - "**/**/__init__.py"
-  - "nigsp/tests"
-  - "nigsp/due.py"
+  - "due.py"
   - ".*rc"
-  - ".github"
 
 comment:
   layout: "reach,diff,flags,tree"
