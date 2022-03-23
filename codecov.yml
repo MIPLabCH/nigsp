@@ -3,8 +3,6 @@ codecov:
   strict_yaml_branch: master
   require_ci_to_pass: yes
   bot: "codecov-io"
-  ci:
-    - "travis.org"
   max_report_age: 48
   disable_default_path_fixes: no
 
