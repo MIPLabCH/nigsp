@@ -1,22 +1,21 @@
 NiGSP
 =====
 
-[![Latest version](https://img.shields.io/pypi/v/nigsp)](https://pypi.org/project/nigsp/)
-[![Latest DOI](https://zenodo.org/badge/446805866.svg)](https://zenodo.org/badge/latestdoi/446805866)
-[![All-time DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.6373436.svg)](https://doi.org/10.5281/zenodo.6373436)
-[![Licensed Apache 2.0](https://img.shields.io/github/license/MIPLabCH/nigsp)](https://github.com/MIPLabCH/nigsp/blob/master/LICENSE)
+[![Latest version](https://img.shields.io/pypi/v/nigsp?style=flat&logo=pypi)](https://pypi.org/project/nigsp/)
+[![Latest DOI](https://zenodo.org/badge/446805866.svg?style=flat&logo=zenodo)](https://zenodo.org/badge/latestdoi/446805866)
+[![All-time DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.6373436.svg?style=flat&logo=zenodo)](https://doi.org/10.5281/zenodo.6373436)
+[![Licensed Apache 2.0](https://img.shields.io/github/license/MIPLabCH/nigsp?style=flat)](https://github.com/MIPLabCH/nigsp/blob/master/LICENSE)
 
-[![codecov](https://codecov.io/gh/MIPLabCH/nigsp/branch/master/graph/badge.svg)](https://codecov.io/gh/MIPLabCH/nigsp)
-[![Build Status](https://circleci.com/gh/MIPLabCH/nigsp.svg?style=shield)](https://circleci.com/gh/MIPLabCH/nigsp)
+[![Codecov](https://codecov.io/gh/MIPLabCH/nigsp/branch/master/graph/badge.svg?style=flat&logo=codecov)](https://codecov.io/gh/MIPLabCH/nigsp)
+[![Build Status](https://circleci.com/gh/MIPLabCH/nigsp.svg?style=shield&logo=circleci)](https://circleci.com/gh/MIPLabCH/nigsp)
 <!--[![See the documentation at: https://nigsp.readthedocs.io](https://readthedocs.org/projects/nigsp/badge/?version=latest)](https://nigsp.readthedocs.io/en/latest/?badge=latest) -->
 
 [![Auto Release](https://img.shields.io/badge/release-auto.svg?colorA=888888&colorB=9B065A&label=auto)](https://github.com/intuit/auto)
-[![Supports python version](https://img.shields.io/pypi/pyversions/nigsp)](https://pypi.org/project/nigsp/)
+[![Supports python version](https://img.shields.io/pypi/pyversions/nigsp?style=shield&logo=python)](https://pypi.org/project/nigsp/)
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
 [![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat)](#contributors)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
-
 
 
 A python library (and toolbox!) to run Graph Signal Processing on multimodal MRI data.
@@ -34,7 +33,11 @@ Full documentation coming soon!
 Cite
 ----
 
-If you use `nigsp` in your work, please cite either the general Zenodo DOI [![DOI](https://zenodo.org/badge/110845855.svg)](https://zenodo.org/badge/latestdoi/110845855) or the Zenodo DOI related to the version you are using.
+If you use `nigsp` in your work, please cite either the [![general Zenodo DOI](https://zenodo.org/badge/110845855.svg)](https://zenodo.org/badge/latestdoi/110845855) or the Zenodo DOI related to the version you are using.
+Please cite also the following paper(s):
+> Preti, M.G., Van De Ville, D. Decoupling of brain function from structure reveals regional behavioral specialization in humans. Nat Commun 10, 4747 (2019). https://doi.org/10.1038/s41467-019-12765-7
+
+If you 
 
 Installation
 ------------
