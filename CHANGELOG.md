@@ -1,3 +1,24 @@
+# 0.1.1 (Wed Mar 23 2022)
+
+#### ⚠️ Pushed to `master`
+
+- Update README.md ([@smoia](https://github.com/smoia))
+
+#### ⚠️ Tests
+
+- Setup CircleCI for CI workflows [#4](https://github.com/MIPLabCH/nigsp/pull/4) ([@smoia](https://github.com/smoia))
+- Fix break tests [#2](https://github.com/MIPLabCH/nigsp/pull/2) ([@smoia](https://github.com/smoia))
+
+#### 🏠 Internal
+
+- Add short documentation in README and mailmap [#5](https://github.com/MIPLabCH/nigsp/pull/5) ([@smoia](https://github.com/smoia))
+
+#### Authors: 1
+
+- Stefano Moia ([@smoia](https://github.com/smoia))
+
+---
+
 # 0.1.0 (Mon Mar 21 2022)
 
 :tada: This release contains work from a new contributor! :tada:
