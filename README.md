@@ -2,8 +2,8 @@ NiGSP
 =====
 
 [![Latest version](https://img.shields.io/pypi/v/nigsp?style=flat&logo=pypi)](https://pypi.org/project/nigsp/)
-[![Latest DOI](https://zenodo.org/badge/446805866.svg?style=flat&logo=zenodo)](https://zenodo.org/badge/latestdoi/446805866)
-[![All-time DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.6373436.svg?style=flat&logo=zenodo)](https://doi.org/10.5281/zenodo.6373436)
+[![Latest DOI](https://zenodo.org/badge/446805866.svg?style=flat&logo=zenodo&label=Latest_DOI)](https://zenodo.org/badge/latestdoi/446805866)
+[![All-time DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.6373436.svg?style=flat&logo=zenodo&label=All--time_DOI)](https://doi.org/10.5281/zenodo.6373436)
 [![Licensed Apache 2.0](https://img.shields.io/github/license/MIPLabCH/nigsp?style=flat)](https://github.com/MIPLabCH/nigsp/blob/master/LICENSE)
 
 [![Codecov](https://codecov.io/gh/MIPLabCH/nigsp/branch/master/graph/badge.svg?style=flat&logo=codecov)](https://codecov.io/gh/MIPLabCH/nigsp)
@@ -33,7 +33,7 @@ Full documentation coming soon!
 Cite
 ----
 
-If you use `nigsp` in your work, please cite either the [![general Zenodo DOI](https://zenodo.org/badge/110845855.svg)](https://zenodo.org/badge/latestdoi/110845855) or the Zenodo DOI related to the version you are using.
+If you use `nigsp` in your work, please cite either the [![general Zenodo DOI](https://zenodo.org/badge/110845855.svg?label=general_Zenodo_DOI)](https://zenodo.org/badge/latestdoi/110845855) or the Zenodo DOI related to the version you are using.
 Please cite also the following paper(s):
 > Preti, M.G., Van De Ville, D. Decoupling of brain function from structure reveals regional behavioral specialization in humans. Nat Commun 10, 4747 (2019). https://doi.org/10.1038/s41467-019-12765-7
 
