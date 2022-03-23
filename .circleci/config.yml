@@ -42,9 +42,9 @@ jobs:
           name: Run tests
           # This assumes pytest is installed via the install-package step above
           command: |
-            pytest --cov=./ --cov-report=xml
+            pytest --cov=./
             mkdir /tmp/src/coverage
-            mv ./coverage.xml /tmp/src/coverage/.coverage.py37
+            mv ./.coverage /tmp/src/coverage/.coverage.py37
       - store_artifacts:
           path: /tmp/src/coverage
       # Persist the specified paths (workspace/echo-output) into the workspace for use in downstream job.
@@ -69,9 +69,9 @@ jobs:
       - run:
           name: Run tests
           command: |
-            pytest --cov=./ --cov-report=xml
+            pytest --cov=./
             mkdir /tmp/src/coverage
-            mv ./coverage.xml /tmp/src/coverage/.coverage.py310
+            mv ./.coverage /tmp/src/coverage/.coverage.py310
       - store_artifacts:
           path: /tmp/src/coverage
       - persist_to_workspace:
