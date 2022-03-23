@@ -1,3 +1,15 @@
+# 0.1.2 (Wed Mar 23 2022)
+
+#### ⚠️ Pushed to `master`
+
+- Update README.md ([@smoia](https://github.com/smoia))
+
+#### Authors: 1
+
+- Stefano Moia ([@smoia](https://github.com/smoia))
+
+---
+
 # 0.1.1 (Wed Mar 23 2022)
 
 #### ⚠️ Pushed to `master`
