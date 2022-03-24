@@ -73,7 +73,7 @@ The possible features are:
 :exclamation::exclamation::exclamation: Please note that `nigsp` is continuously deployed, i.e. the latest feature available are immediately released on PyPI.
 To install `nigsp` from Github, clone the repository first, then move to the cloned folder and run:
 ```bash
-python -m setup.py
+python setup.py install
 ```
 
 Alternatively, `pip` can be used too:
