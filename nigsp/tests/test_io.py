@@ -110,6 +110,7 @@ def test_load_txt():
 
 
 def test_load_mat():
+    """Test load_mat."""
     a = rand(5)
     b = 'likealeaf'
     n = 'inthewind'
@@ -169,6 +170,7 @@ def test_break_check_nifti_dim(data):
 
 
 def test_break_check_mtx_dim():
+    """Break check_mtx_dim."""
     with raises(ValueError) as errorinfo:
         io.check_mtx_dim('river', empty(0))
     assert 'river is empty' in str(errorinfo.value)
@@ -183,6 +185,7 @@ def test_break_check_mtx_dim():
 
 
 def test_break_load_nifti_get_mask():
+    """Break load_nifti_get_mask."""
     sys.modules['nibabel'] = None
     with raises(ImportError) as errorinfo:
         io.load_nifti_get_mask('reavers')
@@ -191,6 +194,7 @@ def test_break_load_nifti_get_mask():
 
 
 def test_break_load_mat():
+    """Break load_mat."""
     sys.modules['pymatreader'] = None
     with raises(ImportError) as errorinfo:
         io.load_mat('simon')
@@ -208,12 +212,14 @@ def test_break_load_mat():
 
 
 def test_break_load_xls():
+    """Break load_xls."""
     with raises(NotImplementedError) as errorinfo:
         io.load_xls('firefly')
     assert 'loading is not' in str(errorinfo.value)
 
 
 def test_break_export_nifti():
+    """Break export_nifti."""
     sys.modules['nibabel'] = None
     with raises(ImportError) as errorinfo:
         io.export_nifti(rand(3), None, 'reavers')
@@ -222,6 +228,7 @@ def test_break_export_nifti():
 
 
 def test_break_export_mtx():
+    """Break export_mtx."""
     with raises(NotImplementedError) as errorinfo:
         io.export_mtx(rand(3, 4), 'lostinthewoods', ext='.xls')
     assert 'output is not' in str(errorinfo.value)
