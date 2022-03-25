@@ -91,10 +91,17 @@ def test_check_mtx_dim_cases(data, shape):
     assert data_out.ndim == 2
 
 
-def test_load_nifti_get_mask():
+def test_load_nifti_get_mask(atlas):
     """Test load_nifti_get_mask."""
-    # #!#
-    pass
+    img = nibabel.load(atlas)
+    data = img.get_fdata()
+    mask = data.any(axis=-1).squeeze()
+
+    d, m, i = io.load_nifti_get_mask(atlas, ndim=3)
+
+    assert (data == d).all()
+    assert (mask == m).all()
+    assert (img.header['dim'] == i.header['dim']).all()
 
 
 def test_load_txt():
@@ -123,11 +130,13 @@ def test_load_mat():
     remove(n)
 
 
-def test_export_nifti():
-    # #!# NEEDS IMAGE
-    # io.export_nifti(rand(3, 4, 5), img, 'book')
-    # assert isfile('book.nii.gz')
-    pass
+def test_export_nifti(atlas):
+    """Test export_nifti."""
+    img = nibabel.load(atlas)
+    shape = img.get_fdata().shape
+    io.export_nifti(empty(shape), img, 'book')
+    assert isfile('book.nii.gz')
+    remove('book.nii.gz')
 
 
 @mark.parametrize('ext_in, ext_out', [
