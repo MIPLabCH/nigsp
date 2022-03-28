@@ -8,7 +8,7 @@ from nigsp.operations import graph
 
 # ### Unit tests
 def test_zerocross():
-    """Text zerocross with legendre polynomials."""
+    """Test zerocross with legendre polynomials."""
     def _bonnet(d, x):
         if(d == 0):
             return np.ones_like(x)
@@ -28,7 +28,7 @@ def test_zerocross():
 
 
 def test_nodestrength():
-    """Text nodestrength with random matrix."""
+    """Test nodestrength with random matrix."""
     a = np.random.rand(3, 3)
     a = a - a.mean()
     b = np.abs(a)
