@@ -27,7 +27,12 @@ ignore:
   - "**/__init__.py"
   - "due.py"
   - ".*rc"
-
+  - "nigsp/tests"
+  - "nigsp/_version.py"
+  - "nigsp/__init__.py"
+  - "nigsp/**/__init__.py"
+  - "nigsp/due.py"
+  - "nigsp/.*rc"
 comment:
   layout: "reach,diff,flags,tree"
   behavior: default
