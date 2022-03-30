@@ -35,6 +35,7 @@ Cite
 If you use `nigsp` in your work, please cite either the all-time Zenodo DOI [![general Zenodo DOI](https://zenodo.org/badge/110845855.svg)](https://zenodo.org/badge/latestdoi/110845855) or the Zenodo DOI related to the version you are using.
 Please cite the following paper(s) too:
 > Preti, M.G., Van De Ville, D. _Decoupling of brain function from structure reveals regional behavioral specialization in humans_. Nat Commun 10, 4747 (2019). https://doi.org/10.1038/s41467-019-12765-7.
+
 If you are using the Couple/Decoupled Functional Connectivity, please cite also:
 > Griffa, A., et al. _Brain structure-function coupling provides signatures for task decoding and individual fingerprinting_. NeuroImage 250, 118970 (2022). https://doi.org/10.1016/j.neuroimage.2022.118970.
 
