@@ -10,8 +10,6 @@ LGR
 
 import logging
 
-from numpy import ndarray
-
 from nigsp import io, viz
 from nigsp.operations import nifti
 
