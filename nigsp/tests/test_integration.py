@@ -2,6 +2,7 @@
 """Integration test."""
 import shutil
 
+from os import remove
 from os.path import isfile, isdir, join
 
 import numpy as np
