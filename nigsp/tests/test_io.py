@@ -103,6 +103,8 @@ def test_load_nifti_get_mask(atlas):
     assert (mask == m).all()
     assert (img.header['dim'] == i.header['dim']).all()
 
+    remove(atlas)
+
 
 def test_load_txt():
     """Test load_txt."""
