@@ -145,7 +145,7 @@ def gsdi(ts_split, mean=False, keys=None):
     LGR.info('Computing generalised SDI')
     gsdi = dict()
     for k in keys:
-        for j in all_keys[1:]:
+        for j in all_keys:
             if k != j:
                 gsdi[f'{k}_over_{j}'] = norm[k] / norm[j]
 
