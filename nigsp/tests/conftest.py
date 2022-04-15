@@ -57,6 +57,12 @@ def atlas(testdir):
 
 
 @pytest.fixture
+def atlastime(testdir):
+    return fetch_file('ts6a8', testdir,
+                      'ats.nii.gz')
+
+
+@pytest.fixture
 def mean_fc(testdir):
     return fetch_file('jrg8d', testdir,
                       'mean_fc_matlab.tsv')
