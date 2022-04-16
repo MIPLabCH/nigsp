@@ -85,5 +85,3 @@ def test_break_gsdi():
     with raises(ValueError) as errorinfo:
         metrics.gsdi(ts, ['physio', 'lambda', 'pi'])
     assert 'provided keys' in str(errorinfo.value)
-
-    pass
