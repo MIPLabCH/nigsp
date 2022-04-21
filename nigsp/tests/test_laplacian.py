@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Tests for operations.laplacian."""
-from os.path import remove
+from os import remove
 
 import numpy as np
 
@@ -36,5 +36,4 @@ def test_decomposition(sc_mtx):
     assert (eival == eigenval).all()
     assert (eivec == eigenvec).all()
 
-
-# ### Break tests
+    remove(sc_mtx)

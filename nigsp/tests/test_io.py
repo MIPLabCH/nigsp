@@ -139,6 +139,7 @@ def test_export_nifti(atlas):
     io.export_nifti(empty(shape), img, 'book')
     assert isfile('book.nii.gz')
     remove('book.nii.gz')
+    remove(atlas)
 
 
 @mark.parametrize('ext_in, ext_out', [

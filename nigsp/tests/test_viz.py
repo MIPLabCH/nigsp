@@ -48,6 +48,8 @@ def test_plot_nodes(sdi, atlas):
 
     assert isfile('joan.png')
     remove('joan.png')
+    remove(sdi)
+    remove(atlas)
 
 
 # ### Break tests
@@ -113,3 +115,6 @@ def test_break_plot_nodes(sdi, atlas):
     with raises(ValueError) as errorinfo:
         viz.plot_nodes(rand(3), atlas)
     assert 'different length' in str(errorinfo.value)
+
+    remove(sdi)
+    remove(atlas)
