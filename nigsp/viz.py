@@ -170,7 +170,7 @@ def plot_nodes(ns, atlas, filename=None):
     # First check that ns is a valid source of data.
     ns = ns.squeeze()
     if ns.ndim > 2:
-        raise ValueError('Cannot plot connectivity matrices for matrix of '
+        raise ValueError('Cannot plot node values for matrix of '
                          'dimensions > 2.')
     elif ns.ndim == 2:
         LGR.warning('Given matrix has 2 dimensions, averaging across last '
@@ -200,6 +200,7 @@ def plot_nodes(ns, atlas, filename=None):
                 raise ImportError('Nibabel is required to handle atlases I/O. '
                                   'Please see install instructions.')
 
+    # This should never happen
     try:
         coord
     except NameError:
