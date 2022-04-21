@@ -8,6 +8,7 @@ from os.path import isfile, join
 import nibabel
 import numpy as np
 from nilearn.plotting import find_parcellation_cut_coords
+from pymatreader import read_mat
 from pytest import mark
 
 from nigsp import blocks
@@ -40,15 +41,16 @@ def test_export_metrics_txt(ext, sc_mtx, atlas, sdi, testdir):
 
     testdir = join(testdir, 'testdir')
     makedirs(testdir, exist_ok=True)
-    atlas, mask, img = load_nifti_get_mask(atlas, ndim=3)
-    sc_mtx = np.genfromtxt(sc_mtx)
-    sdi = np.genfromtxt(sdi)
-    ts = np.unique(atlas)[1:]
+    atlas_in, mask, img = load_nifti_get_mask(atlas, ndim=3)
+    mtx = read_mat(sc_mtx)
+    mtx = mtx['SC_avg56']
+    sdi_in = np.genfromtxt(sdi)
+    ts = np.unique(atlas_in)[1:]
     ts = np.repeat(ts[..., np.newaxis], 2, axis=-1)
-    gsdi = dict.fromkeys(['hilo', 'himid'], sdi)
-    scgraph = SCGraph(sc_mtx, ts, atlas=atlas, img=img, sdi=sdi)
+    gsdi = dict.fromkeys(['hilo', 'himid'], sdi_in)
+    scgraph = SCGraph(mtx, ts, atlas=atlas_in, img=img, sdi=sdi_in)
     blocks.export_metric(scgraph, ext, join(testdir, 'molly_'))
-    scgraph = SCGraph(sc_mtx, ts, atlas=atlas, img=img, gsdi=gsdi)
+    scgraph = SCGraph(mtx, ts, atlas=atlas_in, img=img, gsdi=gsdi)
     blocks.export_metric(scgraph, ext, join(testdir, 'cesar_'))
 
     assert isfile(join(testdir, f'molly_sdi{ext}'))
@@ -65,18 +67,19 @@ def test_export_metrics_nifti(sc_mtx, atlas, sdi, testdir):
 
     testdir = join(testdir, 'testdir')
     makedirs(testdir, exist_ok=True)
-    atlas, mask, img = load_nifti_get_mask(atlas, ndim=3)
-    sc_mtx = np.genfromtxt(sc_mtx)
-    sdi = np.genfromtxt(sdi)
-    ts = np.unique(atlas)[1:]
+    atlas_in, mask, img = load_nifti_get_mask(atlas, ndim=3)
+    mtx = read_mat(sc_mtx)
+    mtx = mtx['SC_avg56']
+    sdi_in = np.genfromtxt(sdi)
+    ts = np.unique(atlas_in)[1:]
     ts = np.repeat(ts[..., np.newaxis], 2, axis=-1)
-    scgraph = SCGraph(sc_mtx, ts, atlas=atlas, sdi=sdi)
+    scgraph = SCGraph(mtx, ts, atlas=atlas_in, sdi=sdi_in)
     blocks.export_metric(scgraph, '.nii.gz', join(testdir, 'molly_'))
 
     assert isfile(join(testdir, 'molly_sdi.csv'))
 
     sys.modules['nibabel'] = None
-    scgraph = SCGraph(sc_mtx, ts, atlas=atlas, img=img, sdi=sdi)
+    scgraph = SCGraph(mtx, ts, atlas=atlas_in, img=img, sdi=sdi_in)
     blocks.export_metric(scgraph, '.nii.gz', join(testdir, 'molly_'))
     sys.modules['nibabel'] = nibabel
 
@@ -91,24 +94,24 @@ def test_plot_metrics(atlas, sc_mtx, sdi, testdir):
 
     testdir = join(testdir, 'testdir')
     makedirs(testdir, exist_ok=True)
-    atlas, _, img = load_nifti_get_mask(atlas, ndim=3)
-    sc_mtx = np.genfromtxt(sc_mtx)
-    sdi = np.genfromtxt(sdi)
-    ts = np.unique(atlas)[1:]
+    atlas_in, _, img = load_nifti_get_mask(atlas, ndim=3)
+    mtx = read_mat(sc_mtx)
+    mtx = mtx['SC_avg56']
+    sdi_in = np.genfromtxt(sdi)
+    ts = np.unique(atlas_in)[1:]
     ts = np.repeat(ts[..., np.newaxis], 2, axis=-1)
-    sdi = np.genfromtxt(sdi)
-    gsdi = dict.fromkeys(['hilo', 'himid'], sdi)
+    gsdi = dict.fromkeys(['hilo', 'himid'], sdi_in)
 
-    scgraph = SCGraph(sc_mtx, ts, sdi=sdi, img=img)
+    scgraph = SCGraph(mtx, ts, sdi=sdi_in, img=img)
     blocks.plot_metric(scgraph, join(testdir, 'maite_'), atlas=img)
     assert isfile(join(testdir, join(testdir, 'maite_sdi.png')))
 
-    atlas = find_parcellation_cut_coords(img)
-    scgraph = SCGraph(sc_mtx, ts, sdi=sdi, img=img)
-    blocks.plot_metric(scgraph, join(testdir, 'maite_'), atlas=atlas)
+    atlas_in = find_parcellation_cut_coords(img)
+    scgraph = SCGraph(mtx, ts, sdi=sdi_in, img=img)
+    blocks.plot_metric(scgraph, join(testdir, 'maite_'), atlas=atlas_in)
     assert isfile(join(testdir, join(testdir, 'maite_sdi.png')))
 
-    scgraph = SCGraph(sc_mtx, ts, gsdi=gsdi, img=img)
+    scgraph = SCGraph(mtx, ts, gsdi=gsdi, img=img)
     blocks.plot_metric(scgraph, join(testdir, 'dimitri_'), atlas=img)
     assert isfile(join(testdir, join(testdir, 'dimitri_gsdi_hilo.png')))
     

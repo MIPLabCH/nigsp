@@ -41,7 +41,7 @@ def nifti_to_timeseries(fname, atlasname):
     _, atlasname = io.check_ext(io.EXT_NIFTI, atlasname, scan=True)
 
     data, mask, _ = io.load_nifti_get_mask(fname)
-    atlas, amask, img = io.load_nifti_get_mask(atlasname, ndim=3)
+    atlas, amask, img = io.load_nifti_get_mask(atlasname, is_mask=True, ndim=3)
     mask *= amask
 
     timeseries = nifti.apply_atlas(data, atlas, mask)
