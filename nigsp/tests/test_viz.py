@@ -6,9 +6,7 @@ from os import remove
 from os.path import isfile
 
 import matplotlib
-import nibabel
-import nilearn
-from nibabel.filebasedimages import ImageFileError
+import nilearn.plotting
 from numpy import genfromtxt
 from numpy.random import rand
 from pytest import mark, raises
@@ -16,7 +14,7 @@ from pytest import mark, raises
 from nigsp import viz
 
 
-@mark.parametrize('mxt', [
+@mark.parametrize('mtx', [
     (rand(3, 4)),
     (rand(4, 4)),
     (rand(4, 4, 3)),
@@ -77,28 +75,21 @@ def test_break_plot_grayplot():
     assert 'plot grayplots' in str(errorinfo.value)
 
 
-def test_break_plot_nodes(sdi, atlas):
-    ns = genfromtxt(sdi)
+def test_break_plot_nodes(atlas):
     sys.modules['matplotlib'] = None
     with raises(ImportError) as errorinfo:
-        viz.plot_nodes(ns, atlas)
-    assert 'is required' in str(errorinfo.value)
+        viz.plot_nodes(rand(3), rand(3, 3))
+    assert 'are required' in str(errorinfo.value)
     sys.modules['matplotlib'] = matplotlib
 
-    sys.modules['nilearn'] = None
+    sys.modules['nilearn.plotting'] = None
     with raises(ImportError) as errorinfo:
-        viz.plot_nodes(ns, atlas)
-    assert 'is required' in str(errorinfo.value)
-    sys.modules['nilearn'] = nilearn
-
-    sys.modules['nibabel'] = None
-    with raises(ImportError) as errorinfo:
-        viz.plot_nodes(ns, atlas)
-    assert 'is required' in str(errorinfo.value)
-    sys.modules['nibabel'] = nibabel
+        viz.plot_nodes(rand(3), rand(3, 3))
+    assert 'are required' in str(errorinfo.value)
+    sys.modules['nilearn.plotting'] = nilearn.plotting
 
     with raises(ValueError) as errorinfo:
-        viz.plot_nodes(rand(3, 3, 4), atlas)
+        viz.plot_nodes(rand(3, 3, 4), rand(3, 3))
     assert 'plot node values' in str(errorinfo.value)
 
     with raises(NotImplementedError) as errorinfo:
@@ -108,13 +99,8 @@ def test_break_plot_nodes(sdi, atlas):
         viz.plot_nodes(rand(3), rand(3, 4))
     assert 'atlases in nifti' in str(errorinfo.value)
 
-    with raises(ImageFileError) as errorinfo:
-        viz.plot_nodes(rand(3), './notanatlas.nii.gz')
-    assert 'file ./notanatlas.nii.gz' in str(errorinfo.value)
-
     with raises(ValueError) as errorinfo:
-        viz.plot_nodes(rand(3), atlas)
+        viz.plot_nodes(rand(3), rand(4, 3))
     assert 'different length' in str(errorinfo.value)
 
-    remove(sdi)
     remove(atlas)

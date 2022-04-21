@@ -153,9 +153,6 @@ def plot_nodes(ns, atlas, filename=None):
     ------
     ImportError
         If matplotlib and/or nilearn are not installed.
-        If nibabel is not installed.
-    nib.filebasedimages.ImageFileError
-        If given path is not an atlas.
     ValueError
         If ns has more than 2 dimensions.
         If coordinates can't be extracted from atlas.
@@ -166,7 +163,6 @@ def plot_nodes(ns, atlas, filename=None):
     except ImportError:
         raise ImportError('nilearn and matplotlib are required to plot node images. '
                           'Please see install instructions.')
-
     # First check that ns is a valid source of data.
     ns = ns.squeeze()
     if ns.ndim > 2:
@@ -178,33 +174,14 @@ def plot_nodes(ns, atlas, filename=None):
         ns = ns.mean(axis=-1)
 
     # Then treat atlas
-    try:
-        coord = find_parcellation_cut_coords(atlas)
-    except:
-        if type(atlas) is np.ndarray:
-            if atlas.ndim > 2 or atlas.shape[1] != 3:
-                raise NotImplementedError('Only atlases in nifti format or '
-                                          'list of coordinates are supported.')
-            coord = atlas
+    if type(atlas) is np.ndarray:
+        if atlas.ndim > 2 or atlas.shape[1] != 3:
+            raise NotImplementedError('Only atlases in nifti format or '
+                                      'list of coordinates are supported.')
         else:
-            try:
-                import nibabel as nib
-                if os.path.isfile(atlas):
-                    img = nib.load(atlas)
-                else:
-                    raise nib.filebasedimages.ImageFileError('Cannot find file '
-                                                             f'{atlas}')
-
-                coord = find_parcellation_cut_coords(img)
-            except ImportError:
-                raise ImportError('Nibabel is required to handle atlases I/O. '
-                                  'Please see install instructions.')
-
-    # This should never happen
-    try:
-        coord
-    except NameError:
-        raise ValueError('Could not obtain coordinates from given atlas.')
+            coord = atlas
+    else:
+        coord = find_parcellation_cut_coords(atlas)
 
     if ns.shape[0] != coord.shape[0]:
         raise ValueError('Node array and coordinates array have different length.')
