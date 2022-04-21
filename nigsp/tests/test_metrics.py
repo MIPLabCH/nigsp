@@ -30,6 +30,7 @@ def test_sdi():
     ts = {'low': np.repeat(np.repeat(ts1[..., np.newaxis], 3, axis=1), 3, axis=2),
           'high': np.repeat(np.repeat(ts2[..., np.newaxis], 3, axis=1), 3, axis=2)}
     sdi_out = metrics.sdi(ts, mean=True)
+    sdi_out = np.around(sdi_out, decimals=15)
     assert (sdi_out == sdi_in).all()
 
 
@@ -39,15 +40,15 @@ def test_gsdi():
     ts3 = np.arange(5, 7)[..., np.newaxis]
     ts = {'alpha': ts1, 'beta': ts2, 'gamma': ts3}
     gsdi_in = np.arange(3., 1., -1.)
-    gsdi_and_in = np.linalg.norm(ts3.add(ts2))
-    keys_in = ['alpha_over_beta', 'alpha_over_gamma', 'alpha_over_beta_and_gamma', 
-               'beta_over_alpha', 'beta_over_gamma', 'beta_over_alpha_and_gamma',
-               'gamma_over_alpha', 'gamma_over_beta', 'gamma_over_alpha_and_beta']
+    gsdi_and_in = np.linalg.norm(ts1, axis=1) / np.linalg.norm(np.add(ts2, ts3), axis=1)
+    keys_in = ['alpha_over_beta', 'alpha_over_gamma', 'alpha_over_(beta_and_gamma)', 
+               'beta_over_alpha', 'beta_over_gamma', 'beta_over_(alpha_and_gamma)',
+               'gamma_over_alpha', 'gamma_over_beta', 'gamma_over_(alpha_and_beta)']
     gsdi_out = metrics.gsdi(ts)
 
-    assert all(item in list(gsdi_out.keys()) for item in keys_in)
+    assert all(item in keys_in for item in list(gsdi_out.keys()))
     assert (gsdi_out['beta_over_alpha'] == gsdi_in).all()
-    assert (gsdi_out['alpha_over_beta_and_gamma'] == gsdi_and_in).all()
+    assert (gsdi_out['alpha_over_(beta_and_gamma)'] == gsdi_and_in).all()
 
     gsdi_out = metrics.gsdi(ts, keys=['alpha', 'beta'])
     assert all(item in list(gsdi_out.keys()) for item in ['alpha_over_beta',
@@ -57,6 +58,8 @@ def test_gsdi():
     ts = {'alpha': np.repeat(np.repeat(ts1[..., np.newaxis], 3, axis=1), 3, axis=2),
           'beta': np.repeat(np.repeat(ts2[..., np.newaxis], 3, axis=1), 3, axis=2)}
     gsdi_out = metrics.gsdi(ts, mean=True)
+    gsdi_out['beta_over_alpha'] = np.around(gsdi_out['beta_over_alpha'],
+                                            decimals=15)
     assert (gsdi_out['beta_over_alpha'] == gsdi_in).all()
 
 
@@ -83,5 +86,5 @@ def test_break_gsdi():
     ts = {'alpha': ts1, 'beta': ts2, 'gamma': ts3}
 
     with raises(ValueError) as errorinfo:
-        metrics.gsdi(ts, ['physio', 'lambda', 'pi'])
+        metrics.gsdi(ts, keys=['physio', 'lambda', 'pi'])
     assert 'provided keys' in str(errorinfo.value)
