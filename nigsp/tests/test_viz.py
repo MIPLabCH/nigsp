@@ -25,6 +25,7 @@ def test_plot_connectivity(mtx):
     viz.plot_connectivity(mtx, 'arthur.png')
 
     assert isfile('arthur.png')
+    matplotlib.pyplot.close()
     remove('arthur.png')
 
 
@@ -37,6 +38,7 @@ def test_plot_grayplot(timeseries):
     viz.plot_grayplot(timeseries, 'dot.png')
 
     assert isfile('dot.png')
+    matplotlib.pyplot.close()
     remove('dot.png')
 
 
@@ -45,6 +47,7 @@ def test_plot_nodes(sdi, atlas):
     viz.plot_nodes(ns, atlas, 'joan.png')
 
     assert isfile('joan.png')
+    matplotlib.pyplot.close()
     remove('joan.png')
     remove(sdi)
     remove(atlas)
@@ -61,6 +64,8 @@ def test_break_plot_connectivity():
     with raises(ValueError) as errorinfo:
         viz.plot_connectivity(rand(3, 3, 3, 4), 'steve.png')
     assert 'plot connectivity' in str(errorinfo.value)
+    
+    matplotlib.pyplot.close()
 
 
 def test_break_plot_grayplot():
@@ -73,6 +78,8 @@ def test_break_plot_grayplot():
     with raises(ValueError) as errorinfo:
         viz.plot_grayplot(rand(3, 3, 3, 4), 'ramsey.png')
     assert 'plot grayplots' in str(errorinfo.value)
+
+    matplotlib.pyplot.close()
 
 
 def test_break_plot_nodes(atlas):
@@ -103,4 +110,5 @@ def test_break_plot_nodes(atlas):
         viz.plot_nodes(rand(3), rand(4, 3))
     assert 'different length' in str(errorinfo.value)
 
+    matplotlib.pyplot.close()
     remove(atlas)
