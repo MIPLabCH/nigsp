@@ -101,9 +101,10 @@ class SCGraph():
         """Implement timeseries.median_cutoff_frequency_idx as class method."""
         if self.index == 'median':
             self.index = operations.median_cutoff_frequency_idx(self.energy)
-        else:
+        elif type(self.index) is not int:
             raise ValueError(f'Unknown option {self.index} for frequency split index. '
                              'Declared index must be either an integer or \'median\'')
+
         self.evec_split, self.ts_split = operations.graph_filter(self.timeseries,
                                                                  self.eigenvec,
                                                                  self.index)
