@@ -57,6 +57,7 @@ class SCGraph():
         self.fc = deepcopy(fc)
         self.fc_split = deepcopy(fc_split)
 
+    # # Properties
     @property
     def nnodes(self):
         """Return number of nodes."""
@@ -77,51 +78,57 @@ class SCGraph():
         """Return the names of the splitted timeseries."""
         return list(self.ts_split.keys())
 
-    def symmetric_normalisation(self):
+    # # Methods
+    # Skip some methods as they are tested elsewhere ("pragma" comments)
+    # Only test split_graph, create_surrogates, compute_fc
+    def symmetric_normalisation(self):  # pragma: no cover
         """Implement laplacian.symmetric_normalisation as class method."""
         self.lapl_mtx = operations.symmetric_normalisation(self.mtx)
         return self
 
-    def decomposition(self):
+    def decomposition(self):  # pragma: no cover
         """Implement laplacian.decomposition as class method."""
         self.eigenval, self.eigenvec = operations.decomposition(self.lapl_mtx)
         return self
 
-    def structural_decomposition(self):
+    def structural_decomposition(self):  # pragma: no cover
         """Implement both laplacian operations."""
         return self.symmetric_normalisation().decomposition()
 
-    def compute_graph_energy(self, mean=False):
+    def compute_graph_energy(self, mean=False):  # pragma: no cover
         """Implement timeseries.graph_fourier_transform for energy as class method."""
         self.energy = operations.graph_fourier_transform(self.timeseries, self.eigenvec,
                                                          energy=True, mean=mean)
         return self
 
-    def split_graph(self):
+    def split_graph(self, index=None, keys=['low', 'high']):
         """Implement timeseries.median_cutoff_frequency_idx as class method."""
-        if self.index == 'median':
-            self.index = operations.median_cutoff_frequency_idx(self.energy)
-        elif type(self.index) is not int:
-            raise ValueError(f'Unknown option {self.index} for frequency split index. '
+        if index is None:
+            index = self.index
+
+        if index == 'median':  # pragma: no cover
+            index = operations.median_cutoff_frequency_idx(self.energy)
+        elif type(index) is not int:
+            raise ValueError(f'Unknown option {index} for frequency split index. '
                              'Declared index must be either an integer or \'median\'')
 
         self.evec_split, self.ts_split = operations.graph_filter(self.timeseries,
                                                                  self.eigenvec,
-                                                                 self.index)
+                                                                 index, keys)
 
         return self
 
-    def nodestrength(self, mean=False):
+    def nodestrength(self, mean=False):  # pragma: no cover
         """Implement graph.nodestrength as class method."""
         self.ns = operations.nodestrength(self.mtx, mean)
         return self
 
-    def compute_sdi(self, mean=False, keys=None):
+    def compute_sdi(self, mean=False, keys=None):  # pragma: no cover
         """Implement sdi.sdi as class method."""
         self.sdi = operations.sdi(self.ts_split, mean, keys)
         return self
 
-    def compute_gsdi(self, mean=False, keys=None):
+    def compute_gsdi(self, mean=False, keys=None):  # pragma: no cover
         """Implement sdi.gsdi as class method."""
         self.gsdi = operations.gsdi(self.ts_split, mean, keys)
         return self
@@ -145,7 +152,7 @@ class SCGraph():
         return self
 
     def test_significance(self, metric='sdi', method='Bernoulli', p=0.05,
-                          return_masked=False, mean=False):
+                          return_masked=False, mean=False):  # pragma: no cover
         """Implement surrogates.test_significance as class method."""
         _, self.surr_split = operations.graph_filter(self.surr,
                                                      self.eigenvec,
@@ -162,7 +169,7 @@ class SCGraph():
                                                    mean)
         return self
 
-    def normalise_ts(self):
+    def normalise_ts(self):  # pragma: no cover
         """Implement timeseries.normalise_ts for energy as class method."""
         self.timeseries = operations.normalise_ts(self.timeseries)
         return self
