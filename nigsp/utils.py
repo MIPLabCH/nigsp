@@ -16,7 +16,7 @@ from numpy import asarray, ndarray, prod, empty
 LGR = logging.getLogger(__name__)
 
 
-def if_declared_force_type(var, dtype, varname='an input variable', stop=True,
+def change_var_type(var, dtype, varname='an input variable', stop=True,
                            silent=False):
     """
     Make sure `var` is of type `dtype`.

@@ -29,7 +29,7 @@ def save_bash_call(fname, outdir, outname):
     outdir : str or path, optional
         output directory
     """
-    fname = utils.if_declared_force_type(fname, list, stop=False, silent=True)
+    fname = utils.change_var_type(fname, list, stop=False, silent=True)
 
     # Prepare folders
     if outdir is None:
@@ -147,7 +147,7 @@ def nigsp(fname, scname, atlasname=None, outname=None, outdir=None,
     Configuration model: https://en.wikipedia.org/wiki/Configuration_model
     """
     # #### Logger preparation #### #
-    fname = utils.if_declared_force_type(fname, list, stop=False, silent=True)
+    fname = utils.change_var_type(fname, list, stop=False, silent=True)
 
     # Prepare folders
     if outdir is None:
