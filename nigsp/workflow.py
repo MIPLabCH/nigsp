@@ -291,24 +291,24 @@ def nigsp(fname, scname, atlasname=None, outname=None, outdir=None,
 
     # Run laplacian decomposition and actually filter timeseries.
     LGR.info('Run laplacian decomposition of structural graph.')
-    scgraph = scgraph.structural_decomposition()
+    scgraph.structural_decomposition()
     LGR.info('Compute the energy of the graph and split it in parts.')
-    scgraph = scgraph.compute_graph_energy(mean=True).split_graph()
+    scgraph.compute_graph_energy(mean=True).split_graph()
 
     # If there are more than two splits in the timeseries, compute Generalised SDI
     # This should not happen in this moment.
     if len(scgraph.split_keys) == 2:
         metric_name = 'sdi'
-        scgraph = scgraph.compute_sdi()
+        scgraph.compute_sdi()
     elif len(scgraph.split_keys) > 2:
         metric_name = 'gsdi'
-        scgraph = scgraph.compute_gsdi()
+        scgraph.compute_gsdi()
     else:
         raise ValueError('Data is not splitted enough to compute SDI or similar '
                          'indexes.')
 
     LGR.info('Compute functional connectivity.')
-    scgraph = scgraph.compute_fc(mean=True)
+    scgraph.compute_fc(mean=True)
 
     # #### Output results (pt. 1) #### #
 
@@ -386,10 +386,10 @@ def nigsp(fname, scname, atlasname=None, outname=None, outdir=None,
             metric_name = 'gsdi'
         LGR.info(f'Test significant {metric_name} against {n_surr} structurally '
                  f'{surr_type} surrogates.')
-        scgraph = scgraph.create_surrogates(sc_type=surr_type, n_surr=n_surr,
-                                            seed=seed)
-        scgraph = scgraph.test_significance(metric=metric_name, method=method,
-                                            p=p, return_masked=True)
+        scgraph.create_surrogates(sc_type=surr_type, n_surr=n_surr,
+                                  seed=seed)
+        scgraph.test_significance(metric=metric_name, method=method,
+                                  p=p, return_masked=True)
         # Export thresholded metrics
         blocks.export_metric(scgraph, outext, outprefix)
 
