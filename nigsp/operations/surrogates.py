@@ -53,7 +53,7 @@ def random_sign(eigenvec, n_surr=1000, seed=42, stack=False):
     # #!# Allow for input of random sign matrix, if None call random sign.
     if seed is not None:
         # Reinitialise the random seed for repeatability
-        np.random.rand(seed)
+        np.random.seed(seed)
 
     if eigenvec.ndim > 3:
         raise NotImplementedError(f'Provided data has {eigenvec.ndim} dimensions, '
