@@ -23,7 +23,7 @@ from os.path import exists, join
 
 import numpy as np
 
-from nigsp.utils import if_declared_force_type
+from nigsp.utils import change_var_type
 
 
 EXT_1D = ['.txt', '.csv', '.tsv', '.1d', '.par', '.tsv.gz', '.csv.gz']
@@ -65,7 +65,7 @@ def check_ext(all_ext, fname, scan=False, remove=False):
             If both `remove` and `has_ext` are True, returns also found extension
     """
     has_ext = False
-    all_ext = if_declared_force_type(all_ext, list, stop=False, silent=True)
+    all_ext = change_var_type(all_ext, list, stop=False, silent=True)
     for ext in all_ext:
         if fname.lower().endswith(ext):
             has_ext = True
