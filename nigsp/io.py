@@ -212,13 +212,12 @@ def load_nifti_get_mask(fname, is_mask=False, ndim=4):
     LGR.info(f'Loading {fname}.')
     img = nib.load(fname)
     data = img.get_fdata()
+    data = check_nifti_dim(fname, data, dim=ndim)
 
     if is_mask:
-        data = check_nifti_dim(fname, data, dim=ndim)
         mask = (data != 0)
         LGR.info(f'{fname} loaded as mask.')
     else:
-        data = check_nifti_dim(fname, data, dim=ndim)
         mask = data.any(axis=-1).squeeze()
         LGR.info(f'Data loaded from {fname}.')
 
