@@ -1,3 +1,30 @@
+# 0.1.3 (Tue May 03 2022)
+
+#### 🐛 Bug Fix
+
+- fix: Fix random seed initialisation ([@smoia](https://github.com/smoia))
+
+#### ⚠️ Pushed to `master`
+
+- docs: Fix citations ([@smoia](https://github.com/smoia))
+- docs: Fix non-pip installation instructions ([@smoia](https://github.com/smoia))
+
+#### ⚠️ Tests
+
+- Add nifti io unit tests [#7](https://github.com/MIPLabCH/nigsp/pull/7) ([@smoia](https://github.com/smoia))
+
+#### 🏠 Internal
+
+- Do not save cache in CI builds (not needed) [#9](https://github.com/MIPLabCH/nigsp/pull/9) ([@smoia](https://github.com/smoia))
+- Fix coverage settings to exclude tests and other minor elements [#8](https://github.com/MIPLabCH/nigsp/pull/8) ([@smoia](https://github.com/smoia))
+- Fix coverage list [#6](https://github.com/MIPLabCH/nigsp/pull/6) ([@smoia](https://github.com/smoia))
+
+#### Authors: 1
+
+- Stefano Moia ([@smoia](https://github.com/smoia))
+
+---
+
 # 0.1.2 (Wed Mar 23 2022)
 
 #### ⚠️ Pushed to `master`
