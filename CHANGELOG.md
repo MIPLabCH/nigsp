@@ -1,3 +1,15 @@
+# 0.2.0 (Tue May 03 2022)
+
+#### 💥 Breaking Change during development
+
+- Change name of function `if_declare_force_type` to `change_var_type` to better match its new scope. [#10](https://github.com/MIPLabCH/nigsp/pull/10) ([@smoia](https://github.com/smoia))
+
+#### Authors: 1
+
+- Stefano Moia ([@smoia](https://github.com/smoia))
+
+---
+
 # 0.1.3 (Tue May 03 2022)
 
 #### 🐛 Bug Fix
