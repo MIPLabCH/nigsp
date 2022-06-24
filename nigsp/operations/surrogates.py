@@ -311,7 +311,6 @@ def test_significance(surr,
             f'Warning: surrogate dimensions ({surr.ndim}) are less than '
             'the program expects - check that you mean to run a test on '
             'an average or that you have enough surrogates.')
-
     # Reorder the surrogate matrix, then find where the real surrogate is
     LGR.info('Reordering surrogates for test')
     real_idx = surr.shape[-1] - 1

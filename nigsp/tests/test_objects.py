@@ -87,15 +87,15 @@ def test_SCGraph():
 def test_break_SCGraph():
     """Break SCGraph and its methods."""
     with raises(ValueError) as errorinfo:
-        scgraph = SCGraph(rand(3, 4), rand(4, 6))
+        SCGraph(rand(3, 4), rand(4, 6))
     assert 'square matrix' in str(errorinfo.value)
 
     with raises(ValueError) as errorinfo:
-        scgraph = SCGraph(rand(4, 4), rand(3, 6))
+        SCGraph(rand(4, 4), rand(3, 6))
     assert 'number of parcels and nodes' in str(errorinfo.value)
 
     with raises(ValueError) as errorinfo:
-        scgraph = SCGraph(rand(4, 4), rand(4, 6, 4, 5))
+        SCGraph(rand(4, 4), rand(4, 6, 4, 5))
     assert 'more than 3 dimensions' in str(errorinfo.value)
 
     scgraph = SCGraph(rand(4, 4), rand(4, 6), index='Chet')
