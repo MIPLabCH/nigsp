@@ -1,3 +1,19 @@
+# 0.3.0 (Tue Jul 05 2022)
+
+#### 💥 Breaking Change during development
+
+- Improve random seed generator initialisation following latest recommendations and bump up required numpy version [#12](https://github.com/MIPLabCH/nigsp/pull/12) ([@smoia](https://github.com/smoia))
+
+#### 💻 Refactored
+
+- Small code improvement in io.py [#11](https://github.com/MIPLabCH/nigsp/pull/11) ([@smoia](https://github.com/smoia))
+
+#### Authors: 1
+
+- Stefano Moia ([@smoia](https://github.com/smoia))
+
+---
+
 # 0.2.0 (Tue May 03 2022)
 
 #### 💥 Breaking Change during development
