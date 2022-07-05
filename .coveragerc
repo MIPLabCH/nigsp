@@ -1,0 +1,15 @@
+[run]
+omit =
+    docs/*
+    tests/*
+    _version.py
+    __init__.py
+    **/__init__.py
+    due.py
+    .*rc
+    nigsp/tests/*
+    nigsp/_version.py
+    nigsp/__init__.py
+    nigsp/**/__init__.py
+    nigsp/due.py
+    nigsp/.*rc
