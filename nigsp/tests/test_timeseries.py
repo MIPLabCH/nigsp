@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Tests for operations.timeseries."""
 
-from numpy import rand
+from numpy.random import rand
 from pytest import mark, raises
 
 from nigsp.operations import timeseries
@@ -14,6 +14,7 @@ def test_break_median_cutoff_frequency_idx():
     with raises(NotImplementedError) as errorinfo:
         timeseries.median_cutoff_frequency_idx(rand(2, 3, 4))
     assert 'has 4 dimensions' in str(errorinfo.value)
+
 
 @mark.parametrize('data', [
     (rand(3, 4)),
