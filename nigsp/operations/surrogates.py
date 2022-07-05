@@ -50,10 +50,9 @@ def random_sign(eigenvec, n_surr=1000, seed=42, stack=False):
     NotImplementedError
         If eigenvec is 4+ D.
     """
-    # #!# Allow for input of random sign matrix, if None call random sign.
-    if seed is not None:
-        # Reinitialise the random seed for repeatability
-        np.random.seed(seed)
+
+    # Reinitialise the random seed for repeatability
+    rng = np.random.default_rng(seed)
 
     if eigenvec.ndim > 3:
         raise NotImplementedError(f'Provided data has {eigenvec.ndim} dimensions, '
@@ -67,12 +66,12 @@ def random_sign(eigenvec, n_surr=1000, seed=42, stack=False):
     for i in range(n_surr):
         # #!# Check if two conditions can be merged.
         if eigenvec.ndim < 3:
-            r_sign = np.random.rand(eigenvec.shape[0]).round()
+            r_sign = rng.integers(0, 1, eigenvec.shape[0], endpoint=True)
             r_sign[r_sign == 0] = -1
             rand_evec[..., i] = eigenvec * r_sign
         else:
             for j in range(eigenvec.shape[2]):
-                r_sign = np.random.rand(eigenvec.shape[0]).round()
+                r_sign = rng.integers(0, 1, eigenvec.shape[0], endpoint=True)
                 r_sign[r_sign == 0] = -1
                 rand_evec[:, :, j, i] = eigenvec[..., j] * r_sign
 
