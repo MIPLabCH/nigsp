@@ -29,15 +29,15 @@ def test_SCGraph():
         else:
             return ((2*d-1)*x*_bonnet(d-1, x)-(d-1)*_bonnet(d-2, x))/d
 
-    x = np.linspace(-1, 1, 6)
-    eigenvec = np.empty([4, 6], dtype='float32')
+    x = np.linspace(-1, 1, 4)
+    eigenvec = np.empty([4, 4], dtype='float32')
     for n in range(4):
-        eigenvec[n, :] = _bonnet(n, x)
+        eigenvec[:, n] = _bonnet(n, x)
     zx = np.linspace(0, 3, 4)
 
     # Initialise SCGraph proper
     scgraph = SCGraph(mtx, timeseries, atlas=atlas, filename=filename,
-                      eigenvec=eigenvec, ts_split=ts_split, index=3)
+                      eigenvec=eigenvec, ts_split=ts_split, index=2)
 
     # # Assert properties
     assert scgraph.nnodes == mtx.shape[1]
@@ -51,17 +51,17 @@ def test_SCGraph():
 
     # Test split_graph and split_graph index priority
     scgraph.split_graph()
-    evs, tss = operations.graph_filter(timeseries, eigenvec, 3)
+    evs, tss = operations.graph_filter(timeseries, eigenvec, 2)
 
     assert all(item in list(evs.keys()) for item in list(scgraph.evec_split.keys()))
     assert all(item in list(tss.keys()) for item in list(scgraph.ts_split.keys()))
-    assert (evs['low'] == scgraph.evec_split['low'])
+    assert (evs['low'] == scgraph.evec_split['low']).all()
 
     scgraph.evec_split = {}
     scgraph.index = 'median'
-    scgraph.split_graph(index=3)
+    scgraph.split_graph(index=2)
 
-    assert (evs['low'] == scgraph.evec_split['low'])
+    assert (evs['low'] == scgraph.evec_split['low']).all()
 
     # Test create_surrogates
     scgraph.create_surrogates(sc_type='informed', n_surr=1, seed=6)
