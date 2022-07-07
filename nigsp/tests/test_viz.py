@@ -22,11 +22,11 @@ from nigsp import viz
 ])
 # ### Unit tests
 def test_plot_connectivity(mtx):
-    viz.plot_connectivity(mtx, 'arthur.png', closeplot=True)
+    viz.plot_connectivity(mtx, 'annie.png', closeplot=True)
 
-    assert isfile('arthur.png')
+    assert isfile('annie.png')
     matplotlib.pyplot.close()
-    remove('arthur.png')
+    remove('annie.png')
 
 
 @mark.parametrize('timeseries', [
@@ -35,20 +35,20 @@ def test_plot_connectivity(mtx):
     (rand(3, 50, 4, 1))
 ])
 def test_plot_grayplot(timeseries):
-    viz.plot_grayplot(timeseries, 'dot.png', closeplot=True)
+    viz.plot_grayplot(timeseries, 'troy.png', closeplot=True)
 
-    assert isfile('dot.png')
+    assert isfile('troy.png')
     matplotlib.pyplot.close()
-    remove('dot.png')
+    remove('troy.png')
 
 
 def test_plot_nodes(sdi, atlas):
     ns = genfromtxt(sdi)
-    viz.plot_nodes(ns, atlas, 'joan.png', closeplot=True)
+    viz.plot_nodes(ns, atlas, 'abed.png', closeplot=True)
 
-    assert isfile('joan.png')
+    assert isfile('abed.png')
     matplotlib.pyplot.close()
-    remove('joan.png')
+    remove('abed.png')
     remove(sdi)
     remove(atlas)
 
@@ -57,12 +57,12 @@ def test_plot_nodes(sdi, atlas):
 def test_break_plot_connectivity():
     sys.modules['matplotlib'] = None
     with raises(ImportError) as errorinfo:
-        viz.plot_connectivity(rand(3, 3), 'steve.png')
+        viz.plot_connectivity(rand(3, 3), 'craig.png')
     assert 'is required' in str(errorinfo.value)
     sys.modules['matplotlib'] = matplotlib
 
     with raises(ValueError) as errorinfo:
-        viz.plot_connectivity(rand(3, 3, 3, 4), 'steve.png')
+        viz.plot_connectivity(rand(3, 3, 3, 4), 'craig.png')
     assert 'plot connectivity' in str(errorinfo.value)
 
     matplotlib.pyplot.close()
@@ -71,12 +71,12 @@ def test_break_plot_connectivity():
 def test_break_plot_grayplot():
     sys.modules['matplotlib'] = None
     with raises(ImportError) as errorinfo:
-        viz.plot_grayplot(rand(3, 3), 'ramsey.png')
+        viz.plot_grayplot(rand(3, 3), 'dan.png')
     assert 'is required' in str(errorinfo.value)
     sys.modules['matplotlib'] = matplotlib
 
     with raises(ValueError) as errorinfo:
-        viz.plot_grayplot(rand(3, 3, 3, 4), 'ramsey.png')
+        viz.plot_grayplot(rand(3, 3, 3, 4), 'dan.png')
     assert 'plot grayplots' in str(errorinfo.value)
 
     matplotlib.pyplot.close()
