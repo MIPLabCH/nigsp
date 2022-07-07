@@ -22,7 +22,7 @@ from nigsp import viz
 ])
 # ### Unit tests
 def test_plot_connectivity(mtx):
-    viz.plot_connectivity(mtx, 'arthur.png')
+    viz.plot_connectivity(mtx, 'arthur.png', closeplot=True)
 
     assert isfile('arthur.png')
     matplotlib.pyplot.close()
@@ -35,7 +35,7 @@ def test_plot_connectivity(mtx):
     (rand(3, 50, 4, 1))
 ])
 def test_plot_grayplot(timeseries):
-    viz.plot_grayplot(timeseries, 'dot.png')
+    viz.plot_grayplot(timeseries, 'dot.png', closeplot=True)
 
     assert isfile('dot.png')
     matplotlib.pyplot.close()
@@ -44,7 +44,7 @@ def test_plot_grayplot(timeseries):
 
 def test_plot_nodes(sdi, atlas):
     ns = genfromtxt(sdi)
-    viz.plot_nodes(ns, atlas, 'joan.png')
+    viz.plot_nodes(ns, atlas, 'joan.png', closeplot=True)
 
     assert isfile('joan.png')
     matplotlib.pyplot.close()

@@ -13,7 +13,6 @@ SET_DPI : int
 """
 
 import logging
-import os
 
 import numpy as np
 
@@ -23,7 +22,7 @@ SET_DPI = 100
 FIGSIZE = (18, 10)
 
 
-def plot_connectivity(mtx, filename=None):
+def plot_connectivity(mtx, filename=None, closeplot=False):
     """
     Create a connectivity matrix plot.
 
@@ -35,6 +34,8 @@ def plot_connectivity(mtx, filename=None):
         A (square) array with connectivity information inside.
     filename : None, str, or os.PathLike, optional
         The path to save the plot on disk.
+    closeplot : bool, optional
+        Whether to close plots after saving or not. Mainly used for debug.
 
     Returns
     -------
@@ -72,12 +73,14 @@ def plot_connectivity(mtx, filename=None):
 
     if filename is not None:
         plt.savefig(filename, dpi=SET_DPI)
+
+    if closeplot:
         plt.close()
 
     return 0
 
 
-def plot_grayplot(timeseries, filename=None):
+def plot_grayplot(timeseries, filename=None, closeplot=False):
     """
     Create a grayplot (a.k.a. carpet plot a.k.a. timeseries plot).
 
@@ -90,6 +93,8 @@ def plot_grayplot(timeseries, filename=None):
         second dimension.
     filename : None, str, or os.PathLike, optional
         The path to save the plot on disk.
+    closeplot : bool, optional
+        Whether to close plots after saving or not. Mainly used for debug.
 
     Returns
     -------
@@ -126,12 +131,14 @@ def plot_grayplot(timeseries, filename=None):
 
     if filename is not None:
         plt.savefig(filename, dpi=SET_DPI)
+
+    if closeplot:
         plt.close()
 
     return 0
 
 
-def plot_nodes(ns, atlas, filename=None):
+def plot_nodes(ns, atlas, filename=None, closeplot=False):
     """
     Create a marker plot in the MNI space.
 
@@ -146,6 +153,8 @@ def plot_nodes(ns, atlas, filename=None):
         or a list of coordinates of the center of mass of parcels.
     filename : None, str, or os.PathLike, optional
         The path to save the plot on disk.
+    closeplot : bool, optional
+        Whether to close plots after saving or not. Mainly used for debug.
 
     Returns
     -------
