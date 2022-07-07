@@ -8,6 +8,25 @@ from nigsp.operations import timeseries
 
 
 # ### Unit tests
+def test_normalise_ts():
+    pass
+
+
+def test_graph_fourier_transform():
+    pass
+
+
+def test_median_cutoff_frequency_idx():
+    pass
+
+
+def test_graph_filter():
+    pass
+
+
+def test_functional_connectivity():
+    pass
+
 
 # ### Break tests
 def test_break_median_cutoff_frequency_idx():
@@ -16,13 +35,12 @@ def test_break_median_cutoff_frequency_idx():
     assert 'have 3 dimensions' in str(errorinfo.value)
 
 
-@mark.parametrize('data', [
-    (rand(3, 4)),
-    (rand(3, 4, 1)),
-    (rand(3, 1, 4))
+@mark.parametrize('freq', [
+    (0),
+    (2),
+    (4)
 ])
-def test_break_graph_filter(data):
+def test_break_graph_filter(freq):
     with raises(IndexError) as errorinfo:
-        timeseries.graph_filter(rand(2, 3, 4))
-    assert 'has 3 dimensions' in str(errorinfo.value)
-
+        timeseries.graph_filter(rand(2, 3), rand(2, 2), freq)
+    assert f'index {freq} is not valid' in str(errorinfo.value)
