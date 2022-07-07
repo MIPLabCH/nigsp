@@ -97,9 +97,13 @@ def test_test_significance():
     data = surr[..., -1]
     p_bernoulli = 0.35
     p = 0.4
-    method = 'frequentist'
+    # Test frequentist method first
+    mask = surrogates.test_significance(surr, data, method='frequentist', p=p)
 
-    pass
+    # Test Bernoulli's method after
+    mask = surrogates.test_significance(surr, p=p, p_bernoulli=p_bernoulli)
+
+    
 
 
 # ### Break tests
