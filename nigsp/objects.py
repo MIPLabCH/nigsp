@@ -146,7 +146,7 @@ class SCGraph():
             sc_args['lapl_mtx'] = self.lapl_mtx
             self.surr = operations.sc_uninformed(**sc_args)
         else:
-            return ValueError(f'Unknown option {sc_type} for surrogate creation. '
+            raise ValueError(f'Unknown option {sc_type} for surrogate creation. '
                               'Declared type must be either \'informed\' or '
                               '\'uninformed\'')
         return self
