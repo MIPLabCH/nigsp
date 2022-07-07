@@ -204,6 +204,10 @@ def plot_nodes(ns, atlas, filename=None, closeplot=False):
 
     if filename is not None:
         plt.savefig(filename, dpi=SET_DPI)
+
+    if closeplot:
+        plt.close()
+
     return 0
 
 
