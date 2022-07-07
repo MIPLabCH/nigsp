@@ -52,10 +52,13 @@ def test_SCGraph():
     # Test split_graph and split_graph index priority
     scgraph.split_graph()
     evs, tss = operations.graph_filter(timeseries, eigenvec, 2)
+    # Update ts_split to be tss
+    ts_split = tss
 
     assert all(item in list(evs.keys()) for item in list(scgraph.evec_split.keys()))
     assert all(item in list(tss.keys()) for item in list(scgraph.ts_split.keys()))
     assert (evs['low'] == scgraph.evec_split['low']).all()
+    assert (tss['low'] == scgraph.ts_split['low']).all()
 
     scgraph.evec_split = {}
     scgraph.index = 'median'
@@ -70,13 +73,13 @@ def test_SCGraph():
 
     scgraph.lapl_mtx = mtx
     scgraph.create_surrogates(sc_type='uninformed', n_surr=1, seed=6)
-    u_surr = operations.sc_informed(timeseries, lapl_mtx=mtx, n_surr=1, seed=6)
+    u_surr = operations.sc_uninformed(timeseries, lapl_mtx=mtx, n_surr=1, seed=6)
     assert (scgraph.surr == u_surr).all()
 
     # Test compute_fc
     scgraph.compute_fc()
     fc = operations.functional_connectivity(timeseries)
-    fc_low = operations.functional_connectivity(ts_split['lo'])
+    fc_low = operations.functional_connectivity(ts_split['low'])
 
     assert (fc == scgraph.fc).all()
     assert all(item in ['high', 'low'] for item in list(scgraph.fc_split.keys()))
