@@ -126,7 +126,7 @@ def test_test_significance():
     mask_avg = surrogates.test_significance(surr, method='frequentist', p=p,
                                             return_masked=True, mean=True)
 
-    assert (masked_data == mask).all()
+    assert (masked_data_avg == mask_avg).all()
 
 
 # ### Break tests
