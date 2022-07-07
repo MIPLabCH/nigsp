@@ -72,6 +72,7 @@ def plot_connectivity(mtx, filename=None):
 
     if filename is not None:
         plt.savefig(filename, dpi=SET_DPI)
+        plt.close()
 
     return 0
 
@@ -125,6 +126,8 @@ def plot_grayplot(timeseries, filename=None):
 
     if filename is not None:
         plt.savefig(filename, dpi=SET_DPI)
+        plt.close()
+
     return 0
 
 
