@@ -87,6 +87,13 @@ def test_sc_uninformed():
 
 
 def test_test_significance():
+    # Create surrogates so that one subject has 2 significant obervations over 3,
+    # and in group 1 observation is significant over 3
+    surr = np.array([[[.1, .1, .1, .1, .4], [.1, .1, .1, .1, -.1], [.4, .4, .1, .1, .2]],
+                    [[.1, .1, .1, .1, .4], [.4, .4, .1, .1, .2], [.4, .4, .1, .1, .2]],
+                    [[.1, .1, .1, .1, .4], [.4, .4, .1, .1, .2], [.4, .4, .1, .1, .2]],
+                    [[.4, .4, .1, .1, .2], [.4, .4, .1, .1, .2], [.4, .4, .1, .1, .2]],
+                    [[.1, .1, .1, .1, .4], [.4, .4, .1, .1, .2], [.4, .4, .1, .1, .2]]])
     pass
 
 
