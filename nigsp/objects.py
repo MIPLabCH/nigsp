@@ -107,7 +107,8 @@ class SCGraph():
             index = self.index
 
         if index == 'median':  # pragma: no cover
-            self.index = operations.median_cutoff_frequency_idx(self.energy)
+            index = operations.median_cutoff_frequency_idx(self.energy)
+
         elif type(index) is not int:
             raise ValueError(f'Unknown option {index} for frequency split index. '
                              'Declared index must be either an integer or \'median\'')
@@ -115,6 +116,8 @@ class SCGraph():
         self.evec_split, self.ts_split = operations.graph_filter(self.timeseries,
                                                                  self.eigenvec,
                                                                  index, keys)
+        if self.index != index:
+            LGR.warning(f'Updating stored index from {self.index} to {index}')
 
         return self
 
