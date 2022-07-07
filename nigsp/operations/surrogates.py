@@ -306,11 +306,20 @@ def test_significance(surr,
                     'possible range of [0, 1]. Statistical thresholding might '
                     'not be interpretable.')
 
+    if p < 0 or p > 1:
+        raise ValueError('p values should always be between 0 and 1. The '
+                         f'provided value of {p} is out of these boundaries')
+    elif p == 0 or p == 1:
+        LGR.warning(f'The selected p value of {p} is at the limits of the '
+                    'possible range of [0, 1]. Statistical thresholding might '
+                    'not be interpretable.')
+
     if surr.ndim < 3:
         LGR.warning(
             f'Warning: surrogate dimensions ({surr.ndim}) are less than '
             'the program expects - check that you mean to run a test on '
             'an average or that you have enough surrogates.')
+
     # Reorder the surrogate matrix, then find where the real surrogate is
     LGR.info('Reordering surrogates for test')
     real_idx = surr.shape[-1] - 1
