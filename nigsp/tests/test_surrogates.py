@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Tests for operations.surrogates."""
 import numpy as np
-from numpy.random import rand, seed
+from numpy.random import rand, default_rng
 from pytest import raises
 
 from nigsp.operations import surrogates, graph_fourier_transform, decomposition
@@ -15,17 +15,17 @@ def test_random_sign():
 
     rs = surrogates.random_sign(eigenvec, n_surr, random_seed, stack=True)
 
-    seed(random_seed)
-
+    # For the moment, replicate code inside function.
+    rng = default_rng(random_seed)
     rand_evec = np.empty((eigenvec.shape + (n_surr,)), dtype='float32')
     for i in range(n_surr):
-        r_sign = np.random.rand(eigenvec.shape[0]).round()
+        r_sign = rng.integers(0, 1, eigenvec.shape[0], endpoint=True)
         r_sign[r_sign == 0] = -1
         rand_evec[..., i] = eigenvec * r_sign
     rand_evec = np.append(rand_evec, eigenvec[..., np.newaxis], axis=-1)
 
     assert rs.ndim == 2
-    assert rs.shape[-1] == (eigenvec.size + 1) 
+    assert rs.shape == eigenvec.shape + (n_surr + 1,)
     assert (rand_evec == rs).all()
 
     # #!# Implement stricter checks on signs
