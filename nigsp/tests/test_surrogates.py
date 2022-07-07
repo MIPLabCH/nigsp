@@ -47,7 +47,7 @@ def test_create_surr():
         surr[..., i] = graph_fourier_transform(fourier_coeff, rand_evec[..., i].T)
 
     assert cs.ndim == 3
-    assert all(cs.shape == surr.shape)
+    assert cs.shape == surr.shape
     assert (cs == surr).all()
 
 
@@ -61,7 +61,7 @@ def test_sc_informed():
     cs = surrogates.sc_informed(timeseries, eigenvec, n_surr, seed, stack=True)
 
     assert cs.ndim == 3
-    assert all(cs.shape == surr.shape)
+    assert cs.shape == surr.shape
     assert (cs == surr).all()
 
 
@@ -79,10 +79,10 @@ def test_sc_uninformed():
     _, surr_eigenvec = decomposition(conf_lapl)
     surr = surrogates._create_surr(timeseries, surr_eigenvec, n_surr, seed, stack=True)
 
-    cs = surrogates.sc_informed(timeseries, lapl_mtx, n_surr, seed, stack=True)
+    cs = surrogates.sc_uninformed(timeseries, lapl_mtx, n_surr, seed, stack=True)
 
     assert cs.ndim == 3
-    assert all(cs.shape == surr.shape)
+    assert cs.shape == surr.shape
     assert (cs == surr).all()
 
 
@@ -100,11 +100,11 @@ def test_break_random_sign():
 def test_break_create_surr():
     with raises(NotImplementedError) as errorinfo:
         surrogates._create_surr(rand(2, 3, 4, 5), rand(2, 2), 1, 2, False)
-    assert 'timeseries of 4 dimensions' in str(errorinfo.value)
+    assert 'timeseries of 4 dimension(s)' in str(errorinfo.value)
 
     with raises(NotImplementedError) as errorinfo:
         surrogates._create_surr(rand(2), rand(2, 2), 1, 2, False)
-    assert ('timeseries of 1 dimensions and eigenvector matrix of 2 dimensions'
+    assert ('timeseries of 1 dimension(s) and eigenvector matrix of 2 dimension(s)'
             in str(errorinfo.value))
 
 
