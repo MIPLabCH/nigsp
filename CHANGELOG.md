@@ -1,3 +1,15 @@
+# 0.4.0 (Thu Jul 07 2022)
+
+#### 🚀 Enhancement
+
+- Allow users to choose p value for both frequentist and Bernoulli's approach at all time. [#13](https://github.com/MIPLabCH/nigsp/pull/13) ([@smoia](https://github.com/smoia))
+
+#### Authors: 1
+
+- Stefano Moia ([@smoia](https://github.com/smoia))
+
+---
+
 # 0.3.0 (Tue Jul 05 2022)
 
 #### 💥 Breaking Change during development
