@@ -107,7 +107,7 @@ class SCGraph():
             index = self.index
 
         if index == 'median':  # pragma: no cover
-            index = operations.median_cutoff_frequency_idx(self.energy)
+            self.index = operations.median_cutoff_frequency_idx(self.energy)
         elif type(index) is not int:
             raise ValueError(f'Unknown option {index} for frequency split index. '
                              'Declared index must be either an integer or \'median\'')
@@ -147,8 +147,8 @@ class SCGraph():
             self.surr = operations.sc_uninformed(**sc_args)
         else:
             raise ValueError(f'Unknown option {sc_type} for surrogate creation. '
-                              'Declared type must be either \'informed\' or '
-                              '\'uninformed\'')
+                             'Declared type must be either \'informed\' or '
+                             '\'uninformed\'')
         return self
 
     def test_significance(self, metric='sdi', method='Bernoulli', p=0.05,
