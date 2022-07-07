@@ -121,10 +121,18 @@ def test_break_sc_uninformed():
 
 
 def test_break_test_significance():
-    with raises(NotImplementedError) as errorinfo:
-        surrogates.test_significance(rand(2, 3, 5), method='Baobab')
-    assert 'Other testing methods' in str(errorinfo.value)
-
     with raises(ValueError) as errorinfo:
         surrogates.test_significance(rand(2, 3, 5), rand(2, 4))
     assert 'shapes do not agree' in str(errorinfo.value)
+
+    with raises(ValueError) as errorinfo:
+        surrogates.test_significance(rand(2, 4), rand(2, 4), p=-0.1)
+    assert 'p values should always be between 0 and 1' in str(errorinfo.value)
+
+    with raises(ValueError) as errorinfo:
+        surrogates.test_significance(rand(2, 4), rand(2, 4), p=1.1)
+    assert 'p values should always be between 0 and 1' in str(errorinfo.value)
+
+    with raises(NotImplementedError) as errorinfo:
+        surrogates.test_significance(rand(2, 3, 5), method='Baobab')
+    assert 'Other testing methods' in str(errorinfo.value)
