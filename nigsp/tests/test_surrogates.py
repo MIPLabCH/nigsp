@@ -87,29 +87,46 @@ def test_sc_uninformed():
 
 
 def test_test_significance():
-    # Create surrogates so that one subject has 2 significant obervations over 3,
-    # and in group 1 observation is significant over 3
-    surr = np.array([[[.1, .1, .1, .1, .4], [.1, .1, .1, .1, -.1], [.4, .4, .1, .1, .2]],
-                    [[.1, .1, .1, .1, .4], [.4, .4, .1, .1, .2], [.4, .4, .1, .1, .2]],
-                    [[.1, .1, .1, .1, .4], [.4, .4, .1, .1, .2], [.4, .4, .1, .1, .2]],
-                    [[.4, .4, .1, .1, .2], [.4, .4, .1, .1, .2], [.4, .4, .1, .1, .2]],
-                    [[.1, .1, .1, .1, .4], [.4, .4, .1, .1, .2], [.4, .4, .1, .1, .2]]])
+    # Create surrogates so that one subject has 3 significant obervations over 4,
+    # and in group 1 observation is significant over 5
+    surr = np.array([[[.1, .1, .1, .1, .4], [.1, .1, .1, .1, .4], [.1, .1, .1, .1, -.1], [.4, .4, .1, .1, .2]],
+                    [[.1, .1, .1, .1, .4], [.1, .1, .1, .1, .4], [.4, .4, .1, .1, .2], [.4, .4, .1, .1, .2]],
+                    [[.1, .1, .1, .1, .4], [.1, .1, .1, .1, .4], [.4, .4, .1, .1, .2], [.4, .4, .1, .1, .2]],
+                    [[.4, .4, .1, .1, .2], [.4, .4, .1, .1, .2], [.4, .4, .1, .1, .2], [.4, .4, .1, .1, .2]],
+                    [[.1, .1, .1, .1, .4], [.1, .1, .1, .1, .4], [.4, .4, .1, .1, .2], [.4, .4, .1, .1, .2]]])
 
     data = surr[..., -1]
     p_bernoulli = 0.35
     p = 0.4
     # Test frequentist method first
+    mask_freq = np.array([[True, True,  True, False],
+                         [True, True, False, False],
+                         [True, True, False, False],
+                         [False, False, False, False],
+                         [True, True, False, False]])
     mask = surrogates.test_significance(surr, data, method='frequentist', p=p)
-    mask_freq = np.array([[True,  True, False],
-                         [True, False, False],
-                         [True, False, False],
-                         [False, False, False],
-                         [True, False, False]])
 
-    # Test Bernoulli's method after
+    assert (mask_freq == mask).all()
+
+    # Test Bernoulli's method after (mask created flat in 1D for convenience)
+    mask_bern = np.array([True, False, False, False, False])
+    mask_bern = mask_bern[..., np.newaxis].repeat(surr.shape[1], axis=-1)
     mask = surrogates.test_significance(surr, p=p, p_bernoulli=p_bernoulli)
 
-    
+    assert (mask_bern == mask).all()
+
+    # Test masked and average
+    masked_data = np.ma.array(data=data, mask=np.invert(mask_freq), fill_value=0)
+    mask = surrogates.test_significance(surr, method='frequentist', p=p,
+                                        return_masked=True)
+
+    assert (masked_data == mask).all()
+
+    masked_data_avg = masked_data.mean(axis=1)
+    mask_avg = surrogates.test_significance(surr, method='frequentist', p=p,
+                                            return_masked=True, mean=True)
+
+    assert (masked_data == mask).all()
 
 
 # ### Break tests
