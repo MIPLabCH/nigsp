@@ -118,6 +118,7 @@ class SCGraph():
                                                                  index, keys)
         if self.index != index:
             LGR.warning(f'Updating stored index from {self.index} to {index}')
+            self.index = index
 
         return self
 
