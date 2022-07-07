@@ -64,7 +64,7 @@ def test_break_plot_connectivity():
     with raises(ValueError) as errorinfo:
         viz.plot_connectivity(rand(3, 3, 3, 4), 'steve.png')
     assert 'plot connectivity' in str(errorinfo.value)
-    
+
     matplotlib.pyplot.close()
 
 
