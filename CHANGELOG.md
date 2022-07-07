@@ -1,3 +1,15 @@
+# 0.5.0 (Thu Jul 07 2022)
+
+#### 🚀 Enhancement
+
+- Handling averages of masked data better [#15](https://github.com/MIPLabCH/nigsp/pull/15) ([@smoia](https://github.com/smoia))
+
+#### Authors: 1
+
+- Stefano Moia ([@smoia](https://github.com/smoia))
+
+---
+
 # 0.4.1 (Thu Jul 07 2022)
 
 #### 🐛 Bug Fix
