@@ -94,11 +94,17 @@ def test_test_significance():
                     [[.1, .1, .1, .1, .4], [.4, .4, .1, .1, .2], [.4, .4, .1, .1, .2]],
                     [[.4, .4, .1, .1, .2], [.4, .4, .1, .1, .2], [.4, .4, .1, .1, .2]],
                     [[.1, .1, .1, .1, .4], [.4, .4, .1, .1, .2], [.4, .4, .1, .1, .2]]])
+
     data = surr[..., -1]
     p_bernoulli = 0.35
     p = 0.4
     # Test frequentist method first
     mask = surrogates.test_significance(surr, data, method='frequentist', p=p)
+    mask_freq = np.array([[True,  True, False],
+                         [True, False, False],
+                         [True, False, False],
+                         [False, False, False],
+                         [True, False, False]])
 
     # Test Bernoulli's method after
     mask = surrogates.test_significance(surr, p=p, p_bernoulli=p_bernoulli)
