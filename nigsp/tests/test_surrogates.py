@@ -165,11 +165,11 @@ def test_break_test_significance():
     assert 'shapes do not agree' in str(errorinfo.value)
 
     with raises(ValueError) as errorinfo:
-        surrogates.test_significance(rand(2, 4), rand(2, 4), p=-0.1)
+        surrogates.test_significance(rand(2, 4, 3), rand(2, 4), p=-0.1)
     assert 'p values should always be between 0 and 1' in str(errorinfo.value)
 
     with raises(ValueError) as errorinfo:
-        surrogates.test_significance(rand(2, 4), rand(2, 4), p=1.1)
+        surrogates.test_significance(rand(2, 4, 3), rand(2, 4), p=1.1)
     assert 'p values should always be between 0 and 1' in str(errorinfo.value)
 
     with raises(NotImplementedError) as errorinfo:
