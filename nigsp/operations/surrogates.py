@@ -347,7 +347,6 @@ def test_significance(surr,
             p_bernoulli = 1 / surr.shape[1]
         # If there aren't enough surrogates, send a warning message on the real p
         # Then update subject level p
-        p = 0.05
         if 1 / surr.shape[-1] > p:
             LGR.warning('The generated surrogates are not enough to test for '
                         f'p={p} two-tails at the subject level. '
