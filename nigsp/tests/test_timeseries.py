@@ -13,7 +13,7 @@ from nigsp.operations import timeseries
 def test_break_median_cutoff_frequency_idx():
     with raises(NotImplementedError) as errorinfo:
         timeseries.median_cutoff_frequency_idx(rand(2, 3, 4))
-    assert 'has 4 dimensions' in str(errorinfo.value)
+    assert 'have 3 dimensions' in str(errorinfo.value)
 
 
 @mark.parametrize('data', [
@@ -24,5 +24,5 @@ def test_break_median_cutoff_frequency_idx():
 def test_break_graph_filter(data):
     with raises(IndexError) as errorinfo:
         timeseries.graph_filter(rand(2, 3, 4))
-    assert 'has 4 dimensions' in str(errorinfo.value)
+    assert 'has 3 dimensions' in str(errorinfo.value)
 
