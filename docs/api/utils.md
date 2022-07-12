@@ -1,1 +1,0 @@
-# ![mkapi](nigsp.utils|all)

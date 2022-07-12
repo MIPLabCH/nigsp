@@ -90,7 +90,7 @@ $ pytest
 This will execute the tests locally and check that your phys2bids
 installation works properly - it should look like this:
 
-```nohighlight
+```
 ==================================== test session starts ====================================
 platform linux -- Python 3.7.13, pytest-7.1.1, pluggy-1.0.0
 rootdir: /home/nemo/Scrivania/gitlab/nigsp, configfile: setup.cfg
