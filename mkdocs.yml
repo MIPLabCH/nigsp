@@ -15,13 +15,20 @@ plugins:
       src_dirs: [nigsp]
 
 nav:
-    - nigsp: README.md
+    - nigsp: index.md
     - Usage:
       - Installation: usage/installation.md
       - User Guide: usage/user_guide.md
       - Licence: usage/licence.md
-      - API: usage/api.md
       - Output: usage/output.md
+    - API:
+      - nigsp.workflow: api/workflow.md
+      - nigsp.objects: api/objects.md
+      - nigsp.io: api/io.md
+      - nigsp.viz: api/viz.md
+      - nigsp.utils: api/utils.md
+      - nigsp.blocks: api/blocks.md
+      - nigsp.operations: api/operations.md
     - Graph Signal Processing:
       - About GSP: about_gsp.md
     - Developers:

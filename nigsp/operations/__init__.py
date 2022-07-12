@@ -1,5 +1,18 @@
-"""Import all operations."""
+"""
+The core functions of `nigsp`.
 
+They are organised into modules by type of operation.
+
+Each function is callable through their respective module or directly
+as an `operations` function, and each module can be called directly as a
+`nigsp` module.
+
+For example, calling `nigsp.operations.metrics.sdi` is equivalent to calling
+`nigsp.operations.sdi` or `nigsp.metrisc.sdi`. 
+"""
+
+
+# Import all operations.
 from .graph import zerocross, nodestrength
 from .laplacian import symmetric_normalisation, decomposition
 from .metrics import sdi, gsdi
