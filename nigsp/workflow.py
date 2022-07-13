@@ -1,6 +1,14 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+"""
+`nigsp` main workflow and related functions.
 
+The workflow is callable either as a python function, or (prefereably)
+in a shell session:
+```shell
+$ nigsp --help
+```
+"""
 import datetime
 import logging
 import os
