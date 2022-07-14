@@ -78,15 +78,38 @@ def test_graph_filter():
 
     evec_split, ts_split = timeseries.graph_filter(ts, ev, freq_idx, keys)
 
-    assert evec_split.keys() == keys
-    assert ts_split.keys() == keys
+    assert all(item in keys for item in list(evec_split.keys()))
+    assert all(item in keys for item in list(ts_split.keys()))
     for k in keys:
         assert (ev_s[k] == evec_split[k]).all()
         assert (ts_s[k] == ts_split[k]).all()
 
 
 def test_functional_connectivity():
-    pass
+    assert timeseries.functional_connectivity(rand(6)) == 1
+
+    ts = rand(3, 6, 2, 2)
+
+    tst, _ = prepare_ndim_iteration(ts, 2)
+    fc = np.empty(([tst.shape[0]] * 2 + [tst.shape[-1]]), dtype='float32')
+    for i in range(tst.shape[-1]):
+        fc[:, :, i] = np.corrcoef(tst[..., i])
+
+    ns = (ts.shape[0],) * 2 + ts.shape[2:]
+    fc = fc.reshape(ns).mean(axis=2).squeeze()
+
+    fc_t = timeseries.functional_connectivity(ts, mean=True)
+
+    assert (fc == fc_t).all()
+
+    tsd = {'hi': rand(3, 6), 'lo': rand(3, 6)}
+
+    fcd = timeseries.functional_connectivity(tsd)
+
+    assert all(item in list(tsd.keys()) for item in list(fcd.keys()))
+
+    for k in fcd.keys():
+        assert (fcd[k] == np.corrcoef(tsd[k])).all()
 
 
 # ### Break tests
