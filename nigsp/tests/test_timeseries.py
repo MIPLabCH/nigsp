@@ -47,11 +47,42 @@ def test_graph_fourier_transform():
 
 
 def test_median_cutoff_frequency_idx():
-    pass
+    energy = np.array([[0, 3], [1, 2], [0, 1], [.5, .5]])
+    freq_t = 2
+
+    freq_idx = timeseries.median_cutoff_frequency_idx(energy)
+
+    assert freq_t == freq_idx
 
 
 def test_graph_filter():
-    pass
+    ts = rand(4, 10)
+    ev = rand(4, 4)
+
+    keys = ['hi', 'ho']
+    freq_idx = 2
+
+    ev_s = dict.fromkeys(keys)
+    ts_s = dict.fromkeys(keys)
+
+    ev_s['ho'] = np.append(ev[:, :freq_idx],
+                           np.zeros_like(ev[:, freq_idx:],
+                                         dtype='float32'), axis=-1)
+    ev_s['hi'] = np.append(np.zeros_like(ev[:, :freq_idx],
+                                         dtype='float32'),
+                           ev[:, freq_idx:], axis=-1)
+
+    fcf = timeseries.graph_fourier_transform(ts, ev)
+    ts_s['ho'] = timeseries.graph_fourier_transform(fcf, ev_s['ho'].T)
+    ts_s['hi'] = timeseries.graph_fourier_transform(fcf, ev_s['hi'].T)
+
+    evec_split, ts_split = timeseries.graph_filter(ts, ev, freq_idx, keys)
+
+    assert evec_split.keys() == keys
+    assert ts_split.keys() == keys
+    for k in keys:
+        assert (ev_s[k] == evec_split[k]).all()
+        assert (ts_s[k] == ts_split[k]).all()
 
 
 def test_functional_connectivity():
