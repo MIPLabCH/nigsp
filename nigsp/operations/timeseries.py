@@ -222,9 +222,9 @@ def graph_filter(timeseries, eigenvec, freq_idx, keys=['low', 'high']):
     for n, idx in enumerate(pairwise(freq_idx)):
         i, j = idx
         k = j if j is not None else eigenvec.shape[-1]
-        evec_split[keys[n]] = np.append(np.zeros_like(eigenvec[:, :i],
-                                                      dtype='float32'),
-                                        eigenvec[:, i:j],
+        evec_split[keys[n]] = np.append(np.append(np.zeros_like(eigenvec[:, :i],
+                                                                dtype='float32'),
+                                                  eigenvec[:, i:j], axis=-1),
                                         np.zeros_like(eigenvec[:, k:],
                                                       dtype='float32'),
                                         axis=-1)
