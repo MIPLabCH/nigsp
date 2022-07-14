@@ -19,7 +19,6 @@ SET_DPI : int
 """
 
 import logging
-import os
 
 import numpy as np
 
@@ -29,7 +28,7 @@ SET_DPI = 100
 FIGSIZE = (18, 10)
 
 
-def plot_connectivity(mtx, filename=None):
+def plot_connectivity(mtx, filename=None, closeplot=False):
     """
     Create a connectivity matrix plot.
 
@@ -41,6 +40,8 @@ def plot_connectivity(mtx, filename=None):
         A (square) array with connectivity information inside.
     filename : None, str, or os.PathLike, optional
         The path to save the plot on disk.
+    closeplot : bool, optional
+        Whether to close plots after saving or not. Mainly used for debug.
 
     Returns
     -------
@@ -83,10 +84,13 @@ def plot_connectivity(mtx, filename=None):
     if filename is not None:
         plt.savefig(filename, dpi=SET_DPI)
 
+    if closeplot:
+        plt.close()
+
     return 0
 
 
-def plot_grayplot(timeseries, filename=None):
+def plot_grayplot(timeseries, filename=None, closeplot=False):
     """
     Create a grayplot (a.k.a. carpet plot a.k.a. timeseries plot).
 
@@ -99,6 +103,8 @@ def plot_grayplot(timeseries, filename=None):
         second dimension.
     filename : None, str, or os.PathLike, optional
         The path to save the plot on disk.
+    closeplot : bool, optional
+        Whether to close plots after saving or not. Mainly used for debug.
 
     Returns
     -------
@@ -139,10 +145,14 @@ def plot_grayplot(timeseries, filename=None):
 
     if filename is not None:
         plt.savefig(filename, dpi=SET_DPI)
+
+    if closeplot:
+        plt.close()
+
     return 0
 
 
-def plot_nodes(ns, atlas, filename=None):
+def plot_nodes(ns, atlas, filename=None, closeplot=False):
     """
     Create a marker plot in the MNI space.
 
@@ -157,6 +167,8 @@ def plot_nodes(ns, atlas, filename=None):
         or a list of coordinates of the center of mass of parcels.
     filename : None, str, or os.PathLike, optional
         The path to save the plot on disk.
+    closeplot : bool, optional
+        Whether to close plots after saving or not. Mainly used for debug.
 
     Returns
     -------
@@ -167,9 +179,6 @@ def plot_nodes(ns, atlas, filename=None):
     ------
     ImportError
         If matplotlib and/or nilearn are not installed.
-        If nibabel is not installed.
-    nib.filebasedimages.ImageFileError
-        If given path is not an atlas.
     ValueError
         If ns has more than 2 dimensions.
         If coordinates can't be extracted from atlas.
@@ -184,11 +193,10 @@ def plot_nodes(ns, atlas, filename=None):
     except ImportError:
         raise ImportError('nilearn and matplotlib are required to plot node images. '
                           'Please see install instructions.')
-
     # First check that ns is a valid source of data.
     ns = ns.squeeze()
     if ns.ndim > 2:
-        raise ValueError('Cannot plot connectivity matrices for matrix of '
+        raise ValueError('Cannot plot node values for matrix of '
                          'dimensions > 2.')
     elif ns.ndim == 2:
         LGR.warning('Given matrix has 2 dimensions, averaging across last '
@@ -196,32 +204,14 @@ def plot_nodes(ns, atlas, filename=None):
         ns = ns.mean(axis=-1)
 
     # Then treat atlas
-    try:
-        coord = find_parcellation_cut_coords(atlas)
-    except:
-        if type(atlas) is np.ndarray:
-            if atlas.ndim > 2 or atlas.shape[1] != 3:
-                raise NotImplementedError('Only atlases in nifti format or '
-                                          'list of coordinates are supported.')
-            coord = atlas
+    if type(atlas) is np.ndarray:
+        if atlas.ndim > 2 or atlas.shape[1] != 3:
+            raise NotImplementedError('Only atlases in nifti format or '
+                                      'list of coordinates are supported.')
         else:
-            try:
-                import nibabel as nib
-                if os.path.isfile(atlas):
-                    img = nib.load(atlas)
-                else:
-                    raise nib.filebasedimages.ImageFileError('Cannot find file '
-                                                             f'{atlas}')
-
-                coord = find_parcellation_cut_coords(img)
-            except ImportError:
-                raise ImportError('Nibabel is required to handle atlases I/O. '
-                                  'Please see install instructions.')
-
-    try:
-        coord
-    except NameError:
-        raise ValueError('Could not obtain coordinates from given atlas.')
+            coord = atlas
+    else:
+        coord = find_parcellation_cut_coords(atlas)
 
     if ns.shape[0] != coord.shape[0]:
         raise ValueError('Node array and coordinates array have different length.')
@@ -232,6 +222,10 @@ def plot_nodes(ns, atlas, filename=None):
 
     if filename is not None:
         plt.savefig(filename, dpi=SET_DPI)
+
+    if closeplot:
+        plt.close()
+
     return 0
 
 

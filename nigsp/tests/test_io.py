@@ -103,6 +103,8 @@ def test_load_nifti_get_mask(atlas):
     assert (mask == m).all()
     assert (img.header['dim'] == i.header['dim']).all()
 
+    remove(atlas)
+
 
 def test_load_txt():
     """Test load_txt."""
@@ -137,6 +139,7 @@ def test_export_nifti(atlas):
     io.export_nifti(empty(shape), img, 'book')
     assert isfile('book.nii.gz')
     remove('book.nii.gz')
+    remove(atlas)
 
 
 @mark.parametrize('ext_in, ext_out', [

@@ -59,20 +59,20 @@ def graph_fourier_transform(timeseries, eigenvec, energy=False, mean=False):
     If `mean` is true and the timeseries has 3 dimensions, it returns the
     mean across the last dimension.
 
-    It is assumed that time is encoded in the second dimension (axis 1),
+    It is assumed that time is encoded in the second dimension of timeseries (axis 1),
     e.g. for 90 voxels and 300 timepoints, shape is [90, 300].
 
     Parameters
     ----------
     timeseries : numpy.ndarray
-        The input timeseries. It is assumed that the second dimension is time.
+        The input timeseries. It is assumed that the second dimension (axis 1) is time.
     eigenvec : numpy.ndarray
         The eigenvector resulting from the Laplacian decomposition.
     energy : bool, optional
         If True, returns the energy (power) of the spectral density instead of
         the projection.
     mean : bool, optional
-        If True and timeseries has 3 dimensions, returns the mean across the last axis.
+        If True and timeseries has 3 dimensions, returns the mean across axis 1 (time).
 
     Returns
     -------

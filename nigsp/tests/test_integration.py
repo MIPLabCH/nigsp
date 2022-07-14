@@ -2,6 +2,7 @@
 """Integration test."""
 import shutil
 
+from os import remove
 from os.path import isfile, isdir, join
 
 import numpy as np
@@ -55,3 +56,8 @@ def test_integration(timeseries, sc_mtx, atlas, mean_fc, sdi, testdir):
 
     # Clean up!
     shutil.rmtree(testdir)
+    remove(timeseries)
+    remove(sc_mtx)
+    remove(mean_fc)
+    remove(atlas)
+    remove(sdi)
