@@ -9,6 +9,7 @@ LGR
 """
 
 import logging
+from itertools import tee
 
 from numpy import asarray, ndarray, prod, empty
 
@@ -16,8 +17,33 @@ from numpy import asarray, ndarray, prod, empty
 LGR = logging.getLogger(__name__)
 
 
+def pairwise(iterable):
+    """
+    Recreate `itertools.pairwise()` behaviour for python < 3.10 compatibility.
+
+    Parameters
+    ----------
+    iterable : any iterable object
+        The object to iterate through
+
+    Returns
+    -------
+    tuple
+        The couple of adjacent elements
+
+    Notes
+    -----
+    The original function is: https://docs.python.org/3/library/itertools.html#itertools.pairwise
+    Credit to the Python Software Foundation, this function is under BSD licence.
+    To be replaced by itertools' pairwise import once support for python < 3.10 is dropped
+    """
+    a, b = tee(iterable, 2)
+    next(b, None)
+    return zip(a, b)
+
+
 def change_var_type(var, dtype, varname='an input variable', stop=True,
-                           silent=False):
+                    silent=False):
     """
     Make sure `var` is of type `dtype`.
 
