@@ -12,7 +12,7 @@ import logging
 
 import numpy as np
 
-from nigsp.utils import prepare_ndim_iteration
+from nigsp.utils import pairwise, change_var_type, prepare_ndim_iteration
 
 LGR = logging.getLogger(__name__)
 
@@ -168,7 +168,7 @@ def graph_filter(timeseries, eigenvec, freq_idx, keys=['low', 'high']):
         The input timeseries. It is assumed that the second dimension is time.
     eigenvec : numpy.ndarray
         The eigenvector resulting from the Laplacian decomposition.
-    freq_idx : int
+    freq_idx : int or list
         The index of the frequency that splits the spectral power into two
         (more or less) equal parts - i.e. the index of the first frequency in
         the "high" component.
@@ -189,25 +189,51 @@ def graph_filter(timeseries, eigenvec, freq_idx, keys=['low', 'high']):
         or higher than the last possible index (not applicable).
     """
     # #!# Find better name
-    # #!# Implement a multi-splitter and an index splitter
-    if freq_idx == 0 or freq_idx >= eigenvec.shape[0]-1:
-        raise IndexError(f'Selected index {freq_idx} is not valid to '
-                         f'split eigenvector matrix of shape {eigenvec.shape}.')
+    # #!# Implement an index splitter
+    freq_idx = change_var_type(freq_idx, list, stop=False, silent=True)
+
+    for f in freq_idx:
+        if f == 0 or f >= eigenvec.shape[0] - 1:
+            raise IndexError(f'Selected index {f} is not valid to split '
+                             f'eigenvector matrix of shape {eigenvec.shape}.')
+
+    LGR.info(f'Splitting graph into {len(freq_idx)+1} parts')
+
+    # Check that there is the right amount of keys
+    if len(keys) > len(freq_idx)+1:
+        LGR.warning(f'The declared keys list ({keys}) has {len(keys)} elements. '
+                    f'Since the frequency index list ({freq_idx}) has {len(freq_idx)}, '
+                    f'any keys after {keys[len(freq_idx)]} will be ignored.')
+        keys = keys[:len(freq_idx)+1]
+    elif len(keys) < len(freq_idx)+1:
+        LGR.warning(f'The declared keys list ({keys}) has {len(keys)} elements. '
+                    f'Since the frequency index list ({freq_idx}) has {len(freq_idx)}, '
+                    f'more keys will be created after {keys[len(freq_idx)]} .')
+
+        for i in range(len(keys), len(freq_idx)+1):
+            keys = keys + [f'key-{i+1:03d}']
+
+    # Add 0 and None to freq_idx to have full indexes
+    freq_idx = [0] + freq_idx + [None]
 
     evec_split = dict.fromkeys(keys)
     ts_split = dict.fromkeys(keys)
-    evec_split['low'] = np.append(eigenvec[:, :freq_idx],
-                                  np.zeros_like(eigenvec[:, freq_idx:],
-                                                dtype='float32'), axis=-1)
-    evec_split['high'] = np.append(np.zeros_like(eigenvec[:, :freq_idx],
-                                                 dtype='float32'),
-                                   eigenvec[:, freq_idx:], axis=-1)
+
+    for n, idx in enumerate(pairwise(freq_idx)):
+        i, j = idx
+        k = j if j is not None else eigenvec.shape[-1]
+        evec_split[keys[n]] = np.append(np.zeros_like(eigenvec[:, :i],
+                                                      dtype='float32'),
+                                        eigenvec[:, i:j],
+                                        np.zeros_like(eigenvec[:, k:],
+                                                      dtype='float32'),
+                                        axis=-1)
 
     LGR.info('Compute graph fourier coefficients.')
     fourier_coeff = graph_fourier_transform(timeseries, eigenvec)
 
     for k in keys:
-        LGR.info(f'Compute {k} portion of timeseries.')
+        LGR.info(f'Compute {k} part of timeseries.')
         ts_split[k] = graph_fourier_transform(fourier_coeff, evec_split[k].T)
 
     return evec_split, ts_split
