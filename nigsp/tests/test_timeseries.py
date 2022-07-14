@@ -33,7 +33,7 @@ def test_graph_fourier_transform():
     ts = rand(3, 6, 2, 2)
     tsr, pr = prepare_ndim_iteration(ts, 2)
 
-    for i in range(2):
+    for i in range(tsr.shape[-1]):
         pr[:, :, i] = ev.conj().T @ np.squeeze(tsr[:, :, i])
     pr = pr.reshape(ts.shape)
     prm = pr.mean(axis=1)
