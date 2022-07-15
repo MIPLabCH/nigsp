@@ -294,18 +294,19 @@ def functional_connectivity(timeseries, mean=False):
                 fcorr[:, :, i] = np.corrcoef(temp_ts[..., i])
 
             if timeseries.ndim > 3:
-                fcorr = fcorr.reshape(timeseries.shape)
+                new_shape = (timeseries.shape[0],) * 2 + timeseries.shape[2:]
+                fcorr = fcorr.reshape(new_shape)
 
             if mean:
-                fcorr = fcorr.mean(axis=2)
+                fcorr = fcorr.mean(axis=2).squeeze()
             return fcorr
 
     if type(timeseries) is dict:
         fc = dict()
         for k in timeseries.keys():
-            fc[k] = _fc(timeseries[k], mean=False)
+            fc[k] = _fc(timeseries[k], mean)
     else:
-        fc = _fc(timeseries, mean=False)
+        fc = _fc(timeseries, mean)
 
     return fc
 
