@@ -15,9 +15,9 @@ def _get_parser():
     parser.parse_args() : argparse dict
 
     """
-    parser = argparse.ArgumentParser(description=('%(prog)s, a tool to apply '
+    parser = argparse.ArgumentParser(description=('NiGSP, a tool to apply '
                                                   'Graph Signal Processing to '
-                                                  'MRI (functional and structural),'
+                                                  'MRI (functional and structural), '
                                                   'and compute derivative metrics '
                                                   'such as the Structural Decoupling '
                                                   'Index and the coupled/decoupled FC.\n'
