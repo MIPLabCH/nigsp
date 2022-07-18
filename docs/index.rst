@@ -71,14 +71,12 @@ cite also:
 .. toctree::
    :titlesonly:
    :maxdepth: 0
-   :hidden:
 
    NiGSP <self>
 
 .. toctree::
    :caption: Usage
    :maxdepth: 5
-   :hidden:
 
    Installation <usage/installation>
    User Guide <usage/user_guide>
@@ -89,27 +87,19 @@ cite also:
 .. toctree::
    :caption: API
    :maxdepth: 5
-   :hidden:
+   :glob:
 
-   api/workflow
-   api/objects
-   api/io
-   api/viz
-   api/utils
-   api/blocks
-   api/operations
+   api/*
 
 .. toctree::
    :caption: Graph Signal Processing
    :maxdepth: 5
-   :hidden:
 
    About GSP <about_gsp>
 
 .. toctree::
    :caption: Developers
    :maxdepth: 5
-   :hidden:
 
    How to Contribute <developers/how_to_contribute>
    Contributor Guide <developers/contributor_guide> 
