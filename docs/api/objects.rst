@@ -2,4 +2,3 @@
 ===============================
 
 .. automodule:: nigsp.objects
-	:members:

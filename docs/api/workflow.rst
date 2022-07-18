@@ -2,5 +2,3 @@
 ===================================
 
 .. automodule:: nigsp.workflow
-
-.. autofunction:: nigsp.workflow.nigsp

@@ -34,7 +34,7 @@ def save_bash_call(fname, outdir, outname):
 
     Parameters
     ----------
-    outdir : str or path, optional
+    outdir : str or os.PathLike, optional
         output directory
     """
     fname = utils.change_var_type(fname, list, stop=False, silent=True)
