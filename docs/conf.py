@@ -13,11 +13,9 @@
 import os
 import sys
 
-import sphinx_rtd_theme  # noqa
-
 import nigsp  # noqa
 
-# sys.path.insert(0, os.path.abspath('.'))
+sys.path.insert(0, os.path.abspath('..'))
 
 
 # -- Project information -----------------------------------------------------
@@ -42,7 +40,6 @@ release = nigsp.__version__
 # ones.import sphinx_rtd_theme  # noqa
 
 extensions = [
-    'matplotlib.sphinxext.plot_directive',
     'sphinx.ext.autodoc',
     'sphinx.ext.autosummary',
     'sphinx.ext.autosectionlabel',
@@ -132,6 +129,5 @@ htmlhelp_basename = 'nigsp'
 # -- Extension configuration -------------------------------------------------
 intersphinx_mapping = {
     'python': ('https://docs.python.org/3.6', None),
-    'matplotlib': ('https://matplotlib.org', None),
     'numpy': ('https://docs.scipy.org/doc/numpy', None),
 }
