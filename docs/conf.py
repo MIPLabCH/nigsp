@@ -42,7 +42,6 @@ release = nigsp.__version__
 # ones.import sphinx_rtd_theme  # noqa
 
 extensions = [
-    'matplotlib.sphinxext.plot_directive',
     'sphinx.ext.autodoc',
     'sphinx.ext.autosummary',
     'sphinx.ext.autosectionlabel',
