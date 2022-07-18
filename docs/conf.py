@@ -129,7 +129,7 @@ intersphinx_mapping = {
 }
 
 
-# -- Generate API automgically -----------------------------------------------
+# -- Generate API automagically -----------------------------------------------
 def run_apidoc(_):
     from sphinx.ext.apidoc import main
 
@@ -151,4 +151,3 @@ def setup(app):  # noqa
     app.connect('builder-inited', run_apidoc)
     app.add_css_file('theme_overrides.css')
     app.add_js_file('https://cdn.rawgit.com/chrisfilo/zenodo.js/v0.1/zenodo.js')
-    
