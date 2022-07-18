@@ -111,10 +111,6 @@ html_show_sourcelink = False
 html_static_path = ['_static']
 
 
-# https://github.com/rtfd/sphinx_rtd_theme/issues/117
-def setup(app):  # noqa
-    app.add_css_file('theme_overrides.css')
-    app.add_js_file('https://cdn.rawgit.com/chrisfilo/zenodo.js/v0.1/zenodo.js')
 
 
 # html_favicon = '_static/logo.png'
@@ -131,3 +127,27 @@ intersphinx_mapping = {
     'python': ('https://docs.python.org/3.6', None),
     'numpy': ('https://docs.scipy.org/doc/numpy', None),
 }
+
+
+# -- Generate API automgically -----------------------------------------------
+def run_apidoc(_):
+    from sphinx.ext.apidoc import main
+
+    cur_dir = os.path.normpath(os.path.dirname(__file__))
+    output_path = os.path.join(cur_dir, 'api')
+    modules = os.path.normpath(os.path.join(cur_dir, "../nigsp"))
+    exclusions = [
+        '../nigsp/tests/*',
+        '../nigsp/cli/*',
+    ]
+    main(['-e', '-f', '-T', '-o', output_path, modules] + exclusions)
+
+
+# -- Final Setup -------------------------------------------------------------
+
+# https://github.com/rtfd/sphinx_rtd_theme/issues/117
+# launch setup
+def setup(app):  # noqa
+    app.connect('builder-inited', run_apidoc)
+    app.add_css_file('theme_overrides.css')
+    app.add_js_file('https://cdn.rawgit.com/chrisfilo/zenodo.js/v0.1/zenodo.js')
