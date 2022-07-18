@@ -132,6 +132,5 @@ htmlhelp_basename = 'nigsp'
 # -- Extension configuration -------------------------------------------------
 intersphinx_mapping = {
     'python': ('https://docs.python.org/3.6', None),
-    'matplotlib': ('https://matplotlib.org', None),
     'numpy': ('https://docs.scipy.org/doc/numpy', None),
 }
