@@ -50,8 +50,6 @@ def test_integration(timeseries, sc_mtx, atlas, mean_fc, sdi, testdir):
     sdi_pyt = np.genfromtxt(join(testdir, 'testfile_sdi.tsv'))
 
     fc = np.empty((sdi_mat.shape[0], sdi_mat.shape[0], 10))
-    for i in range(10):
-        fc[..., i] = 
 
     mean_fc_pyt = np.genfromtxt(join(testdir, 'testfile_fc.tsv'))
     # Check that each cell in the result is comparable to matlab's.
