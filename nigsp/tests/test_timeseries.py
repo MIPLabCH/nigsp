@@ -65,10 +65,10 @@ def test_graph_filter():
     ev_s = dict.fromkeys(keys)
     ts_s = dict.fromkeys(keys)
 
-    ev_s['ho'] = np.append(ev[:, :freq_idx],
+    ev_s['hi'] = np.append(ev[:, :freq_idx],
                            np.zeros_like(ev[:, freq_idx:],
                                          dtype='float32'), axis=-1)
-    ev_s['hi'] = np.append(np.zeros_like(ev[:, :freq_idx],
+    ev_s['ho'] = np.append(np.zeros_like(ev[:, :freq_idx],
                                          dtype='float32'),
                            ev[:, freq_idx:], axis=-1)
 
