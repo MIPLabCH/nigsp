@@ -152,7 +152,7 @@ def plot_grayplot(timeseries, filename=None, closeplot=False):
     return 0
 
 
-def plot_nodes(ns, atlas, filename=None, closeplot=False):
+def plot_nodes(ns, atlas, filename=None, thr=None, closeplot=False):
     """
     Create a marker plot in the MNI space.
 
@@ -167,6 +167,8 @@ def plot_nodes(ns, atlas, filename=None, closeplot=False):
         or a list of coordinates of the center of mass of parcels.
     filename : None, str, or os.PathLike, optional
         The path to save the plot on disk.
+    thr : float or None, optional
+        The threshold to use in plotting the nodes.
     closeplot : bool, optional
         Whether to close plots after saving or not. Mainly used for debug.
 
@@ -218,7 +220,7 @@ def plot_nodes(ns, atlas, filename=None, closeplot=False):
 
     LGR.info('Creating markerplot.')
     plt.figure(figsize=FIGSIZE)
-    plot_markers(ns, coord)
+    plot_markers(ns, coord, node_threshold=thr)
 
     if filename is not None:
         plt.savefig(filename, dpi=SET_DPI)

@@ -408,9 +408,9 @@ def nigsp(fname, scname, atlasname=None, outname=None, outdir=None,
             if atlasname is not None:
                 LGR.info(f'Plot {metric_name} markerplot.')
                 if img is not None:
-                    blocks.plot_metric(scgraph, outprefix, img)
+                    blocks.plot_metric(scgraph, outprefix, atlas=img, thr=0)
                 elif atlas is not None:
-                    blocks.plot_metric(scgraph, outprefix, atlas)
+                    blocks.plot_metric(scgraph, outprefix, atlas=atlas, thr=0)
 
         except ImportError:
             pass
