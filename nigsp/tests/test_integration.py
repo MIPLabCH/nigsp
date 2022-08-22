@@ -8,11 +8,8 @@ import numpy as np
 
 from nigsp.workflow import _main
 
-from pytest import mark
-
 
 # ### Integration tests
-@mark.skip()
 def test_integration(timeseries, sc_mtx, atlas, mean_fc, sdi, testdir):
     """Integration test for FULL workflow."""
     testdir = join(testdir, 'testdir')
