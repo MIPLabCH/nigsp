@@ -1,3 +1,19 @@
+# 0.7.0 (Mon Aug 22 2022)
+
+#### 💥 Breaking Change during development
+
+- Add extensive testing and fixs issues [#16](https://github.com/MIPLabCH/nigsp/pull/16) ([@smoia](https://github.com/smoia))
+
+#### 🏠 Internal
+
+- Fix minor documentation issues [#21](https://github.com/MIPLabCH/nigsp/pull/21) ([@smoia](https://github.com/smoia))
+
+#### Authors: 1
+
+- Stefano Moia ([@smoia](https://github.com/smoia))
+
+---
+
 # 0.6.1 (Mon Jul 18 2022)
 
 #### 🐛 Bug Fix
