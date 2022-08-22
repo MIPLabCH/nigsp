@@ -22,32 +22,38 @@ def test_integration(timeseries, sc_mtx, atlas, mean_fc, sdi, testdir):
 
     # Check that files were created
     assert isdir(testdir)
-    assert isdir(join(testdir, 'testfile_fc.tsv'))
-    assert isdir(join(testdir, 'testfile_fc_high.tsv'))
-    assert isdir(join(testdir, 'testfile_fc_low.tsv'))
     assert isdir(join(testdir, 'logs'))
-    assert isdir(join(testdir, 'testfile_timeseries_high.tsv'))
-    assert isdir(join(testdir, 'testfile_timeseries_low.tsv'))
-    assert isfile(join(testdir, 'testfile_fc', '000.tsv'))
-    assert isfile(join(testdir, 'testfile_fc_high', '000.tsv'))
-    assert isfile(join(testdir, 'testfile_fc_low', '000.tsv'))
-    assert isfile(join(testdir, 'testfile_timeseries_high', '000.tsv'))
+    assert isdir(join(testdir, 'testfile_timeseries_low'))
+    assert isdir(join(testdir, 'testfile_timeseries_high'))
     assert isfile(join(testdir, 'testfile_timeseries_low', '000.tsv'))
-    assert isfile(join(testdir, 'testfile_sc.png'))
-    assert isfile(join(testdir, 'testfile_sdi.png'))
-    assert isfile(join(testdir, 'testfile_fc.png'))
-    assert isfile(join(testdir, 'testfile_grayplot.png'))
-    assert isfile(join(testdir, 'testfile_fc_high.png'))
-    assert isfile(join(testdir, 'testfile_grayplot_high.png'))
+    assert isfile(join(testdir, 'testfile_timeseries_high', '000.tsv'))
+    assert isfile(join(testdir, 'testfile_fc.tsv'))
+    assert isfile(join(testdir, 'testfile_fc_low.tsv'))
+    assert isfile(join(testdir, 'testfile_fc_high.tsv'))
+    assert isfile(join(testdir, 'testfile_eigenval.tsv'))
+    assert isfile(join(testdir, 'testfile_eigenvec.tsv'))
+    assert isfile(join(testdir, 'testfile_eigenvec_low.tsv'))
+    assert isfile(join(testdir, 'testfile_eigenvec_high.tsv'))
     assert isfile(join(testdir, 'testfile_sdi.tsv'))
+    assert isfile(join(testdir, 'testfile_mkd_sdi.tsv'))
+    assert isfile(join(testdir, 'testfile_laplacian.png'))
+    assert isfile(join(testdir, 'testfile_sc.png'))
+    assert isfile(join(testdir, 'testfile_fc.png'))
+    assert isfile(join(testdir, 'testfile_fc_low.png'))
+    assert isfile(join(testdir, 'testfile_fc_high.png'))
+    assert isfile(join(testdir, 'testfile_grayplot.png'))
+    assert isfile(join(testdir, 'testfile_grayplot_low.png'))
+    assert isfile(join(testdir, 'testfile_grayplot_high.png'))
+    assert isfile(join(testdir, 'testfile_sdi.png'))
+    assert isfile(join(testdir, 'testfile_mkd_sdi.png'))
 
     sdi_pyt = np.genfromtxt(join(testdir, 'testfile_sdi.tsv'))
 
     fc = np.empty((sdi_mat.shape[0], sdi_mat.shape[0], 10))
     for i in range(10):
-        fc[..., i] = np.genfromtxt(join(testdir, 'testfile_fc', f'{i:03d}.tsv'))
+        fc[..., i] = 
 
-    mean_fc_pyt = fc.mean(axis=-1)
+    mean_fc_pyt = np.genfromtxt(join(testdir, 'testfile_fc.tsv'))
     # Check that each cell in the result is comparable to matlab's.
     # There's a bunch of rounding due to np.round and numerical difference between matlab and python
     assert abs(mean_fc_pyt.round(6) - mean_fc_mat.round(6)).max().round(6) <= 0.000001

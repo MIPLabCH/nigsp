@@ -161,22 +161,22 @@ class SCGraph():
                              '\'uninformed\'')
         return self
 
-    def test_significance(self, metric='sdi', method='Bernoulli', p=0.05,
+    def test_significance(self, method='Bernoulli', p=0.05,
                           return_masked=False, mean=False):  # pragma: no cover
         """Implement surrogates.test_significance as class method."""
         _, self.surr_split = operations.graph_filter(self.surr,
                                                      self.eigenvec,
                                                      self.index)
-        if metric == 'sdi':
+        if self.sdi is not None:
             surr_sdi = operations.sdi(self.surr_split, mean, keys=None)
-            metric_data = self.sdi
-        elif metric == 'gsdi':
+            self.sdi = operations.test_significance(surr=surr_sdi, data=self.sdi,
+                                                    method=method, p=p, return_masked=return_masked,
+                                                    mean=mean)
+        if self.gsdi is not None:
             surr_sdi = operations.gsdi(self.surr_split, mean, keys=None)
-            metric_data = self.gsdi
-        # #!# Check that this attribution works (should)
-        metric_data = operations.test_significance(surr_sdi, metric_data,
-                                                   method, p, return_masked,
-                                                   mean)
+            self.gsdi = operations.test_significance(surr=surr_sdi, data=self.gsdi,
+                                                     method=method, p=p, return_masked=return_masked,
+                                                     mean=mean)
         return self
 
     def normalise_ts(self):  # pragma: no cover

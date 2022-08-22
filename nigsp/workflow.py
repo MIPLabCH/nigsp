@@ -396,7 +396,7 @@ def nigsp(fname, scname, atlasname=None, outname=None, outdir=None,
                  f'{surr_type} surrogates.')
         scgraph.create_surrogates(sc_type=surr_type, n_surr=n_surr,
                                   seed=seed)
-        scgraph.test_significance(metric=metric_name, method=method,
+        scgraph.test_significance(method=method,
                                   p=p, return_masked=True)
         # Export thresholded metrics
         blocks.export_metric(scgraph, outext, outprefix)
