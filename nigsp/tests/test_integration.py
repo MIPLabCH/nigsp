@@ -14,7 +14,8 @@ def test_integration(timeseries, sc_mtx, atlas, mean_fc, sdi, testdir):
     """Integration test for FULL workflow."""
     testdir = join(testdir, 'testdir')
     mean_fc_mat = np.genfromtxt(mean_fc)
-    sdi_mat = np.genfromtxt(sdi)
+    # Compared to original SDI, now we log2 it).
+    sdi_mat = np.log2(np.genfromtxt(sdi))
 
     # Run workflow
     _main(['-f', timeseries, '-s', sc_mtx, '-a', atlas, '-odir', testdir,

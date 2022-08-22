@@ -13,7 +13,7 @@ def test_sdi():
     ts1 = np.arange(1, 3)[..., np.newaxis]
     ts2 = np.arange(3, 5)[..., np.newaxis]
     ts3 = np.arange(5, 7)[..., np.newaxis]
-    sdi_in = np.arange(3., 1., -1.)
+    sdi_in = np.log2(np.arange(3., 1., -1.))
 
     ts = {'low': ts1, 'high': ts2}
     sdi_out = metrics.sdi(ts)
@@ -39,8 +39,8 @@ def test_gsdi():
     ts2 = np.arange(3, 5)[..., np.newaxis]
     ts3 = np.arange(5, 7)[..., np.newaxis]
     ts = {'alpha': ts1, 'beta': ts2, 'gamma': ts3}
-    gsdi_in = np.arange(3., 1., -1.)
-    gsdi_and_in = np.linalg.norm(ts1, axis=1) / np.linalg.norm(np.add(ts2, ts3), axis=1)
+    gsdi_in = np.log2(np.arange(3., 1., -1.))
+    gsdi_and_in = np.log2(np.linalg.norm(ts1, axis=1) / np.linalg.norm(np.add(ts2, ts3), axis=1))
     keys_in = ['alpha_over_beta', 'alpha_over_gamma', 'alpha_over_(beta_and_gamma)', 
                'beta_over_alpha', 'beta_over_gamma', 'beta_over_(alpha_and_gamma)',
                'gamma_over_alpha', 'gamma_over_beta', 'gamma_over_(alpha_and_beta)']

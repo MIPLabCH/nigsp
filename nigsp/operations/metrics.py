@@ -84,7 +84,7 @@ def sdi(ts_split, mean=False, keys=None):
     if sdi.ndim >= 2 and mean:
         sdi = sdi.mean(axis=1)
 
-    return sdi
+    return np.log2(sdi)
 
 
 def gsdi(ts_split, mean=False, keys=None):
@@ -153,6 +153,9 @@ def gsdi(ts_split, mean=False, keys=None):
     if list(gsdi.values())[0].ndim >= 2 and mean:
         for k in gsdi.keys():
             gsdi[k] = gsdi[k].mean(axis=1)
+
+    for k in gsdi.keys():
+        gsdi[k] = np.log2(gsdi[k])
 
     return gsdi
 
