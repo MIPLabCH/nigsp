@@ -60,4 +60,4 @@ def test_integration(timeseries, sc_mtx, atlas, mean_fc, sdi, testdir):
     assert abs(sdi_pyt.round(5) - sdi_mat.round(5)).max().round(5) <= 0.00001
 
     # Clean up!
-    # shutil.rmtree(testdir)
+    shutil.rmtree(testdir)
