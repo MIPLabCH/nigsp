@@ -127,12 +127,9 @@ def prepare_ndim_iteration(data, idx):
     """
     if data.ndim > idx+1:
         new_shape = list(data.shape[:idx]) + [prod(data.shape[idx:])]
-        temp_data = data.reshape(new_shape)
-        temp_empty = empty(new_shape, dtype='float32')
+        data = data.reshape(new_shape)
 
-        return temp_data, temp_empty
-    else:
-        return data, empty(data.shape, dtype='float32')
+    return data, empty(data.shape, dtype='float32')
 
 
 """

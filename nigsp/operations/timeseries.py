@@ -59,20 +59,20 @@ def graph_fourier_transform(timeseries, eigenvec, energy=False, mean=False):
     If `mean` is true and the timeseries has 3 dimensions, it returns the
     mean across the last dimension.
 
-    It is assumed that time is encoded in the second dimension (axis 1),
+    It is assumed that time is encoded in the second dimension of timeseries (axis 1),
     e.g. for 90 voxels and 300 timepoints, shape is [90, 300].
 
     Parameters
     ----------
     timeseries : numpy.ndarray
-        The input timeseries. It is assumed that the second dimension is time.
+        The input timeseries. It is assumed that the second dimension (axis 1) is time.
     eigenvec : numpy.ndarray
         The eigenvector resulting from the Laplacian decomposition.
     energy : bool, optional
         If True, returns the energy (power) of the spectral density instead of
         the projection.
     mean : bool, optional
-        If True and timeseries has 3 dimensions, returns the mean across the last axis.
+        If True and timeseries has 3 dimensions, returns the mean across axis 1 (time).
 
     Returns
     -------
@@ -294,18 +294,19 @@ def functional_connectivity(timeseries, mean=False):
                 fcorr[:, :, i] = np.corrcoef(temp_ts[..., i])
 
             if timeseries.ndim > 3:
-                fcorr = fcorr.reshape(timeseries.shape)
+                new_shape = (timeseries.shape[0],) * 2 + timeseries.shape[2:]
+                fcorr = fcorr.reshape(new_shape)
 
             if mean:
-                fcorr = fcorr.mean(axis=2)
+                fcorr = fcorr.mean(axis=2).squeeze()
             return fcorr
 
     if type(timeseries) is dict:
         fc = dict()
         for k in timeseries.keys():
-            fc[k] = _fc(timeseries[k], mean=False)
+            fc[k] = _fc(timeseries[k], mean)
     else:
-        fc = _fc(timeseries, mean=False)
+        fc = _fc(timeseries, mean)
 
     return fc
 

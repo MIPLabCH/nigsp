@@ -12,7 +12,7 @@ import pytest
 
 def fetch_file(osf_id, path, filename):
     """
-    Fetches file located on OSF and downloads to `path`/`filename`1
+    Fetch file located on OSF and downloads to `path`/`filename`.
 
     Parameters
     ----------
@@ -46,7 +46,7 @@ def fetch_file(osf_id, path, filename):
 
 @pytest.fixture(scope='session')
 def testdir(tmp_path_factory):
-    """ Test path that will be used to download all files """
+    """Test path that will be used to download all files."""
     return tmp_path_factory.getbasetemp()
 
 
@@ -54,6 +54,12 @@ def testdir(tmp_path_factory):
 def atlas(testdir):
     return fetch_file('h6nj7', testdir,
                       'atlas.nii.gz')
+
+
+@pytest.fixture
+def atlastime(testdir):
+    return fetch_file('ts6a8', testdir,
+                      'ats.nii.gz')
 
 
 @pytest.fixture

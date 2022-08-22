@@ -115,6 +115,7 @@ def gsdi(ts_split, mean=False, keys=None):
         If keys are provided but not contained in the dictionary.
     """
     # #!# Implement acceptance of N matrices and not only dictionary
+    # #!# Check that this can overcome SDI
     if keys is None:
         keys = list(ts_split.keys())
     else:
@@ -127,13 +128,13 @@ def gsdi(ts_split, mean=False, keys=None):
         LGR.info('Prepare combinations of timeseries')
         # Combining two or more "timeseries splits" means nothing more than
         # adding them in this case.
-        for n in range(3, len(keys)):
+        for n in range(2, len(keys)):
             for c in combinations(keys, n):
                 comb_key = str(c).replace("'", "").replace(", ", "_and_")
 
                 ts_split[comb_key] = np.zeros_like(ts_split[keys[0]], dtype='float32')
                 for k in c:
-                    ts_split[comb_key] = ts_split[comb_key].add(ts_split[k])
+                    ts_split[comb_key] = np.add(ts_split[comb_key], ts_split[k])
 
     # Obtain updated list of keys
     all_keys = list(ts_split.keys())
@@ -145,11 +146,11 @@ def gsdi(ts_split, mean=False, keys=None):
     LGR.info('Computing generalised SDI')
     gsdi = dict()
     for k in keys:
-        for j in all_keys[1:]:
-            if k != j:
+        for j in all_keys:
+            if not (k in j or f'({k}_' in j or f'_{k})' in j or f'_{k}_' in j):
                 gsdi[f'{k}_over_{j}'] = norm[k] / norm[j]
 
-    if gsdi[f'{k}_over_{j}'].ndim >= 2 and mean:
+    if list(gsdi.values())[0].ndim >= 2 and mean:
         for k in gsdi.keys():
             gsdi[k] = gsdi[k].mean(axis=1)
 

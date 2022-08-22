@@ -405,13 +405,14 @@ def test_significance(surr,
 
     if return_masked:
         LGR.info('Returning masked empirical data')
-        stat_mask = np.ma.asarray(data=surr[..., -1], mask=np.invert(stat_mask),
-                                  fill_value=0).squeeze()
-    elif mean and stat_mask.ndim >= 2:
-        LGR.info('Returning average')
-        stat_mask = stat_mask.mean(axis=1)
+        stat_mask = np.ma.array(data=surr[..., -1], mask=np.invert(stat_mask),
+                                fill_value=0).squeeze()
     else:
         LGR.info('Returning mask')
+
+    if mean and stat_mask.ndim >= 2:
+        LGR.info('Returning average across subjects (axis 1)')
+        stat_mask = stat_mask.mean(axis=1)
 
     if return_masked:
         stat_mask = stat_mask.filled()
