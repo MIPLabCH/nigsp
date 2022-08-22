@@ -115,6 +115,7 @@ def gsdi(ts_split, mean=False, keys=None):
         If keys are provided but not contained in the dictionary.
     """
     # #!# Implement acceptance of N matrices and not only dictionary
+    # #!# Check that this can overcome SDI
     if keys is None:
         keys = list(ts_split.keys())
     else:
