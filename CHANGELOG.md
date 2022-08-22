@@ -1,3 +1,15 @@
+# 0.7.1 (Mon Aug 22 2022)
+
+#### 🐛 Bug Fix
+
+- Fix metric plot threshold [#22](https://github.com/MIPLabCH/nigsp/pull/22) ([@smoia](https://github.com/smoia))
+
+#### Authors: 1
+
+- Stefano Moia ([@smoia](https://github.com/smoia))
+
+---
+
 # 0.7.0 (Mon Aug 22 2022)
 
 #### 💥 Breaking Change during development
