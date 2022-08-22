@@ -96,7 +96,7 @@ def export_metric(scgraph, outext, outprefix):
     return 0
 
 
-def plot_metric(scgraph, outprefix, atlas=None):
+def plot_metric(scgraph, outprefix, atlas=None, thr=None):
     """
     If possible, plot metrics as markerplot.
 
@@ -110,6 +110,8 @@ def plot_metric(scgraph, outprefix, atlas=None):
         The nifti image of the atlas
     atlas : 3D Nifti1Image, numpy.ndarray, or None, optional
         Either a nifti image containing a valid atlas or a set of parcel coordinates.
+    thr : float or None, optional
+        The threshold to use in plotting the nodes.
     """
     # Check that atlas format is supported.
     try:
@@ -128,11 +130,12 @@ def plot_metric(scgraph, outprefix, atlas=None):
     # If it is, plot.
     if atlas_plot is not None:
         if scgraph.sdi is not None:
-            viz.plot_nodes(scgraph.sdi, atlas_plot, f'{outprefix}sdi.png')
+            viz.plot_nodes(scgraph.sdi, atlas_plot,
+                           filename=f'{outprefix}sdi.png', thr=thr)
         elif scgraph.gsdi is not None:
             for k in scgraph.gsdi.keys():
                 viz.plot_nodes(scgraph.gsdi[k], atlas_plot,
-                               f'{outprefix}gsdi_{k}.png')
+                               filename=f'{outprefix}gsdi_{k}.png', thr=thr)
 
     return 0
 

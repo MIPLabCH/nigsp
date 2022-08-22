@@ -48,14 +48,14 @@ def test_integration(timeseries, sc_mtx, atlas, mean_fc, sdi, testdir):
     assert isfile(join(testdir, 'testfile_mkd_sdi.png'))
 
     sdi_pyt = np.genfromtxt(join(testdir, 'testfile_sdi.tsv'))
-
-    fc = np.empty((sdi_mat.shape[0], sdi_mat.shape[0], 10))
+    sdi_mkd = np.genfromtxt(join(testdir, 'testfile_mkd_sdi.tsv'))
 
     mean_fc_pyt = np.genfromtxt(join(testdir, 'testfile_fc.tsv'))
     # Check that each cell in the result is comparable to matlab's.
     # There's a bunch of rounding due to np.round and numerical difference between matlab and python
     assert abs(mean_fc_pyt.round(6) - mean_fc_mat.round(6)).max().round(6) <= 0.000001
     assert abs(sdi_pyt.round(5) - sdi_mat.round(5)).max().round(5) <= 0.00001
+    assert (sdi_pyt != sdi_mkd).any()
 
     # Clean up!
     shutil.rmtree(testdir)
