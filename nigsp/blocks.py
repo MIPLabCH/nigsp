@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Operations on graphs and graph derived properties.
+Blocks of code for workflows.
 
 Attributes
 ----------

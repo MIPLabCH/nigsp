@@ -1,6 +1,12 @@
 #!/usr/bin/env python3
 """
-Toolbox objects.
+The main object of `nigsp`.
+
+It holds all data information - graph, timeseries, decompositions, ...
+
+Contains duplications of operations, allowing a more object oriented approach
+to interact with `nigsp`.
+
 
 Attributes
 ----------

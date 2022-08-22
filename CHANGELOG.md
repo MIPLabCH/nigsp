@@ -1,3 +1,31 @@
+# 0.6.1 (Mon Jul 18 2022)
+
+#### 🐛 Bug Fix
+
+- Fix issues with documentation and automatise API [#20](https://github.com/MIPLabCH/nigsp/pull/20) ([@smoia](https://github.com/smoia))
+
+#### Authors: 1
+
+- Stefano Moia ([@smoia](https://github.com/smoia))
+
+---
+
+# 0.6.0 (Thu Jul 14 2022)
+
+#### 🚀 Enhancement
+
+- Implement multi-index (bandpass-like) graph split [#18](https://github.com/MIPLabCH/nigsp/pull/18) ([@smoia](https://github.com/smoia))
+
+#### 📝 Documentation
+
+- Add documentation structure, CLI, API, and installation. [#17](https://github.com/MIPLabCH/nigsp/pull/17) ([@smoia](https://github.com/smoia))
+
+#### Authors: 1
+
+- Stefano Moia ([@smoia](https://github.com/smoia))
+
+---
+
 # 0.5.0 (Thu Jul 07 2022)
 
 #### 🚀 Enhancement

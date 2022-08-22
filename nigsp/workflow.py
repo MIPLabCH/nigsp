@@ -1,6 +1,14 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+"""
+`nigsp` main workflow and related functions.
 
+The workflow is callable either as a python function, or (prefereably)
+in a shell session:
+```shell
+$ nigsp --help
+```
+"""
 import datetime
 import logging
 import os
@@ -26,7 +34,7 @@ def save_bash_call(fname, outdir, outname):
 
     Parameters
     ----------
-    outdir : str or path, optional
+    outdir : str or os.PathLike, optional
         output directory
     """
     fname = utils.change_var_type(fname, list, stop=False, silent=True)

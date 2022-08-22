@@ -1,6 +1,12 @@
 #!/usr/bin/env python3
 """
-Visualisation utility.
+Module to plot graphs.
+
+All `viz` functions require the extra modules `matplotlib` and `nibabel`,
+installable using the flag:
+```shell
+$ pip3 install nigsp[viz]
+```
 
 Attributes
 ----------
@@ -48,6 +54,10 @@ def plot_connectivity(mtx, filename=None, closeplot=False):
         If matplotlib is not installed.
     ValueError
         If mtx has more than 3 dimensions.
+
+    Notes
+    -----
+    Requires `matplotlib`
     """
     try:
         import matplotlib.pyplot as plt
@@ -107,6 +117,10 @@ def plot_grayplot(timeseries, filename=None, closeplot=False):
         If matplotlib is not installed.
     ValueError
         If timeseries has more than 3 dimensions.
+
+    Notes
+    -----
+    Requires `matplotlib`
     """
     try:
         import matplotlib.pyplot as plt
@@ -168,6 +182,10 @@ def plot_nodes(ns, atlas, filename=None, closeplot=False):
     ValueError
         If ns has more than 2 dimensions.
         If coordinates can't be extracted from atlas.
+
+    Notes
+    -----
+    Requires `matplotlib` and `nilearn`
     """
     try:
         from nilearn.plotting import find_parcellation_cut_coords, plot_markers

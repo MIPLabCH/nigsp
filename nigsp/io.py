@@ -354,11 +354,6 @@ def load_xls(fname, shape=''):
     --------
     check_mtx_dim
 
-    No Longer Returned
-    ------------------
-    mtx : numpy.ndarray
-        Data matrix
-
     Raises
     ------
     NotImplementedError
