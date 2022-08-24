@@ -1,17 +1,20 @@
 NiGSP
 =====
 
-[![Latest version](https://img.shields.io/pypi/v/nigsp?style=flat&logo=pypi)](https://pypi.org/project/nigsp/)
-[![Latest DOI](https://zenodo.org/badge/446805866.svg?style=flat&logo=zenodo&label=Latest_DOI)](https://zenodo.org/badge/latestdoi/446805866)
-[![Documentation Status](https://readthedocs.org/projects/nigsp/badge/?version=latest)](https://nigsp.readthedocs.io/en/latest/?badge=latest)
-[![Licensed Apache 2.0](https://img.shields.io/github/license/MIPLabCH/nigsp?style=flat)](https://github.com/MIPLabCH/nigsp/blob/master/LICENSE)
+[![Latest version](https://img.shields.io/github/v/release/MIPLabCH/nigsp?style=flat&logo=github&sort=semver)](https://github.com/MIPLabCH/nigsp/releases)
+[![Release date](https://img.shields.io/github/release-date/MIPLabCH/nigsp?style=flat&logo=github)](https://github.com/MIPLabCH/nigsp/releases)
+[![Auto Release](https://img.shields.io/badge/release-auto.svg?style=flat&colorA=888888&colorB=9B065A&label=auto&logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAACzElEQVR4AYXBW2iVBQAA4O+/nLlLO9NM7JSXasko2ASZMaKyhRKEDH2ohxHVWy6EiIiiLOgiZG9CtdgG0VNQoJEXRogVgZYylI1skiKVITPTTtnv3M7+v8UvnG3M+r7APLIRxStn69qzqeBBrMYyBDiL4SD0VeFmRwtrkrI5IjP0F7rjzrSjvbTqwubiLZffySrhRrSghBJa8EBYY0NyLJt8bDBOtzbEY72TldQ1kRm6otana8JK3/kzN/3V/NBPU6HsNnNlZAz/ukOalb0RBJKeQnykd7LiX5Fp/YXuQlfUuhXbg8Di5GL9jbXFq/tLa86PpxPhAPrwCYaiorS8L/uuPJh1hZFbcR8mewrx0d7JShr3F7pNW4vX0GRakKWVk7taDq7uPvFWw8YkMcPVb+vfvfRZ1i7zqFwjtmFouL72y6C/0L0Ie3GvaQXRyYVB3YZNE32/+A/D9bVLcRB3yw3hkRCdaDUtFl6Ykr20aaLvKoqIXUdbMj6GFzAmdxfWx9iIRrkDr1f27cFONGMUo/gRI/jNbIMYxJOoR1cY0OGaVPb5z9mlKbyJP/EsdmIXvsFmM7Ql42nEblX3xI1BbYbTkXCqRnxUbgzPo4T7sQBNeBG7zbAiDI8nWfZDhQWYCG4PFr+HMBQ6l5VPJybeRyJXwsdYJ/cRnlJV0yB4ZlUYtFQIkMZnst8fRrPcKezHCblz2IInMIkPzbbyb9mW42nWInc2xmE0y61AJ06oGsXL5rcOK1UdCbEXiVwNXsEy/6+EbaiVG8eeEAfxvaoSBnCH61uOD7BS1Ul8ESHBKWxCrdyd6EYNKihgEVrwOAbQruoytuBYIFfAc3gVN6iawhjKyNCEpYhVJXgbOzARyaU4hCtYizq5EI1YgiUoIlT1B7ZjByqmRWYbwtdYjoWoN7+LOIQefIqKawLzK6ID69GGpQgwhhEcwGGUzfEPAiPqsCXadFsAAAAASUVORK5CYII=)](https://github.com/intuit/auto)
+
+[![See the documentation at: https://nigsp.readthedocs.io](https://img.shields.io/badge/docs-read%20latest-informational?style=flat&logo=readthedocs)](https://nigsp.readthedocs.io/en/latest/?badge=latest)
+[![Latest DOI](https://zenodo.org/badge/446805866.svg?style=flat&logo=zenodo)](https://zenodo.org/badge/latestdoi/446805866)
+[![Licensed Apache 2.0](https://img.shields.io/github/license/MIPLabCH/nigsp?style=flat&logo=apache)](https://github.com/MIPLabCH/nigsp/blob/master/LICENSE)
 
 [![Codecov](https://codecov.io/gh/MIPLabCH/nigsp/branch/master/graph/badge.svg?style=flat&logo=codecov)](https://codecov.io/gh/MIPLabCH/nigsp)
-[![Build Status](https://circleci.com/gh/MIPLabCH/nigsp.svg?style=shield&logo=circleci)](https://circleci.com/gh/MIPLabCH/nigsp)
-<!--[![See the documentation at: https://nigsp.readthedocs.io](https://readthedocs.org/projects/nigsp/badge/?version=latest)](https://nigsp.readthedocs.io/en/latest/?badge=latest) -->
+[![Build Status](https://img.shields.io/circleci/build/github/MIPLabCH/nigsp?style=flat&label=circleci&logo=circleci)](https://circleci.com/gh/MIPLabCH/nigsp)
+[![Documentation Status](https://img.shields.io/readthedocs/nigsp?label=readthedocs&logo=readthedocs)](https://nigsp.readthedocs.io/en/latest/?badge=latest)
 
-[![Auto Release](https://img.shields.io/badge/release-auto.svg?colorA=888888&colorB=9B065A&label=auto)](https://github.com/intuit/auto)
-[![Supports python version](https://img.shields.io/pypi/pyversions/nigsp?style=shield&logo=python)](https://pypi.org/project/nigsp/)
+[![Latest version](https://img.shields.io/pypi/v/nigsp?style=flat&logo=pypi&logoColor=white)](https://pypi.org/project/nigsp/)
+[![Supports python version](https://img.shields.io/pypi/pyversions/nigsp?style=shield&logo=python&logoColor=white)](https://pypi.org/project/nigsp/)
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
 [![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat)](#contributors)
