@@ -9,12 +9,12 @@ NiGSP
 [![Latest DOI](https://zenodo.org/badge/446805866.svg?style=flat&logo=zenodo)](https://zenodo.org/badge/latestdoi/446805866)
 [![Licensed Apache 2.0](https://img.shields.io/github/license/MIPLabCH/nigsp?style=flat&logo=apache)](https://github.com/MIPLabCH/nigsp/blob/master/LICENSE)
 
-[![Codecov](https://codecov.io/gh/MIPLabCH/nigsp/branch/master/graph/badge.svg?style=flat&logo=codecov)](https://codecov.io/gh/MIPLabCH/nigsp)
+[![Codecov](https://img.shields.io/codecov/c/gh/MIPlabCH/nigsp?style=flat&label=codecov&logo=codecov)](https://codecov.io/gh/MIPLabCH/nigsp)
 [![Build Status](https://img.shields.io/circleci/build/github/MIPLabCH/nigsp?style=flat&label=circleci&logo=circleci)](https://circleci.com/gh/MIPLabCH/nigsp)
-[![Documentation Status](https://img.shields.io/readthedocs/nigsp?label=readthedocs&logo=readthedocs)](https://nigsp.readthedocs.io/en/latest/?badge=latest)
+[![Documentation Status](https://img.shields.io/readthedocs/nigsp?style=flat&label=readthedocs&logo=readthedocs)](https://nigsp.readthedocs.io/en/latest/?badge=latest)
 
 [![Latest version](https://img.shields.io/pypi/v/nigsp?style=flat&logo=pypi&logoColor=white)](https://pypi.org/project/nigsp/)
-[![Supports python version](https://img.shields.io/pypi/pyversions/nigsp?style=shield&logo=python&logoColor=white)](https://pypi.org/project/nigsp/)
+[![Supports python version](https://img.shields.io/pypi/pyversions/nigsp?style=flat&logo=python&logoColor=white)](https://pypi.org/project/nigsp/)
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
 [![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat)](#contributors)
@@ -32,7 +32,7 @@ This project follows the [all-contributors](https://github.com/all-contributors/
 Cite
 ====
 
-If you use `nigsp` in your work, **please cite either the all-time Zenodo DOI** [![general Zenodo DOI](https://zenodo.org/badge/110845855.svg)](https://zenodo.org/badge/latestdoi/110845855) **or the Zenodo DOI related to the version you are using**.
+If you use `nigsp` in your work, **please cite either the all-time Zenodo DOI** [![general Zenodo DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.6373436.svg)](https://zenodo.org/badge/latestdoi/446805866) **or the Zenodo DOI related to the version you are using**.
 Please cite the following paper(s) too:
 > Preti, M.G., Van De Ville, D. _Decoupling of brain function from structure reveals regional behavioral specialization in humans_. Nat Commun 10, 4747 (2019). https://doi.org/10.1038/s41467-019-12765-7.
 
