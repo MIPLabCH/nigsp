@@ -406,7 +406,7 @@ def test_significance(surr,
     if return_masked:
         LGR.info('Returning masked empirical data')
         stat_mask = np.ma.array(data=surr[..., -1], mask=np.invert(stat_mask),
-                                fill_value=0).squeeze()
+                                fill_value=np.NINF).squeeze()
     else:
         LGR.info('Returning mask')
 
