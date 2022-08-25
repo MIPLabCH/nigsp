@@ -110,7 +110,7 @@ def nigsp(
         Path to the output folder. If it doesn't exist, it will be created.
         If both `outdir` and `outname` are declared, `outdir` overrides the path
         specified in `outname` (but not the filename!)
-    comp_metric : list, optional
+    comp_metric : list or None, optional
         List of metrics that should be computed. If empty (default), compute all
         metrics available.
     index : 'median' or int, optional
