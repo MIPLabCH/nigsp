@@ -25,6 +25,7 @@ LGR = logging.getLogger(__name__)
 
 
 class SCGraph():
+    """Main module object, containing all data representing the graph."""
 
     def __init__(self, mtx, timeseries, atlas=None, filename=None, img=None,
                  eigenval=None, eigenvec=None, energy=None, lapl_mtx=None,
@@ -170,12 +171,14 @@ class SCGraph():
         if self.sdi is not None:
             surr_sdi = operations.sdi(self.surr_split, mean, keys=None)
             self.sdi = operations.test_significance(surr=surr_sdi, data=self.sdi,
-                                                    method=method, p=p, return_masked=return_masked,
+                                                    method=method, p=p,
+                                                    return_masked=return_masked,
                                                     mean=mean)
         if self.gsdi is not None:
             surr_sdi = operations.gsdi(self.surr_split, mean, keys=None)
             self.gsdi = operations.test_significance(surr=surr_sdi, data=self.gsdi,
-                                                     method=method, p=p, return_masked=return_masked,
+                                                     method=method, p=p,
+                                                     return_masked=return_masked,
                                                      mean=mean)
         return self
 

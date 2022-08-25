@@ -34,7 +34,7 @@ def symmetric_normalisation(mtx):
     --------
     https://en.wikipedia.org/wiki/Laplacian_matrix#Symmetrically_normalized_Laplacian_2
     """
-    d = np.diag(mtx.sum(axis=-1) ** (-1/2))
+    d = np.diag(mtx.sum(axis=-1) ** (-1 / 2))
 
     symm_norm = (d @ mtx @ d)
 
@@ -61,7 +61,7 @@ def decomposition(mtx):
 
     idx = np.argsort(eigenval)
     eigenval = eigenval[idx]
-    # #!# Check that eigenvec has the right index and not inverted 
+    # #!# Check that eigenvec has the right index and not inverted
     eigenvec = eigenvec[:, idx]
 
     return eigenval, eigenvec

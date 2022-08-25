@@ -42,8 +42,8 @@ def normalise_ts(timeseries):
                     'Returning it as is.')
         return timeseries
 
-    z = ((timeseries - timeseries.mean(axis=1)[:, np.newaxis, ...]) /
-         timeseries.std(axis=1, ddof=1)[:, np.newaxis, ...])
+    z = ((timeseries - timeseries.mean(axis=1)[:, np.newaxis, ...])
+         / timeseries.std(axis=1, ddof=1)[:, np.newaxis, ...])
     z[np.isnan(z)] = 0
 
     return z
@@ -133,7 +133,7 @@ def median_cutoff_frequency_idx(energy):
 
     if energy.ndim == 2:
         energy = energy.mean(axis=-1)
-    half_tot_auc = np.trapz(energy, axis=0)/2
+    half_tot_auc = np.trapz(energy, axis=0) / 2
     LGR.debug(f'Total AUC = {half_tot_auc*2}, targetting half of total AUC')
 
     # Compute the AUC from first to one to last frequency,
@@ -200,17 +200,17 @@ def graph_filter(timeseries, eigenvec, freq_idx, keys=['low', 'high']):
     LGR.info(f'Splitting graph into {len(freq_idx)+1} parts')
 
     # Check that there is the right amount of keys
-    if len(keys) > len(freq_idx)+1:
+    if len(keys) > len(freq_idx) + 1:
         LGR.warning(f'The declared keys list ({keys}) has {len(keys)} elements. '
                     f'Since the frequency index list ({freq_idx}) has {len(freq_idx)}, '
                     f'any keys after {keys[len(freq_idx)]} will be ignored.')
-        keys = keys[:len(freq_idx)+1]
-    elif len(keys) < len(freq_idx)+1:
+        keys = keys[:len(freq_idx) + 1]
+    elif len(keys) < len(freq_idx) + 1:
         LGR.warning(f'The declared keys list ({keys}) has {len(keys)} elements. '
                     f'Since the frequency index list ({freq_idx}) has {len(freq_idx)}, '
                     f'more keys will be created after {keys[len(freq_idx)]} .')
 
-        for i in range(len(keys), len(freq_idx)+1):
+        for i in range(len(keys), len(freq_idx) + 1):
             keys = keys + [f'key-{i+1:03d}']
 
     # Add 0 and None to freq_idx to have full indexes
@@ -287,7 +287,7 @@ def functional_connectivity(timeseries, mean=False):
         elif timeseries.ndim == 2:
             return np.corrcoef(timeseries)
         else:
-            # reshape the array to allow reiteration on unknown dimensions of timeseries 
+            # reshape the array to allow reiteration on unknown dimensions of timeseries
             temp_ts, _ = prepare_ndim_iteration(timeseries, 2)
             fcorr = np.empty(([temp_ts.shape[0]] * 2 + [temp_ts.shape[-1]]), dtype='float32')
             for i in range(temp_ts.shape[-1]):

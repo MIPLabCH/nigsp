@@ -37,7 +37,7 @@ def sdi(ts_split, mean=False, keys=None):
         A dictionary containing two entries. If the two entries are "low" and
         "high", then SDI will be computed as the norm of the high vs the norm
         of the low, oterwise as the ratio between the second (second key in
-        sorted keys) and the first. 
+        sorted keys) and the first.
     mean : bool, optional
         If True, compute mean over the last axis (e.g. between subjects)
     keys : None or list of strings, optional
