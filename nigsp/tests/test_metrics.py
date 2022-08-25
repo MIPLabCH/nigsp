@@ -2,9 +2,11 @@
 """Tests for operations.metrics."""
 
 import numpy as np
+from numpy.random import rand
 from pytest import raises
 
 from nigsp.operations import metrics
+from nigsp.utils import prepare_ndim_iteration
 
 
 # ### Unit tests
@@ -96,3 +98,30 @@ def test_break_gsdi():
     with raises(ValueError) as errorinfo:
         metrics.gsdi(ts, keys=["physio", "lambda", "pi"])
     assert "provided keys" in str(errorinfo.value)
+
+
+def test_functional_connectivity():
+    assert metrics.functional_connectivity(rand(6)) == 1
+
+    ts = rand(3, 6, 2, 2)
+
+    tst, _ = prepare_ndim_iteration(ts, 2)
+    fc = np.empty(([tst.shape[0]] * 2 + [tst.shape[-1]]), dtype='float32')
+    for i in range(tst.shape[-1]):
+        fc[:, :, i] = np.corrcoef(tst[..., i])
+
+    ns = (ts.shape[0],) * 2 + ts.shape[2:]
+    fc = fc.reshape(ns).mean(axis=2).squeeze()
+
+    fc_t = metrics.functional_connectivity(ts, mean=True)
+
+    assert (fc == fc_t).all()
+
+    tsd = {'hi': rand(3, 6), 'lo': rand(3, 6)}
+
+    fcd = metrics.functional_connectivity(tsd)
+
+    assert all(item in list(tsd.keys()) for item in list(fcd.keys()))
+
+    for k in fcd.keys():
+        assert (fcd[k] == np.corrcoef(tsd[k])).all()

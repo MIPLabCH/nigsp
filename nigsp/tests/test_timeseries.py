@@ -181,33 +181,6 @@ def test_graph_filter():
         assert (ts_s[k] == ts_split[k]).all()
 
 
-def test_functional_connectivity():
-    assert timeseries.functional_connectivity(rand(6)) == 1
-
-    ts = rand(3, 6, 2, 2)
-
-    tst, _ = prepare_ndim_iteration(ts, 2)
-    fc = np.empty(([tst.shape[0]] * 2 + [tst.shape[-1]]), dtype="float32")
-    for i in range(tst.shape[-1]):
-        fc[:, :, i] = np.corrcoef(tst[..., i])
-
-    ns = (ts.shape[0],) * 2 + ts.shape[2:]
-    fc = fc.reshape(ns).mean(axis=2).squeeze()
-
-    fc_t = timeseries.functional_connectivity(ts, mean=True)
-
-    assert (fc == fc_t).all()
-
-    tsd = {"hi": rand(3, 6), "lo": rand(3, 6)}
-
-    fcd = timeseries.functional_connectivity(tsd)
-
-    assert all(item in list(tsd.keys()) for item in list(fcd.keys()))
-
-    for k in fcd.keys():
-        assert (fcd[k] == np.corrcoef(tsd[k])).all()
-
-
 # ### Break tests
 def test_break_resize_ts():
     with raises(NotImplementedError) as errorinfo:
