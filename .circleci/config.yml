@@ -83,6 +83,22 @@ jobs:
           paths:
             - src/coverage/.coverage.py310
 
+  style-check: 
+    docker:
+      - image: cimg/python:3.7
+    working_directory: /tmp/src/nigsp
+    resource_class: small
+    steps:
+      - checkout
+      - python/install-packages:
+          path-args: .[style]
+          pypi-cache: false
+          venv-cache: false
+          pkg-manager: pip-dist
+      - run:
+          name: Check style
+          command: flake8 ./nigsp
+
   merge_coverage:
     working_directory: /tmp/src/nigsp
     docker:
