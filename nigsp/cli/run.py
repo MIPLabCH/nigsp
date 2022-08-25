@@ -66,14 +66,14 @@ def _get_parser():
                                                          )
                                             )
     opt_metrics.add_argument('-sdi', '--structural-decoupling-index',
-                             dest='metrics',
+                             dest='comp_metric',
                              action='append_const',
                              const='sdi',
                              help=('Compute the structural decoupling index '
                                    '(see Preti et al, 2019, Nat. Commun.)'),
                              default=None)
     opt_metrics.add_argument('-dfc', '--decoupled-functional-connectivity',
-                             dest='metrics',
+                             dest='comp_metric',
                              action='append_const',
                              const='dfc',
                              help=('Compute the decoupledd functional connectivity '
