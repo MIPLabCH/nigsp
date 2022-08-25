@@ -1,3 +1,19 @@
+# 0.8.0 (Thu Aug 25 2022)
+
+#### 💥 Breaking Change during development
+
+- Express SDI as log2 of bands quotient [#23](https://github.com/MIPLabCH/nigsp/pull/23) ([@smoia](https://github.com/smoia))
+
+#### ⚠️ Pushed to `master`
+
+- docs: Update documentation home page ([@smoia](https://github.com/smoia))
+
+#### Authors: 1
+
+- Stefano Moia ([@smoia](https://github.com/smoia))
+
+---
+
 # 0.7.1 (Mon Aug 22 2022)
 
 #### 🐛 Bug Fix
