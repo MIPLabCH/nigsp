@@ -12,8 +12,8 @@ from pymatreader import read_mat
 from pytest import mark
 
 from nigsp import blocks
-from nigsp.objects import SCGraph
 from nigsp.io import load_nifti_get_mask
+from nigsp.objects import SCGraph
 
 
 # ### Unit tests

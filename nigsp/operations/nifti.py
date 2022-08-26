@@ -12,7 +12,6 @@ import logging
 
 import numpy as np
 
-
 LGR = logging.getLogger(__name__)
 
 

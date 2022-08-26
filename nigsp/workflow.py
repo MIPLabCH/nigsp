@@ -16,13 +16,14 @@ import sys
 
 import numpy as np
 
-from nigsp import blocks, io, utils, viz, _version
+from nigsp import _version, blocks, io
 from nigsp import surrogates as surr
 from nigsp import timeseries as ts
+from nigsp import utils, viz
 from nigsp.cli.run import _get_parser
+
 # from nigsp.due import due, Doi
 from nigsp.objects import SCGraph
-
 
 LGR = logging.getLogger(__name__)
 LGR.setLevel(logging.INFO)
@@ -351,8 +352,8 @@ def nigsp(fname, scname, atlasname=None, outname=None, outdir=None,
 
     # If possible, create plots!
     try:
-        import nilearn as _
         import matplotlib as _
+        import nilearn as _
 
         # Plot original SC and Laplacian
         LGR.info('Plot laplacian matrix.')
@@ -402,8 +403,8 @@ def nigsp(fname, scname, atlasname=None, outname=None, outdir=None,
         blocks.export_metric(scgraph, outext, outprefix)
 
         try:
-            import nilearn as _
             import matplotlib as _
+            import nilearn as _
 
             if atlasname is not None:
                 LGR.info(f'Plot {metric_name} markerplot.')

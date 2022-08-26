@@ -11,8 +11,7 @@ LGR
 import logging
 from itertools import tee
 
-from numpy import asarray, ndarray, prod, empty
-
+from numpy import asarray, empty, ndarray, prod
 
 LGR = logging.getLogger(__name__)
 

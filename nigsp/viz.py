@@ -22,7 +22,6 @@ import logging
 
 import numpy as np
 
-
 LGR = logging.getLogger(__name__)
 SET_DPI = 100
 FIGSIZE = (18, 10)
@@ -190,8 +189,8 @@ def plot_nodes(ns, atlas, filename=None, thr=None, closeplot=False):
     Requires `matplotlib` and `nilearn`
     """
     try:
-        from nilearn.plotting import find_parcellation_cut_coords, plot_markers
         import matplotlib.pyplot as plt
+        from nilearn.plotting import find_parcellation_cut_coords, plot_markers
     except ImportError:
         raise ImportError('nilearn and matplotlib are required to plot node images. '
                           'Please see install instructions.')

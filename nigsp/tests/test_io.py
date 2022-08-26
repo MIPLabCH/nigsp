@@ -2,20 +2,17 @@
 """Tests for io."""
 
 import sys
-
 from os import remove
 from os.path import isfile
 
 import nibabel
-import scipy
 import pymatreader
-
-from numpy import empty, asarray, genfromtxt, savetxt
+import scipy
+from numpy import asarray, empty, genfromtxt, savetxt
 from numpy.random import rand
 from pytest import mark, raises
 
 from nigsp import io
-
 
 # ### Unit tests
 

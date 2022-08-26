@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 """Tests for operations.nifti."""
-from numpy import prod, asarray, zeros, unique
+from numpy import asarray, prod, unique, zeros
 from numpy.random import rand
-
 from pytest import raises
 
 from nigsp.operations import nifti

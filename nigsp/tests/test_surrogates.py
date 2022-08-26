@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """Tests for operations.surrogates."""
 import numpy as np
-from numpy.random import rand, default_rng
+from numpy.random import default_rng, rand
 from pytest import raises
 
-from nigsp.operations import surrogates, graph_fourier_transform, decomposition
+from nigsp.operations import decomposition, graph_fourier_transform, surrogates
 
 
 # ### Unit tests

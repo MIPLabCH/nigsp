@@ -3,7 +3,6 @@
 
 import numpy as np
 from numpy.random import rand
-
 from pytest import raises
 
 from nigsp import operations

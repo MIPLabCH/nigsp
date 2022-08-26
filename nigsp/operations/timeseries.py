@@ -12,7 +12,7 @@ import logging
 
 import numpy as np
 
-from nigsp.utils import pairwise, change_var_type, prepare_ndim_iteration
+from nigsp.utils import change_var_type, pairwise, prepare_ndim_iteration
 
 LGR = logging.getLogger(__name__)
 

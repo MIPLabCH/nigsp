@@ -9,11 +9,9 @@ LGR
 """
 
 import logging
-
 from itertools import combinations
 
 import numpy as np
-
 
 LGR = logging.getLogger(__name__)
 

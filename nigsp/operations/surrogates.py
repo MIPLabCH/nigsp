@@ -9,14 +9,13 @@ LGR
 """
 
 import logging
-
 from copy import deepcopy
-from math import factorial, floor, ceil
+from math import ceil, factorial, floor
 
 import numpy as np
 
-from nigsp.operations.timeseries import graph_fourier_transform
 from nigsp.operations.laplacian import decomposition
+from nigsp.operations.timeseries import graph_fourier_transform
 
 LGR = logging.getLogger(__name__)
 SURR_TYPE = ['informed', 'uninformed']

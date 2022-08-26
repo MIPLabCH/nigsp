@@ -13,7 +13,6 @@ import logging
 from nigsp import io, viz
 from nigsp.operations import nifti
 
-
 LGR = logging.getLogger(__name__)
 
 

@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 """Integration test."""
 import shutil
-
-from os.path import isfile, isdir, join
+from os.path import isdir, isfile, join
 
 import numpy as np
 

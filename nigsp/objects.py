@@ -15,11 +15,9 @@ LGR
 """
 
 import logging
-
 from copy import deepcopy
 
 from nigsp import operations
-
 
 LGR = logging.getLogger(__name__)
 
