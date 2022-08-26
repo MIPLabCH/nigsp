@@ -11,11 +11,11 @@ from nigsp.operations import laplacian
 # ### Unit tests
 def test_symmetric_norm(sc_mtx):
     mtx = read_mat(sc_mtx)
-    mtx = mtx['SC_avg56']
+    mtx = mtx["SC_avg56"]
 
-    d = np.diag(mtx.sum(axis=-1) ** (-1/2))
+    d = np.diag(mtx.sum(axis=-1) ** (-1 / 2))
 
-    symm_norm = (d @ mtx @ d)
+    symm_norm = d @ mtx @ d
 
     lapl_in = np.eye(mtx.shape[0]) - symm_norm
     lapl_out = laplacian.symmetric_normalisation(mtx)
@@ -27,13 +27,13 @@ def test_symmetric_norm(sc_mtx):
 
 def test_decomposition(sc_mtx):
     mtx = read_mat(sc_mtx)
-    mtx = mtx['SC_avg56']
+    mtx = mtx["SC_avg56"]
 
     eival, eivec = np.linalg.eig(mtx)
 
     idx = np.argsort(eival)
     eival = eival[idx]
-    # #!# Check that eigenvec has the right index and not inverted 
+    # #!# Check that eigenvec has the right index and not inverted
     eivec = eivec[:, idx]
 
     eigenval, eigenvec = laplacian.decomposition(mtx)

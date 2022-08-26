@@ -41,8 +41,7 @@ def pairwise(iterable):
     return zip(a, b)
 
 
-def change_var_type(var, dtype, varname='an input variable', stop=True,
-                    silent=False):
+def change_var_type(var, dtype, varname="an input variable", stop=True, silent=False):
     """
     Make sure `var` is of type `dtype`.
 
@@ -72,9 +71,9 @@ def change_var_type(var, dtype, varname='an input variable', stop=True,
         If variable var is not of type and stop is True
     """
     if type(var) is not dtype and stop:
-        if varname != 'an input variable':
-            varname = f'variable {varname}'
-        raise TypeError(f'{varname} is not of type {dtype}')
+        if varname != "an input variable":
+            varname = f"variable {varname}"
+        raise TypeError(f"{varname} is not of type {dtype}")
 
     if dtype is int:
         tmpvar = int(var)
@@ -90,12 +89,12 @@ def change_var_type(var, dtype, varname='an input variable', stop=True,
         else:
             tmpvar = [var]
     else:
-        raise NotImplementedError(f'Type {dtype.__name__} not supported')
+        raise NotImplementedError(f"Type {dtype.__name__} not supported")
 
     if type(tmpvar) is not type(var):
-        if varname != 'an input variable':
-            varname = f'variable {varname}'
-        msg = f'Changing type of {varname} from {type(var)} to {dtype}'
+        if varname != "an input variable":
+            varname = f"variable {varname}"
+        msg = f"Changing type of {varname} from {type(var)} to {dtype}"
 
         if silent:
             LGR.debug(msg)
@@ -128,7 +127,7 @@ def prepare_ndim_iteration(data, idx):
         new_shape = list(data.shape[:idx]) + [prod(data.shape[idx:])]
         data = data.reshape(new_shape)
 
-    return data, empty(data.shape, dtype='float32')
+    return data, empty(data.shape, dtype="float32")
 
 
 """

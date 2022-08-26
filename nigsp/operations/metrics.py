@@ -59,24 +59,28 @@ def sdi(ts_split, mean=False, keys=None):
         keys = list(ts_split.keys())
     else:
         if all(item in list(ts_split.keys()) for item in keys) is False:
-            raise ValueError(f'The provided keys {keys} do not match the '
-                             'keys of the provided dictionary '
-                             f'({list(ts_split.keys())})')
+            raise ValueError(
+                f"The provided keys {keys} do not match the "
+                "keys of the provided dictionary "
+                f"({list(ts_split.keys())})"
+            )
 
     if len(keys) != 2:
-        raise ValueError('`structural_decoupling_index` function requires '
-                         'a dictionary with exactly two timeseries as input.')
+        raise ValueError(
+            "`structural_decoupling_index` function requires "
+            "a dictionary with exactly two timeseries as input."
+        )
 
     check_keys = [item.lower() for item in keys]
-    if all(item in ['low', 'high'] for item in check_keys):
+    if all(item in ["low", "high"] for item in check_keys):
         # Case insensitively reorder the items of dictionary as ['low', 'high'].
-        keys = [keys[check_keys.index('low')], keys[check_keys.index('high')]]
+        keys = [keys[check_keys.index("low")], keys[check_keys.index("high")]]
 
     norm = dict.fromkeys(keys)
     for k in keys:
         norm[k] = np.linalg.norm(ts_split[k], axis=1)
 
-    LGR.info('Computing Structural Decoupling Index.')
+    LGR.info("Computing Structural Decoupling Index.")
     sdi = norm[keys[1]] / norm[keys[0]]
 
     if sdi.ndim >= 2 and mean:
@@ -118,35 +122,37 @@ def gsdi(ts_split, mean=False, keys=None):
         keys = list(ts_split.keys())
     else:
         if all(item in list(ts_split.keys()) for item in keys) is False:
-            raise ValueError(f'The provided keys {keys} do not match the '
-                             'keys of the provided dictionary '
-                             f'({list(ts_split.keys())})')
+            raise ValueError(
+                f"The provided keys {keys} do not match the "
+                "keys of the provided dictionary "
+                f"({list(ts_split.keys())})"
+            )
 
     if len(keys) > 2:
-        LGR.info('Prepare combinations of timeseries')
+        LGR.info("Prepare combinations of timeseries")
         # Combining two or more "timeseries splits" means nothing more than
         # adding them in this case.
         for n in range(2, len(keys)):
             for c in combinations(keys, n):
                 comb_key = str(c).replace("'", "").replace(", ", "_and_")
 
-                ts_split[comb_key] = np.zeros_like(ts_split[keys[0]], dtype='float32')
+                ts_split[comb_key] = np.zeros_like(ts_split[keys[0]], dtype="float32")
                 for k in c:
                     ts_split[comb_key] = np.add(ts_split[comb_key], ts_split[k])
 
     # Obtain updated list of keys
     all_keys = list(ts_split.keys())
     norm = dict.fromkeys(all_keys)
-    LGR.info('Computing norm of timeseries')
+    LGR.info("Computing norm of timeseries")
     for k in all_keys:
         norm[k] = np.linalg.norm(ts_split[k], axis=1)
 
-    LGR.info('Computing generalised SDI')
+    LGR.info("Computing generalised SDI")
     gsdi = dict()
     for k in keys:
         for j in all_keys:
-            if not (k in j or f'({k}_' in j or f'_{k})' in j or f'_{k}_' in j):
-                gsdi[f'{k}_over_{j}'] = norm[k] / norm[j]
+            if not (k in j or f"({k}_" in j or f"_{k})" in j or f"_{k}_" in j):
+                gsdi[f"{k}_over_{j}"] = norm[k] / norm[j]
 
     if list(gsdi.values())[0].ndim >= 2 and mean:
         for k in gsdi.keys():

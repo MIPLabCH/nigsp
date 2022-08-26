@@ -18,8 +18,8 @@ from nigsp.operations.laplacian import decomposition
 from nigsp.operations.timeseries import graph_fourier_transform
 
 LGR = logging.getLogger(__name__)
-SURR_TYPE = ['informed', 'uninformed']
-STAT_METHOD = ['Bernoulli', 'frequentist']
+SURR_TYPE = ["informed", "uninformed"]
+STAT_METHOD = ["Bernoulli", "frequentist"]
 
 
 def random_sign(eigenvec, n_surr=1000, seed=42, stack=False):
@@ -53,13 +53,14 @@ def random_sign(eigenvec, n_surr=1000, seed=42, stack=False):
 
     if eigenvec.ndim > 3:
         raise NotImplementedError(
-            f'Provided data has {eigenvec.ndim} dimensions, '
-            'but data of more than 3 dimensions are not '
-            'supported yet')
+            f"Provided data has {eigenvec.ndim} dimensions, "
+            "but data of more than 3 dimensions are not "
+            "supported yet"
+        )
 
-    rand_evec = np.empty((eigenvec.shape + (n_surr,)), dtype='float32')
+    rand_evec = np.empty((eigenvec.shape + (n_surr,)), dtype="float32")
 
-    LGR.info('Randomly switching signs of eigenvectors to create surrogates.')
+    LGR.info("Randomly switching signs of eigenvectors to create surrogates.")
     for i in range(n_surr):
         # #!# Check if two conditions can be merged.
         if eigenvec.ndim < 3:
@@ -112,29 +113,31 @@ def _create_surr(timeseries, eigenvec, n_surr, seed, stack):
     if stack:
         n_surr += 1
 
-    surr = np.empty((timeseries.shape + (n_surr,)), dtype='float32')
+    surr = np.empty((timeseries.shape + (n_surr,)), dtype="float32")
 
     fourier_coeff = graph_fourier_transform(timeseries, eigenvec)
 
-    LGR.info('Projecting the timeseries onto the surrogate eigenvectors.')
+    LGR.info("Projecting the timeseries onto the surrogate eigenvectors.")
     for i in range(n_surr):
         if timeseries.ndim < 3 and rand_evec.ndim == timeseries.ndim + 1:
-            surr[..., i] = graph_fourier_transform(fourier_coeff,
-                                                   rand_evec[..., i].T)
+            surr[..., i] = graph_fourier_transform(fourier_coeff, rand_evec[..., i].T)
         elif timeseries.ndim == 3:
             if rand_evec.ndim < 4:
-                surr[..., i] = graph_fourier_transform(fourier_coeff,
-                                                       rand_evec[..., i].T)
+                surr[..., i] = graph_fourier_transform(
+                    fourier_coeff, rand_evec[..., i].T
+                )
             else:
                 for j in range(rand_evec.shape[2]):
-                    surr[:, :, j,
-                         i] = graph_fourier_transform(fourier_coeff,
-                                                      rand_evec[:, :, j, i].T)
+                    surr[:, :, j, i] = graph_fourier_transform(
+                        fourier_coeff, rand_evec[:, :, j, i].T
+                    )
         else:
-            raise NotImplementedError('No solution implemented for timeseries '
-                                      f'of {timeseries.ndim} dimension(s) and '
-                                      f'eigenvector matrix of {eigenvec.ndim} '
-                                      'dimension(s)')
+            raise NotImplementedError(
+                "No solution implemented for timeseries "
+                f"of {timeseries.ndim} dimension(s) and "
+                f"eigenvector matrix of {eigenvec.ndim} "
+                "dimension(s)"
+            )
     return surr
 
 
@@ -166,9 +169,11 @@ def sc_informed(timeseries, eigenvec, n_surr=1000, seed=124, stack=False):
         If timeseries is 4+ D.
     """
     if timeseries.ndim > 3:
-        raise NotImplementedError(f'Provided timeseries has {timeseries.ndim} '
-                                  'dimensions, but timeseries of more than 3 '
-                                  'dimensions are not supported yet.')
+        raise NotImplementedError(
+            f"Provided timeseries has {timeseries.ndim} "
+            "dimensions, but timeseries of more than 3 "
+            "dimensions are not supported yet."
+        )
 
     return _create_surr(timeseries, eigenvec, n_surr, seed, stack)
 
@@ -201,9 +206,11 @@ def sc_uninformed(timeseries, lapl_mtx, n_surr=1000, seed=98, stack=False):
         If timeseries is 4+ D.
     """
     if timeseries.ndim > 3:
-        raise NotImplementedError(f'Provided timeseries has {timeseries.ndim} '
-                                  'dimensions, but timeseries of more than 3 '
-                                  'dimensions are not supported yet.')
+        raise NotImplementedError(
+            f"Provided timeseries has {timeseries.ndim} "
+            "dimensions, but timeseries of more than 3 "
+            "dimensions are not supported yet."
+        )
 
     symm_norm = np.eye(lapl_mtx.shape[0]) - lapl_mtx
     symm_norm_sum = symm_norm.sum(axis=-1)
@@ -217,13 +224,15 @@ def sc_uninformed(timeseries, lapl_mtx, n_surr=1000, seed=98, stack=False):
     return _create_surr(timeseries, surr_eigenvec, n_surr, seed, stack)
 
 
-def test_significance(surr,
-                      data=None,
-                      method='Bernoulli',
-                      p=0.05,
-                      p_bernoulli=None,
-                      return_masked=False,
-                      mean=False):
+def test_significance(
+    surr,
+    data=None,
+    method="Bernoulli",
+    p=0.05,
+    p_bernoulli=None,
+    return_masked=False,
+    mean=False,
+):
     """
     Test the significance of the empirical data against surrogates.
 
@@ -288,51 +297,57 @@ def test_significance(surr,
     # #!# Check that the surrogate shape has parcels in the first axis!
     # If provided, append data to surr
     if data is not None:
-        if surr.shape[:data.ndim] != data.shape:
+        if surr.shape[: data.ndim] != data.shape:
             raise ValueError(
-                'Provided empirical data and surrogate data shapes '
-                f'do not agree, with shapes {data.shape} and '
-                f'{surr.shape[:data.ndim]} (last axis excluded)')
+                "Provided empirical data and surrogate data shapes "
+                f"do not agree, with shapes {data.shape} and "
+                f"{surr.shape[:data.ndim]} (last axis excluded)"
+            )
         if not (surr[..., -1] == data).all():
             # Check that data was not appended yet.
             surr = np.append(surr, data[..., np.newaxis], axis=-1)
 
     if p < 0 or p > 1:
-        raise ValueError('p values should always be between 0 and 1. The '
-                         f'provided value of {p} is out of these boundaries')
+        raise ValueError(
+            "p values should always be between 0 and 1. The "
+            f"provided value of {p} is out of these boundaries"
+        )
     elif p == 0 or p == 1:
-        LGR.warning(f'The selected p value of {p} is at the limits of the '
-                    'possible range of [0, 1]. Statistical thresholding might '
-                    'not be interpretable.')
+        LGR.warning(
+            f"The selected p value of {p} is at the limits of the "
+            "possible range of [0, 1]. Statistical thresholding might "
+            "not be interpretable."
+        )
 
     if surr.ndim < 3:
         LGR.warning(
-            f'Warning: surrogate dimensions ({surr.ndim}) are less than '
-            'the program expects - check that you mean to run a test on '
-            'an average or that you have enough surrogates.')
+            f"Warning: surrogate dimensions ({surr.ndim}) are less than "
+            "the program expects - check that you mean to run a test on "
+            "an average or that you have enough surrogates."
+        )
 
     # Reorder the surrogate matrix, then find where the real surrogate is
-    LGR.info('Reordering surrogates for test')
+    LGR.info("Reordering surrogates for test")
     real_idx = surr.shape[-1] - 1
-    reord_surr = (np.argsort(surr, axis=-1) == real_idx)
+    reord_surr = np.argsort(surr, axis=-1) == real_idx
 
-    LGR.info(f'Adopting {method} testing method.')
+    LGR.info(f"Adopting {method} testing method.")
     # Testing both tails requires to split p
-    if method == 'frequentist':
-        LGR.info(f'Testing for p={p} two-tails (p={p/2} each tail)')
+    if method == "frequentist":
+        LGR.info(f"Testing for p={p} two-tails (p={p/2} each tail)")
         p = p / 2
         # If there aren't enough surrogates, send a warning message on the real p
         # Then update p
         if 1 / surr.shape[-1] > p:
             LGR.warning(
-                'The generated surrogates are not enough to test for '
-                f'the selected p ({p*2} two-tails), since at least '
-                f'{ceil(1/p)-1} surrogates are required for the selected '
-                f'p value. Testing for p={1/surr.shape[-1]} two-tails instead.'
+                "The generated surrogates are not enough to test for "
+                f"the selected p ({p*2} two-tails), since at least "
+                f"{ceil(1/p)-1} surrogates are required for the selected "
+                f"p value. Testing for p={1/surr.shape[-1]} two-tails instead."
             )
             p = 1 / surr.shape[-1]
 
-    elif method == 'Bernoulli':
+    elif method == "Bernoulli":
         # If there aren't enough subjects, send a warning message on the real p
         # Then update group level p
         if p_bernoulli is None:
@@ -340,46 +355,55 @@ def test_significance(surr,
             p = 0.1
         if 1 / surr.shape[1] > p_bernoulli:
             LGR.warning(
-                'The provided subjects are not enough to test for '
-                f'p={p_bernoulli} one-tail at the group level, since '
-                f'at least {ceil(1/p_bernoulli)} subjects are required.')
+                "The provided subjects are not enough to test for "
+                f"p={p_bernoulli} one-tail at the group level, since "
+                f"at least {ceil(1/p_bernoulli)} subjects are required."
+            )
             p_bernoulli = 1 / surr.shape[1]
         # If there aren't enough surrogates, send a warning message on the real p
         # Then update subject level p
         if 1 / surr.shape[-1] > p:
-            LGR.warning('The generated surrogates are not enough to test for '
-                        f'p={p} two-tails at the subject level. '
-                        f'{ceil(1/p)-1} surrogates are required for p={p}.')
+            LGR.warning(
+                "The generated surrogates are not enough to test for "
+                f"p={p} two-tails at the subject level. "
+                f"{ceil(1/p)-1} surrogates are required for p={p}."
+            )
             p = 1 / surr.shape[-1]
 
         LGR.info(
-            f'Testing for p={p_bernoulli} one-tail at the group level and '
-            f'at p={p*2} two-tails (p={p} each tail) at the subject level.')
+            f"Testing for p={p_bernoulli} one-tail at the group level and "
+            f"at p={p*2} two-tails (p={p} each tail) at the subject level."
+        )
     else:
         raise NotImplementedError(
-            'Other testing methods than Bernoulli or '
-            'frequentist are not implemented at the moment.')
+            "Other testing methods than Bernoulli or "
+            "frequentist are not implemented at the moment."
+        )
 
     # First, and no matter what, apply frequentist approach to find where
     # the real data index (real_idx) is at the extremes of the matrix last axis
     # (with tolerance on the extremes depending on p).
     # real_idx serendipitously is the number of surrogates.
-    stat_mask = (reord_surr[..., :floor(real_idx * p) + 1].any(axis=-1)
-                 + reord_surr[..., -floor(real_idx * p) - 1:].any(axis=-1))
+    stat_mask = reord_surr[..., : floor(real_idx * p) + 1].any(axis=-1) + reord_surr[
+        ..., -floor(real_idx * p) - 1 :
+    ].any(axis=-1)
 
-    if method == 'Bernoulli' and surr.shape[1] > 1 and surr.ndim >= 3:
+    if method == "Bernoulli" and surr.shape[1] > 1 and surr.ndim >= 3:
         # The following computes the CDF of a binomial distribution
         # Difference with scipy's binom.cdf (100 samples) is: 5.066394802133445e-06
         # #!# See if there is a quicker way to get this (probably invert testing)
 
         def _pmf(x, n, p):
-            f = ((factorial(n) / (factorial(x) * factorial(n - x))) * p**x
-                 * (1 - p)**(n - x))
+            f = (
+                (factorial(n) / (factorial(x) * factorial(n - x)))
+                * p**x
+                * (1 - p) ** (n - x)
+            )
             return f
 
         x = np.arange(0, 100, 1)
         # Generate the PMF of the binomial distribution
-        y = np.asarray([_pmf(i, 100, p) for i in x], dtype='float32')
+        y = np.asarray([_pmf(i, 100, p) for i in x], dtype="float32")
         # Generate the CDF, then invert it.
         y = 1 - np.cumsum(y)
         # Find the number of subjects necessary to be statistically significant,
@@ -396,21 +420,26 @@ def test_significance(surr,
         # repeat stat_mask for the number of subjects.
         stat_mask = stat_mask[..., np.newaxis].repeat(surr.shape[1], axis=-1)
     elif surr.shape[1] == 1 and surr.ndim >= 3:
-        LGR.warning('The "Bernoulli" method is a group test that requires '
-                    'multiple subjects to be run.')
+        LGR.warning(
+            'The "Bernoulli" method is a group test that requires '
+            "multiple subjects to be run."
+        )
     elif surr.ndim < 3:
-        LGR.warning('The dimensionality of the data is not enough to run '
-                    'the "Bernoulli" method.')
+        LGR.warning(
+            "The dimensionality of the data is not enough to run "
+            'the "Bernoulli" method.'
+        )
 
     if return_masked:
-        LGR.info('Returning masked empirical data')
-        stat_mask = np.ma.array(data=surr[..., -1], mask=np.invert(stat_mask),
-                                fill_value=np.NINF).squeeze()
+        LGR.info("Returning masked empirical data")
+        stat_mask = np.ma.array(
+            data=surr[..., -1], mask=np.invert(stat_mask), fill_value=np.NINF
+        ).squeeze()
     else:
-        LGR.info('Returning mask')
+        LGR.info("Returning mask")
 
     if mean and stat_mask.ndim >= 2:
-        LGR.info('Returning average across subjects (axis 1)')
+        LGR.info("Returning average across subjects (axis 1)")
         stat_mask = stat_mask.mean(axis=1)
 
     if return_masked:
