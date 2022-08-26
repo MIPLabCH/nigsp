@@ -1,6 +1,6 @@
 # # This workflows will create a release using auto when a PR is merged in master.
 
-name: Auto-release on PR merge
+name: Format and auto-release on PR merge
 
 on:
   # ATM, this is the closest trigger to a PR merging
@@ -9,8 +9,8 @@ on:
       - master
 
 jobs:
-  auto-release:
-    runs-on: ubuntu-18.04
+  format-and-auto-release:
+    runs-on: ubuntu-20.04
     # Set skip ci to avoid loops
     if: "!contains(github.event.head_commit.message, 'ci skip') && !contains(github.event.head_commit.message, 'skip ci')"
     # Set bash as default shell for jobs
@@ -25,6 +25,25 @@ jobs:
         fetch-depth: 0
         # Use token with write access to the repo
         token: ${{ secrets.GH_TOKEN }}
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.7'
+    - name: Install style dependencies and Format code
+      run: |
+        python -m pip install --upgrade pip
+        pip install .[style]
+        isort .
+        black nisgp
+    - name: Push on master branch
+        uses: github-actions-x/commit@v2.8
+        with:
+          github-token: ${{ secrets.GH_TOKEN }}
+          push-branch: 'master'
+          commit-message: 'Commit formatted code [skip ci]'
+          files: .
+          name: Stefano Moia
+          email: s.moia.research@gmail.com
     - name: Download and install latest auto
       env:
         # OS can be linux, macos, or win
