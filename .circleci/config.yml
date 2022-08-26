@@ -132,10 +132,10 @@ workflows:
       - style_check
       - test37:
           requires:
-            style_check
+            - style_check
       - test310:
           requires:
-            style_check
+            - style_check
       - merge_coverage:
           requires:
             - test37
