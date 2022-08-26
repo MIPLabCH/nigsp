@@ -97,7 +97,7 @@ def apply_mask(data, mask):
     if data.shape[:mask.ndim] != mask.shape:
         raise ValueError(f'Cannot mask data with shape {data.shape} using mask '
                          f'with shape {mask.shape}')
-    if (data.ndim-mask.ndim) > 1:
+    if (data.ndim - mask.ndim) > 1:
         LGR.warning(f'Returning volume with {data.ndim-mask.ndim+1} dimensions.')
     else:
         LGR.info(f'Returning {data.ndim-mask.ndim+1}D array.')
@@ -131,7 +131,7 @@ def unmask(data, mask, shape=None, asdata=None):
     ------
     ValueError
         If both `shape` and `asdata` are empty
-        If the first dimension of `data` and the number of available voxels in 
+        If the first dimension of `data` and the number of available voxels in
         mask do not match.
         If the mask shape does not match the first (mask)
     """
@@ -193,21 +193,22 @@ def apply_atlas(data, atlas, mask=None):
     # #!# Add nilearn's fetching atlases utility
 
     if atlas.ndim > 3:
-        raise NotImplementedError(f'Files with {atlas.ndim} dimensions are not supported as atlases.')
+        raise NotImplementedError(f'Files with {atlas.ndim} dimensions are not '
+                                  'supported as atlases.')
     if data.shape[:mask.ndim] != mask.shape:
         raise ValueError(f'Cannot mask data with shape {data.shape} using mask '
                          f'with shape {mask.shape}')
     if data.shape[:atlas.ndim] != atlas.shape:
         raise ValueError(f'Cannot apply atlas with shape {atlas.shape} on data '
                          f'with shape {data.shape}')
-    if (data.ndim-atlas.ndim) > 1:
+    if (data.ndim - atlas.ndim) > 1:
         LGR.warning(f'returning volume with {data.ndim-atlas.ndim+1} dimensions.')
     else:
         LGR.info(f'Returning {data.ndim-atlas.ndim+1}D array of signal averages '
                  f'in atlas {atlas}.')
 
     # Mask data and atlas first
-    atlas = atlas*mask
+    atlas = atlas * mask
     labels = np.unique(atlas)
     labels = labels[labels > 0]
     LGR.info(f'Labels: {labels}, numbers: {len(labels)}')
@@ -268,7 +269,7 @@ def unfold_atlas(data, atlas, mask=None):
     if atlas.shape[:mask.ndim] != mask.shape:
         raise ValueError(f'Cannot mask atlas with shape {atlas.shape} using mask '
                          f'with shape {mask.shape}')
-    atlas = atlas*mask
+    atlas = atlas * mask
 
     labels = np.unique(atlas)
     labels = labels[labels > 0]

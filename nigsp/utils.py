@@ -19,7 +19,7 @@ LGR = logging.getLogger(__name__)
 
 def pairwise(iterable):
     """
-    Recreate `itertools.pairwise()` behaviour for python < 3.10 compatibility.
+    Recreate `itertools.pairwise` behaviour for python < 3.10 compatibility.
 
     Parameters
     ----------
@@ -125,7 +125,7 @@ def prepare_ndim_iteration(data, idx):
     np.ndarray, np.ndarray
         The reshaped data and an empty array like it.
     """
-    if data.ndim > idx+1:
+    if data.ndim > idx + 1:
         new_shape = list(data.shape[:idx]) + [prod(data.shape[idx:])]
         data = data.reshape(new_shape)
 

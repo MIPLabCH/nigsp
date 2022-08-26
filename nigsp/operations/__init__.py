@@ -8,7 +8,7 @@ as an `operations` function, and each module can be called directly as a
 `nigsp` module.
 
 For example, calling `nigsp.operations.metrics.sdi` is equivalent to calling
-`nigsp.operations.sdi` or `nigsp.metrisc.sdi`. 
+`nigsp.operations.sdi` or `nigsp.metrisc.sdi`.
 """
 
 

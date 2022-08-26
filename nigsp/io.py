@@ -142,7 +142,7 @@ def check_mtx_dim(fname, data, shape=None):
     -------
     np.ndarray
         If `data.ndim` = 2, returns data.
-        If `data.ndim` = 1 and `shape` == 'rectangle', 
+        If `data.ndim` = 1 and `shape` == 'rectangle',
         Returns data with added empty axis.
 
     Raises
@@ -268,8 +268,8 @@ def load_mat(fname, shape=None):
     """
     Read files in matlab format.
 
-    Assumes the existence of a matrix/vector in the mat file, rendered as 
-    a numpy.ndarray. If there is more than a marix, the one with the largest 
+    Assumes the existence of a matrix/vector in the mat file, rendered as
+    a numpy.ndarray. If there is more than a marix, the one with the largest
     size will be selected.
 
     Parameters
@@ -313,7 +313,8 @@ def load_mat(fname, shape=None):
         # Check data key only if it's not hidden
         # (skip '__header__', '__version__', '__global__')
         if '__' not in k:
-            LGR.info(f'Checking {fname} key {str(k)} content for data (float array/matrices in MATLAB).')
+            LGR.info(f'Checking {fname} key {str(k)} content for data '
+                     '(float array/matrices in MATLAB).')
             if type(data[k]) is np.ndarray:
                 data_keys.append(k)
 

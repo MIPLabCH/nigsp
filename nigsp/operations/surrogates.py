@@ -365,8 +365,8 @@ def test_significance(surr,
     # the real data index (real_idx) is at the extremes of the matrix last axis
     # (with tolerance on the extremes depending on p).
     # real_idx serendipitously is the number of surrogates.
-    stat_mask = (reord_surr[..., :floor(real_idx * p) + 1].any(axis=-1) +
-                 reord_surr[..., -floor(real_idx * p) - 1:].any(axis=-1))
+    stat_mask = (reord_surr[..., :floor(real_idx * p) + 1].any(axis=-1)
+                 + reord_surr[..., -floor(real_idx * p) - 1:].any(axis=-1))
 
     if method == 'Bernoulli' and surr.shape[1] > 1 and surr.ndim >= 3:
         # The following computes the CDF of a binomial distribution
@@ -374,8 +374,8 @@ def test_significance(surr,
         # #!# See if there is a quicker way to get this (probably invert testing)
 
         def _pmf(x, n, p):
-            f = ((factorial(n) / (factorial(x) * factorial(n - x))) * p**x *
-                 (1 - p)**(n - x))
+            f = ((factorial(n) / (factorial(x) * factorial(n - x))) * p**x
+                 * (1 - p)**(n - x))
             return f
 
         x = np.arange(0, 100, 1)
