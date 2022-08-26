@@ -46,7 +46,7 @@ def test_gsdi():
         np.linalg.norm(ts1, axis=1) / np.linalg.norm(np.add(ts2, ts3), axis=1)
     )
     # fmt: off
-    keys_in = ['alpha_over_beta', 'alpha_over_gamma', 'alpha_over_(beta_and_gamma)', 
+    keys_in = ['alpha_over_beta', 'alpha_over_gamma', 'alpha_over_(beta_and_gamma)',
                'beta_over_alpha', 'beta_over_gamma', 'beta_over_(alpha_and_gamma)',
                'gamma_over_alpha', 'gamma_over_beta', 'gamma_over_(alpha_and_beta)']
     # fmt: on
