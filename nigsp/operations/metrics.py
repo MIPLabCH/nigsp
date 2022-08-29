@@ -13,9 +13,13 @@ from itertools import combinations
 
 import numpy as np
 
+from nigsp import references
+from nigsp.due import due
+
 LGR = logging.getLogger(__name__)
 
 
+@due.dcite(references.PRETI_2019)
 def sdi(ts_split, mean=False, keys=None):
     """
     Compute the Structural Decoupling Index (SDI).
