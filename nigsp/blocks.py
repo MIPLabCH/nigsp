@@ -13,7 +13,6 @@ import logging
 from nigsp import io, viz
 from nigsp.operations import nifti
 
-
 LGR = logging.getLogger(__name__)
 
 
@@ -71,27 +70,31 @@ def export_metric(scgraph, outext, outprefix):
         try:
             import nibabel as _
         except ImportError:
-            LGR.warning('The necessary library for nifti export (nibabel) '
-                        'was not found. Exporting metrics in CSV format instead.')
-            outext = '.csv'
+            LGR.warning(
+                "The necessary library for nifti export (nibabel) "
+                "was not found. Exporting metrics in CSV format instead."
+            )
+            outext = ".csv"
         if scgraph.img is None:
-            LGR.warning('A necessary atlas nifti image was not found. '
-                        'Exporting metrics in CSV format instead.')
-            outext = '.csv'
+            LGR.warning(
+                "A necessary atlas nifti image was not found. "
+                "Exporting metrics in CSV format instead."
+            )
+            outext = ".csv"
 
     if scgraph.sdi is not None:
         if outext in io.EXT_NIFTI:
             data = nifti.unfold_atlas(scgraph.sdi, scgraph.atlas)
-            io.export_nifti(data, scgraph.img, f'{outprefix}sdi{outext}')
+            io.export_nifti(data, scgraph.img, f"{outprefix}sdi{outext}")
         else:
-            io.export_mtx(scgraph.sdi, f'{outprefix}sdi{outext}')
+            io.export_mtx(scgraph.sdi, f"{outprefix}sdi{outext}")
     elif scgraph.gsdi is not None:
         for k in scgraph.gsdi.keys():
             if outext in io.EXT_NIFTI:
                 data = nifti.unfold_atlas(scgraph.gsdi[k], scgraph.atlas)
-                io.export_nifti(data, scgraph.img, f'{outprefix}gsdi_{k}{outext}')
+                io.export_nifti(data, scgraph.img, f"{outprefix}gsdi_{k}{outext}")
             else:
-                io.export_mtx(scgraph.gsdi[k], f'{outprefix}gsdi_{k}{outext}')
+                io.export_mtx(scgraph.gsdi[k], f"{outprefix}gsdi_{k}{outext}")
 
     return 0
 
@@ -123,19 +126,25 @@ def plot_metric(scgraph, outprefix, atlas=None, thr=None):
             if atlas.ndim == 2 and atlas.shape[1] == 3:
                 atlas_plot = atlas
         except AttributeError:
-            LGR.warning('The provided atlas is not in a format supported for '
-                        'markerplots.')
+            LGR.warning(
+                "The provided atlas is not in a format supported for " "markerplots."
+            )
             atlas_plot = None
 
     # If it is, plot.
     if atlas_plot is not None:
         if scgraph.sdi is not None:
-            viz.plot_nodes(scgraph.sdi, atlas_plot,
-                           filename=f'{outprefix}sdi.png', thr=thr)
+            viz.plot_nodes(
+                scgraph.sdi, atlas_plot, filename=f"{outprefix}sdi.png", thr=thr
+            )
         elif scgraph.gsdi is not None:
             for k in scgraph.gsdi.keys():
-                viz.plot_nodes(scgraph.gsdi[k], atlas_plot,
-                               filename=f'{outprefix}gsdi_{k}.png', thr=thr)
+                viz.plot_nodes(
+                    scgraph.gsdi[k],
+                    atlas_plot,
+                    filename=f"{outprefix}gsdi_{k}.png",
+                    thr=thr,
+                )
 
     return 0
 

@@ -12,7 +12,6 @@ import logging
 
 import numpy as np
 
-
 LGR = logging.getLogger(__name__)
 
 
@@ -30,8 +29,8 @@ def vol_to_mat(data):
     numpy.ndarray
         2D reshaped data.
     """
-    LGR.info(f'Reshape {data.ndim}D volume into 1[+1]D (space[*time]) matrix.')
-    return data.reshape(((-1,) + data.shape[3:]), order='F')
+    LGR.info(f"Reshape {data.ndim}D volume into 1[+1]D (space[*time]) matrix.")
+    return data.reshape(((-1,) + data.shape[3:]), order="F")
 
 
 def mat_to_vol(data, shape=None, asdata=None):
@@ -59,15 +58,18 @@ def mat_to_vol(data, shape=None, asdata=None):
     """
     if asdata is not None:
         if shape is not None:
-            LGR.warning('Both shape and asdata were defined. '
-                        f'Overwriting shape {shape} with asdata {asdata.shape}')
+            LGR.warning(
+                "Both shape and asdata were defined. "
+                f"Overwriting shape {shape} with asdata {asdata.shape}"
+            )
         shape = asdata.shape
     elif shape is None:
-        raise ValueError('Both shape and asdata are empty. '
-                         'Must specify at least one')
+        raise ValueError(
+            "Both shape and asdata are empty. " "Must specify at least one"
+        )
 
-    LGR.info(f'Reshape {data.ndim}D matrix into volume with shape {shape}.')
-    return data.reshape(shape, order='F')
+    LGR.info(f"Reshape {data.ndim}D matrix into volume with shape {shape}.")
+    return data.reshape(shape, order="F")
 
 
 def apply_mask(data, mask):
@@ -94,15 +96,17 @@ def apply_mask(data, mask):
     ValueError
         If the first mask.ndim dimensions of data have a different shape from mask.
     """
-    if data.shape[:mask.ndim] != mask.shape:
-        raise ValueError(f'Cannot mask data with shape {data.shape} using mask '
-                         f'with shape {mask.shape}')
+    if data.shape[: mask.ndim] != mask.shape:
+        raise ValueError(
+            f"Cannot mask data with shape {data.shape} using mask "
+            f"with shape {mask.shape}"
+        )
     if (data.ndim - mask.ndim) > 1:
-        LGR.warning(f'Returning volume with {data.ndim-mask.ndim+1} dimensions.')
+        LGR.warning(f"Returning volume with {data.ndim-mask.ndim+1} dimensions.")
     else:
-        LGR.info(f'Returning {data.ndim-mask.ndim+1}D array.')
+        LGR.info(f"Returning {data.ndim-mask.ndim+1}D array.")
 
-    mask = (mask != 0)
+    mask = mask != 0
     return data[mask]
 
 
@@ -137,24 +141,31 @@ def unmask(data, mask, shape=None, asdata=None):
     """
     if asdata is not None:
         if shape is not None:
-            LGR.warning('Both shape and asdata were defined. '
-                        f'Overwriting shape {shape} with asdata {asdata.shape}')
+            LGR.warning(
+                "Both shape and asdata were defined. "
+                f"Overwriting shape {shape} with asdata {asdata.shape}"
+            )
         shape = asdata.shape
     elif shape is None:
-        raise ValueError('Both shape and asdata are empty. '
-                         'Must specify at least one.')
+        raise ValueError(
+            "Both shape and asdata are empty. " "Must specify at least one."
+        )
 
-    if shape[:mask.ndim] != mask.shape:
-        raise ValueError(f'Cannot unmask data into shape {shape} using mask '
-                         f'with shape {mask.shape}')
+    if shape[: mask.ndim] != mask.shape:
+        raise ValueError(
+            f"Cannot unmask data into shape {shape} using mask "
+            f"with shape {mask.shape}"
+        )
     if data.ndim > 1 and (data.shape[0] != mask.sum()):
-        raise ValueError('Cannot unmask data with first dimension '
-                         f'{data.shape[0]} using mask with '
-                         f'{mask.sum()} entries)')
+        raise ValueError(
+            "Cannot unmask data with first dimension "
+            f"{data.shape[0]} using mask with "
+            f"{mask.sum()} entries)"
+        )
 
-    LGR.info(f'Unmasking matrix into volume of shape {shape}')
-    mask = (mask != 0)
-    out = np.zeros(shape, dtype='float32')
+    LGR.info(f"Unmasking matrix into volume of shape {shape}")
+    mask = mask != 0
+    out = np.zeros(shape, dtype="float32")
     out[mask] = data
     return out
 
@@ -188,32 +199,39 @@ def apply_atlas(data, atlas, mask=None):
         mask = (data != 0).any(axis=-1)
     else:
         # Ensure that mask is boolean
-        mask = (mask != 0)
+        mask = mask != 0
 
     # #!# Add nilearn's fetching atlases utility
 
     if atlas.ndim > 3:
-        raise NotImplementedError(f'Files with {atlas.ndim} dimensions are not '
-                                  'supported as atlases.')
-    if data.shape[:mask.ndim] != mask.shape:
-        raise ValueError(f'Cannot mask data with shape {data.shape} using mask '
-                         f'with shape {mask.shape}')
-    if data.shape[:atlas.ndim] != atlas.shape:
-        raise ValueError(f'Cannot apply atlas with shape {atlas.shape} on data '
-                         f'with shape {data.shape}')
+        raise NotImplementedError(
+            f"Files with {atlas.ndim} dimensions are not " "supported as atlases."
+        )
+    if data.shape[: mask.ndim] != mask.shape:
+        raise ValueError(
+            f"Cannot mask data with shape {data.shape} using mask "
+            f"with shape {mask.shape}"
+        )
+    if data.shape[: atlas.ndim] != atlas.shape:
+        raise ValueError(
+            f"Cannot apply atlas with shape {atlas.shape} on data "
+            f"with shape {data.shape}"
+        )
     if (data.ndim - atlas.ndim) > 1:
-        LGR.warning(f'returning volume with {data.ndim-atlas.ndim+1} dimensions.')
+        LGR.warning(f"returning volume with {data.ndim-atlas.ndim+1} dimensions.")
     else:
-        LGR.info(f'Returning {data.ndim-atlas.ndim+1}D array of signal averages '
-                 f'in atlas {atlas}.')
+        LGR.info(
+            f"Returning {data.ndim-atlas.ndim+1}D array of signal averages "
+            f"in atlas {atlas}."
+        )
 
     # Mask data and atlas first
     atlas = atlas * mask
     labels = np.unique(atlas)
     labels = labels[labels > 0]
-    LGR.info(f'Labels: {labels}, numbers: {len(labels)}')
+    LGR.info(f"Labels: {labels}, numbers: {len(labels)}")
     # Initialise dataframe and dictionary for series
-    parcels = np.empty([len(labels), data.shape[-1]], dtype='float32')
+    parcels = np.empty([len(labels), data.shape[-1]], dtype="float32")
 
     # Compute averages
     for n, l in enumerate(labels):
@@ -254,31 +272,35 @@ def unfold_atlas(data, atlas, mask=None):
         in the atlas.
     """
     if mask is None:
-        mask = (atlas != 0)
+        mask = atlas != 0
     else:
         # Check that mask contains bool
-        mask = (mask != 0)
+        mask = mask != 0
 
     if (mask.ndim - atlas.ndim) == 1:
         atlas = atlas[..., np.newaxis]
     elif (atlas.ndim - mask.ndim) == 1:
         mask = mask[..., np.newaxis]
     elif abs(mask.ndim - atlas.ndim) > 1:
-        raise ValueError(f'Cannot use {mask.ndim}D mask on {atlas.ndim}D atlas.')
+        raise ValueError(f"Cannot use {mask.ndim}D mask on {atlas.ndim}D atlas.")
 
-    if atlas.shape[:mask.ndim] != mask.shape:
-        raise ValueError(f'Cannot mask atlas with shape {atlas.shape} using mask '
-                         f'with shape {mask.shape}')
+    if atlas.shape[: mask.ndim] != mask.shape:
+        raise ValueError(
+            f"Cannot mask atlas with shape {atlas.shape} using mask "
+            f"with shape {mask.shape}"
+        )
     atlas = atlas * mask
 
     labels = np.unique(atlas)
     labels = labels[labels > 0]
     if data.shape[0] != len(labels):
-        raise ValueError(f'Cannot unfold data with shape {data.shape} on atlas '
-                         f'with {len(labels)} parcels')
+        raise ValueError(
+            f"Cannot unfold data with shape {data.shape} on atlas "
+            f"with {len(labels)} parcels"
+        )
 
-    LGR.info(f'Unmasking data into atlas-like volume of {3+data.ndim-1} dimensions.')
-    out = np.zeros_like(atlas, dtype='float32')
+    LGR.info(f"Unmasking data into atlas-like volume of {3+data.ndim-1} dimensions.")
+    out = np.zeros_like(atlas, dtype="float32")
 
     for ax in range(1, data.ndim):
         if data.shape[ax] > 1:

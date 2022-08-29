@@ -22,7 +22,6 @@ import logging
 
 import numpy as np
 
-
 LGR = logging.getLogger(__name__)
 SET_DPI = 100
 FIGSIZE = (18, 10)
@@ -62,24 +61,26 @@ def plot_connectivity(mtx, filename=None, closeplot=False):
     try:
         import matplotlib.pyplot as plt
     except ImportError:
-        raise ImportError('matplotlib is required to plot connectivity matrices. '
-                          'Please see install instructions.')
+        raise ImportError(
+            "matplotlib is required to plot connectivity matrices. "
+            "Please see install instructions."
+        )
 
     mtx = mtx.squeeze()
     if mtx.ndim > 3:
-        raise ValueError('Cannot plot connectivity matrices for matrix of '
-                         'dimensions > 3.')
+        raise ValueError(
+            "Cannot plot connectivity matrices for matrix of " "dimensions > 3."
+        )
     elif mtx.ndim == 3:
-        LGR.warning('Since matrix is 3D, averaging across last '
-                    'dimension.')
+        LGR.warning("Since matrix is 3D, averaging across last " "dimension.")
         mtx = mtx.mean(axis=-1)
 
     if mtx.shape[0] != mtx.shape[1]:
-        LGR.warning('Given matrix is not a square matrix!')
+        LGR.warning("Given matrix is not a square matrix!")
 
-    LGR.info('Creating connectivity plot.')
+    LGR.info("Creating connectivity plot.")
     plt.figure(figsize=FIGSIZE)
-    plt.imshow(mtx, cmap='RdBu')
+    plt.imshow(mtx, cmap="RdBu")
 
     if filename is not None:
         plt.savefig(filename, dpi=SET_DPI)
@@ -125,23 +126,23 @@ def plot_grayplot(timeseries, filename=None, closeplot=False):
     try:
         import matplotlib.pyplot as plt
     except ImportError:
-        raise ImportError('matplotlib is required to plot grayplots. '
-                          'Please see install instructions.')
+        raise ImportError(
+            "matplotlib is required to plot grayplots. "
+            "Please see install instructions."
+        )
 
     timeseries = timeseries.squeeze()
     if timeseries.ndim > 3:
-        raise ValueError('Cannot plot grayplots for timeseries of '
-                         'dimensions > 3.')
+        raise ValueError("Cannot plot grayplots for timeseries of " "dimensions > 3.")
     elif timeseries.ndim == 3:
-        LGR.warning('Since timeseries is 3D, averaging across last '
-                    'dimension.')
+        LGR.warning("Since timeseries is 3D, averaging across last " "dimension.")
         timeseries = timeseries.mean(axis=-1)
 
-    LGR.info('Creating grayplot.')
+    LGR.info("Creating grayplot.")
     plt.figure(figsize=FIGSIZE)
     vmax = np.percentile(timeseries, 99)
     vmin = np.percentile(timeseries, 1)
-    plt.imshow(timeseries, cmap='gray', vmin=vmin, vmax=vmax)
+    plt.imshow(timeseries, cmap="gray", vmin=vmin, vmax=vmax)
 
     if filename is not None:
         plt.savefig(filename, dpi=SET_DPI)
@@ -190,35 +191,38 @@ def plot_nodes(ns, atlas, filename=None, thr=None, closeplot=False):
     Requires `matplotlib` and `nilearn`
     """
     try:
-        from nilearn.plotting import find_parcellation_cut_coords, plot_markers
         import matplotlib.pyplot as plt
+        from nilearn.plotting import find_parcellation_cut_coords, plot_markers
     except ImportError:
-        raise ImportError('nilearn and matplotlib are required to plot node images. '
-                          'Please see install instructions.')
+        raise ImportError(
+            "nilearn and matplotlib are required to plot node images. "
+            "Please see install instructions."
+        )
     # First check that ns is a valid source of data.
     ns = ns.squeeze()
     if ns.ndim > 2:
-        raise ValueError('Cannot plot node values for matrix of '
-                         'dimensions > 2.')
+        raise ValueError("Cannot plot node values for matrix of " "dimensions > 2.")
     elif ns.ndim == 2:
-        LGR.warning('Given matrix has 2 dimensions, averaging across last '
-                    'dimension.')
+        LGR.warning(
+            "Given matrix has 2 dimensions, averaging across last " "dimension."
+        )
         ns = ns.mean(axis=-1)
 
     # Then treat atlas
     if type(atlas) is np.ndarray:
         if atlas.ndim > 2 or atlas.shape[1] != 3:
-            raise NotImplementedError('Only atlases in nifti format or '
-                                      'list of coordinates are supported.')
+            raise NotImplementedError(
+                "Only atlases in nifti format or " "list of coordinates are supported."
+            )
         else:
             coord = atlas
     else:
         coord = find_parcellation_cut_coords(atlas)
 
     if ns.shape[0] != coord.shape[0]:
-        raise ValueError('Node array and coordinates array have different length.')
+        raise ValueError("Node array and coordinates array have different length.")
 
-    LGR.info('Creating markerplot.')
+    LGR.info("Creating markerplot.")
     plt.figure(figsize=FIGSIZE)
     plot_markers(ns, coord, node_threshold=thr)
 

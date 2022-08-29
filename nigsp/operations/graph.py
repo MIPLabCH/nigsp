@@ -12,7 +12,6 @@ import logging
 
 from numpy import abs
 
-
 LGR = logging.getLogger(__name__)
 
 

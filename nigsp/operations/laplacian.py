@@ -12,7 +12,6 @@ import logging
 
 import numpy as np
 
-
 LGR = logging.getLogger(__name__)
 
 
@@ -36,9 +35,9 @@ def symmetric_normalisation(mtx):
     """
     d = np.diag(mtx.sum(axis=-1) ** (-1 / 2))
 
-    symm_norm = (d @ mtx @ d)
+    symm_norm = d @ mtx @ d
 
-    return (np.eye(mtx.shape[0]) - symm_norm)
+    return np.eye(mtx.shape[0]) - symm_norm
 
 
 def decomposition(mtx):

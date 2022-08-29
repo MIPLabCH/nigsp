@@ -12,8 +12,9 @@ from nigsp.utils import prepare_ndim_iteration
 # ### Unit tests
 def test_normalise_ts():
     ts = rand(3, 20)
-    z = ((ts - ts.mean(axis=1)[:, np.newaxis, ...]) /
-         ts.std(axis=1, ddof=1)[:, np.newaxis, ...])
+    z = (ts - ts.mean(axis=1)[:, np.newaxis, ...]) / ts.std(axis=1, ddof=1)[
+        :, np.newaxis, ...
+    ]
     z[np.isnan(z)] = 0
 
     tsz = timeseries.normalise_ts(ts)
@@ -37,7 +38,7 @@ def test_graph_fourier_transform():
         pr[:, :, i] = ev.conj().T @ np.squeeze(tsr[:, :, i])
     pr = pr.reshape(ts.shape)
     prm = pr.mean(axis=1)
-    engm = (pr ** 2).mean(axis=1)
+    engm = (pr**2).mean(axis=1)
 
     proj = timeseries.graph_fourier_transform(ts, ev, mean=True)
     eng = timeseries.graph_fourier_transform(ts, ev, energy=True, mean=True)
@@ -47,7 +48,7 @@ def test_graph_fourier_transform():
 
 
 def test_median_cutoff_frequency_idx():
-    energy = np.array([[0, 3], [1, 2], [0, 1], [.5, .5]])
+    energy = np.array([[0, 3], [1, 2], [0, 1], [0.5, 0.5]])
     freq_t = 2
 
     freq_idx = timeseries.median_cutoff_frequency_idx(energy)
@@ -59,22 +60,22 @@ def test_graph_filter():
     ts = rand(4, 10)
     ev = rand(4, 4)
 
-    keys = ['hi', 'ho']
+    keys = ["hi", "ho"]
     freq_idx = 2
 
     ev_s = dict.fromkeys(keys)
     ts_s = dict.fromkeys(keys)
 
-    ev_s['hi'] = np.append(ev[:, :freq_idx],
-                           np.zeros_like(ev[:, freq_idx:],
-                                         dtype='float32'), axis=-1)
-    ev_s['ho'] = np.append(np.zeros_like(ev[:, :freq_idx],
-                                         dtype='float32'),
-                           ev[:, freq_idx:], axis=-1)
+    ev_s["hi"] = np.append(
+        ev[:, :freq_idx], np.zeros_like(ev[:, freq_idx:], dtype="float32"), axis=-1
+    )
+    ev_s["ho"] = np.append(
+        np.zeros_like(ev[:, :freq_idx], dtype="float32"), ev[:, freq_idx:], axis=-1
+    )
 
     fcf = timeseries.graph_fourier_transform(ts, ev)
-    ts_s['ho'] = timeseries.graph_fourier_transform(fcf, ev_s['ho'].T)
-    ts_s['hi'] = timeseries.graph_fourier_transform(fcf, ev_s['hi'].T)
+    ts_s["ho"] = timeseries.graph_fourier_transform(fcf, ev_s["ho"].T)
+    ts_s["hi"] = timeseries.graph_fourier_transform(fcf, ev_s["hi"].T)
 
     evec_split, ts_split = timeseries.graph_filter(ts, ev, freq_idx, keys)
 
@@ -91,7 +92,7 @@ def test_functional_connectivity():
     ts = rand(3, 6, 2, 2)
 
     tst, _ = prepare_ndim_iteration(ts, 2)
-    fc = np.empty(([tst.shape[0]] * 2 + [tst.shape[-1]]), dtype='float32')
+    fc = np.empty(([tst.shape[0]] * 2 + [tst.shape[-1]]), dtype="float32")
     for i in range(tst.shape[-1]):
         fc[:, :, i] = np.corrcoef(tst[..., i])
 
@@ -102,7 +103,7 @@ def test_functional_connectivity():
 
     assert (fc == fc_t).all()
 
-    tsd = {'hi': rand(3, 6), 'lo': rand(3, 6)}
+    tsd = {"hi": rand(3, 6), "lo": rand(3, 6)}
 
     fcd = timeseries.functional_connectivity(tsd)
 
@@ -116,15 +117,11 @@ def test_functional_connectivity():
 def test_break_median_cutoff_frequency_idx():
     with raises(NotImplementedError) as errorinfo:
         timeseries.median_cutoff_frequency_idx(rand(2, 3, 4))
-    assert 'have 3 dimensions' in str(errorinfo.value)
+    assert "have 3 dimensions" in str(errorinfo.value)
 
 
-@mark.parametrize('freq', [
-    (0),
-    (2),
-    (4)
-])
+@mark.parametrize("freq", [(0), (2), (4)])
 def test_break_graph_filter(freq):
     with raises(IndexError) as errorinfo:
         timeseries.graph_filter(rand(2, 3), rand(2, 2), freq)
-    assert f'index {freq} is not valid' in str(errorinfo.value)
+    assert f"index {freq} is not valid" in str(errorinfo.value)

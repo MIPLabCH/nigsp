@@ -15,36 +15,57 @@ LGR
 """
 
 import logging
-
 from copy import deepcopy
 
 from nigsp import operations
 
-
 LGR = logging.getLogger(__name__)
 
 
-class SCGraph():
+class SCGraph:
     """Main module object, containing all data representing the graph."""
 
-    def __init__(self, mtx, timeseries, atlas=None, filename=None, img=None,
-                 eigenval=None, eigenvec=None, energy=None, lapl_mtx=None,
-                 index='median', evec_split=None, ts_split=None, surr=None,
-                 surr_split=None, sdi=None, gsdi=None, fc=None, fc_split=None):
+    def __init__(
+        self,
+        mtx,
+        timeseries,
+        atlas=None,
+        filename=None,
+        img=None,
+        eigenval=None,
+        eigenvec=None,
+        energy=None,
+        lapl_mtx=None,
+        index="median",
+        evec_split=None,
+        ts_split=None,
+        surr=None,
+        surr_split=None,
+        sdi=None,
+        gsdi=None,
+        fc=None,
+        fc_split=None,
+    ):
         """Initialise SCGraph (see class docstring)."""
         if mtx.shape[1] != mtx.shape[0]:
-            raise ValueError('Graph matrix must be a square matrix, but '
-                             f'given matrix has {mtx.shape}!')
+            raise ValueError(
+                "Graph matrix must be a square matrix, but "
+                f"given matrix has {mtx.shape}!"
+            )
 
         if mtx.shape[1] != timeseries.shape[0]:
-            raise ValueError(f'Timeseries extracted from {timeseries.shape[0]} '
-                             f'parcels, but graph has {mtx.shape[1]} nodes. '
-                             'The number of parcels and nodes must be the same.')
+            raise ValueError(
+                f"Timeseries extracted from {timeseries.shape[0]} "
+                f"parcels, but graph has {mtx.shape[1]} nodes. "
+                "The number of parcels and nodes must be the same."
+            )
 
         if timeseries.ndim > 3:
-            raise ValueError('Timeseries of more than 3 dimensions are not supported '
-                             f'yet, but given timeseries has {timeseries.ndim} '
-                             'dimensions.')
+            raise ValueError(
+                "Timeseries of more than 3 dimensions are not supported "
+                f"yet, but given timeseries has {timeseries.ndim} "
+                "dimensions."
+            )
         self.mtx = deepcopy(mtx)
         self.timeseries = deepcopy(timeseries)
         self.atlas = deepcopy(atlas)
@@ -104,27 +125,30 @@ class SCGraph():
 
     def compute_graph_energy(self, mean=False):  # pragma: no cover
         """Implement timeseries.graph_fourier_transform for energy as class method."""
-        self.energy = operations.graph_fourier_transform(self.timeseries, self.eigenvec,
-                                                         energy=True, mean=mean)
+        self.energy = operations.graph_fourier_transform(
+            self.timeseries, self.eigenvec, energy=True, mean=mean
+        )
         return self
 
-    def split_graph(self, index=None, keys=['low', 'high']):
+    def split_graph(self, index=None, keys=["low", "high"]):
         """Implement timeseries.median_cutoff_frequency_idx as class method."""
         if index is None:
             index = self.index
 
-        if index == 'median':  # pragma: no cover
+        if index == "median":  # pragma: no cover
             index = operations.median_cutoff_frequency_idx(self.energy)
 
         elif type(index) is not int:
-            raise ValueError(f'Unknown option {index} for frequency split index. '
-                             'Declared index must be either an integer or \'median\'')
+            raise ValueError(
+                f"Unknown option {index} for frequency split index. "
+                "Declared index must be either an integer or 'median'"
+            )
 
-        self.evec_split, self.ts_split = operations.graph_filter(self.timeseries,
-                                                                 self.eigenvec,
-                                                                 index, keys)
+        self.evec_split, self.ts_split = operations.graph_filter(
+            self.timeseries, self.eigenvec, index, keys
+        )
         if self.index != index:
-            LGR.warning(f'Updating stored index from {self.index} to {index}')
+            LGR.warning(f"Updating stored index from {self.index} to {index}")
             self.index = index
 
         return self
@@ -144,42 +168,53 @@ class SCGraph():
         self.gsdi = operations.gsdi(self.ts_split, mean, keys)
         return self
 
-    def create_surrogates(self, sc_type='informed', n_surr=1000, seed=None):
+    def create_surrogates(self, sc_type="informed", n_surr=1000, seed=None):
         """Implement surrogates.sc_informed and sc_uninformed as class method."""
-        sc_args = {'timeseries': self.timeseries, 'n_surr': n_surr}
+        sc_args = {"timeseries": self.timeseries, "n_surr": n_surr}
         if seed is not None:
-            sc_args['seed'] = seed
+            sc_args["seed"] = seed
 
-        if sc_type == 'informed':
-            sc_args['eigenvec'] = self.eigenvec
+        if sc_type == "informed":
+            sc_args["eigenvec"] = self.eigenvec
             self.surr = operations.sc_informed(**sc_args)
-        elif sc_type == 'uninformed':
-            sc_args['lapl_mtx'] = self.lapl_mtx
+        elif sc_type == "uninformed":
+            sc_args["lapl_mtx"] = self.lapl_mtx
             self.surr = operations.sc_uninformed(**sc_args)
         else:
-            raise ValueError(f'Unknown option {sc_type} for surrogate creation. '
-                             'Declared type must be either \'informed\' or '
-                             '\'uninformed\'')
+            raise ValueError(
+                f"Unknown option {sc_type} for surrogate creation. "
+                "Declared type must be either 'informed' or "
+                "'uninformed'"
+            )
         return self
 
-    def test_significance(self, method='Bernoulli', p=0.05,
-                          return_masked=False, mean=False):  # pragma: no cover
+    def test_significance(
+        self, method="Bernoulli", p=0.05, return_masked=False, mean=False
+    ):  # pragma: no cover
         """Implement surrogates.test_significance as class method."""
-        _, self.surr_split = operations.graph_filter(self.surr,
-                                                     self.eigenvec,
-                                                     self.index)
+        _, self.surr_split = operations.graph_filter(
+            self.surr, self.eigenvec, self.index
+        )
         if self.sdi is not None:
             surr_sdi = operations.sdi(self.surr_split, mean, keys=None)
-            self.sdi = operations.test_significance(surr=surr_sdi, data=self.sdi,
-                                                    method=method, p=p,
-                                                    return_masked=return_masked,
-                                                    mean=mean)
+            self.sdi = operations.test_significance(
+                surr=surr_sdi,
+                data=self.sdi,
+                method=method,
+                p=p,
+                return_masked=return_masked,
+                mean=mean,
+            )
         if self.gsdi is not None:
             surr_sdi = operations.gsdi(self.surr_split, mean, keys=None)
-            self.gsdi = operations.test_significance(surr=surr_sdi, data=self.gsdi,
-                                                     method=method, p=p,
-                                                     return_masked=return_masked,
-                                                     mean=mean)
+            self.gsdi = operations.test_significance(
+                surr=surr_sdi,
+                data=self.gsdi,
+                method=method,
+                p=p,
+                return_masked=return_masked,
+                mean=mean,
+            )
         return self
 
     def normalise_ts(self):  # pragma: no cover
@@ -190,15 +225,16 @@ class SCGraph():
     def compute_fc(self, mean=False):
         """Implement timeseries.functional_connectivity as class method."""
         if self.timeseries is not None:
-            LGR.info('Compute FC of original timeseries.')
+            LGR.info("Compute FC of original timeseries.")
             self.fc = operations.functional_connectivity(self.timeseries, mean)
         if self.ts_split is not None:
             self.fc_split = dict.fromkeys(self.ts_split.keys())
-            LGR.info('Compute FC of split timeseries.')
+            LGR.info("Compute FC of split timeseries.")
             for k in self.ts_split.keys():
-                LGR.info(f'Compute FC of {k} timeseries.')
-                self.fc_split[k] = operations.functional_connectivity(self.ts_split[k],
-                                                                      mean)
+                LGR.info(f"Compute FC of {k} timeseries.")
+                self.fc_split[k] = operations.functional_connectivity(
+                    self.ts_split[k], mean
+                )
         return self
 
 

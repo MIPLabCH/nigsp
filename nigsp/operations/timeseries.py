@@ -12,7 +12,7 @@ import logging
 
 import numpy as np
 
-from nigsp.utils import pairwise, change_var_type, prepare_ndim_iteration
+from nigsp.utils import change_var_type, pairwise, prepare_ndim_iteration
 
 LGR = logging.getLogger(__name__)
 
@@ -38,12 +38,14 @@ def normalise_ts(timeseries):
         If timeseries is a 1D array, it is returned as is.
     """
     if timeseries.ndim < 2 or (timeseries.ndim == 2 and timeseries.shape[1] == 1):
-        LGR.warning('Given timeseries seems to be a single timepoint. '
-                    'Returning it as is.')
+        LGR.warning(
+            "Given timeseries seems to be a single timepoint. " "Returning it as is."
+        )
         return timeseries
 
-    z = ((timeseries - timeseries.mean(axis=1)[:, np.newaxis, ...])
-         / timeseries.std(axis=1, ddof=1)[:, np.newaxis, ...])
+    z = (timeseries - timeseries.mean(axis=1)[:, np.newaxis, ...]) / timeseries.std(
+        axis=1, ddof=1
+    )[:, np.newaxis, ...]
     z[np.isnan(z)] = 0
 
     return z
@@ -94,7 +96,7 @@ def graph_fourier_transform(timeseries, eigenvec, energy=False, mean=False):
 
     if energy:
         # Compute energy of the spectral density
-        energy = proj ** 2
+        energy = proj**2
         if proj.ndim > 2 and mean:
             energy = energy.mean(axis=1)
 
@@ -127,14 +129,16 @@ def median_cutoff_frequency_idx(energy):
         If the provided array is 3D or more.
     """
     if energy.ndim > 2:
-        raise NotImplementedError('Provided energy spectral density data have '
-                                  f'{energy.ndim} dimensions, but arrays of more '
-                                  'than 2 dimensions are not supported yet')
+        raise NotImplementedError(
+            "Provided energy spectral density data have "
+            f"{energy.ndim} dimensions, but arrays of more "
+            "than 2 dimensions are not supported yet"
+        )
 
     if energy.ndim == 2:
         energy = energy.mean(axis=-1)
     half_tot_auc = np.trapz(energy, axis=0) / 2
-    LGR.debug(f'Total AUC = {half_tot_auc*2}, targetting half of total AUC')
+    LGR.debug(f"Total AUC = {half_tot_auc*2}, targetting half of total AUC")
 
     # Compute the AUC from first to one to last frequency,
     # skipping first component because AUC(1)=0.
@@ -142,17 +146,19 @@ def median_cutoff_frequency_idx(energy):
     # It could be computed from high to low, but in theory
     # there would be more cycles, as #eigenvec(h) > #eigenvec(l).
     for freq_idx in range(1, energy.size):
-        LGR.debug(f'Frequency idx {freq_idx}, '
-                  f'AUC = {np.trapz(energy[:freq_idx])}, '
-                  f'target AUC = {half_tot_auc}')
+        LGR.debug(
+            f"Frequency idx {freq_idx}, "
+            f"AUC = {np.trapz(energy[:freq_idx])}, "
+            f"target AUC = {half_tot_auc}"
+        )
         if np.trapz(energy[:freq_idx]) >= half_tot_auc:
             break
 
-    LGR.info(f'Found {freq_idx} as splitting index')
+    LGR.info(f"Found {freq_idx} as splitting index")
     return freq_idx
 
 
-def graph_filter(timeseries, eigenvec, freq_idx, keys=['low', 'high']):
+def graph_filter(timeseries, eigenvec, freq_idx, keys=["low", "high"]):
     """
     Filter a graph decomposition into two parts based on freq_idx.
 
@@ -194,24 +200,30 @@ def graph_filter(timeseries, eigenvec, freq_idx, keys=['low', 'high']):
 
     for f in freq_idx:
         if f == 0 or f >= eigenvec.shape[0] - 1:
-            raise IndexError(f'Selected index {f} is not valid to split '
-                             f'eigenvector matrix of shape {eigenvec.shape}.')
+            raise IndexError(
+                f"Selected index {f} is not valid to split "
+                f"eigenvector matrix of shape {eigenvec.shape}."
+            )
 
-    LGR.info(f'Splitting graph into {len(freq_idx)+1} parts')
+    LGR.info(f"Splitting graph into {len(freq_idx)+1} parts")
 
     # Check that there is the right amount of keys
     if len(keys) > len(freq_idx) + 1:
-        LGR.warning(f'The declared keys list ({keys}) has {len(keys)} elements. '
-                    f'Since the frequency index list ({freq_idx}) has {len(freq_idx)}, '
-                    f'any keys after {keys[len(freq_idx)]} will be ignored.')
-        keys = keys[:len(freq_idx) + 1]
+        LGR.warning(
+            f"The declared keys list ({keys}) has {len(keys)} elements. "
+            f"Since the frequency index list ({freq_idx}) has {len(freq_idx)}, "
+            f"any keys after {keys[len(freq_idx)]} will be ignored."
+        )
+        keys = keys[: len(freq_idx) + 1]
     elif len(keys) < len(freq_idx) + 1:
-        LGR.warning(f'The declared keys list ({keys}) has {len(keys)} elements. '
-                    f'Since the frequency index list ({freq_idx}) has {len(freq_idx)}, '
-                    f'more keys will be created after {keys[len(freq_idx)]} .')
+        LGR.warning(
+            f"The declared keys list ({keys}) has {len(keys)} elements. "
+            f"Since the frequency index list ({freq_idx}) has {len(freq_idx)}, "
+            f"more keys will be created after {keys[len(freq_idx)]} ."
+        )
 
         for i in range(len(keys), len(freq_idx) + 1):
-            keys = keys + [f'key-{i+1:03d}']
+            keys = keys + [f"key-{i+1:03d}"]
 
     # Add 0 and None to freq_idx to have full indexes
     freq_idx = [0] + freq_idx + [None]
@@ -222,18 +234,21 @@ def graph_filter(timeseries, eigenvec, freq_idx, keys=['low', 'high']):
     for n, idx in enumerate(pairwise(freq_idx)):
         i, j = idx
         k = j if j is not None else eigenvec.shape[-1]
-        evec_split[keys[n]] = np.append(np.append(np.zeros_like(eigenvec[:, :i],
-                                                                dtype='float32'),
-                                                  eigenvec[:, i:j], axis=-1),
-                                        np.zeros_like(eigenvec[:, k:],
-                                                      dtype='float32'),
-                                        axis=-1)
+        evec_split[keys[n]] = np.append(
+            np.append(
+                np.zeros_like(eigenvec[:, :i], dtype="float32"),
+                eigenvec[:, i:j],
+                axis=-1,
+            ),
+            np.zeros_like(eigenvec[:, k:], dtype="float32"),
+            axis=-1,
+        )
 
-    LGR.info('Compute graph fourier coefficients.')
+    LGR.info("Compute graph fourier coefficients.")
     fourier_coeff = graph_fourier_transform(timeseries, eigenvec)
 
     for k in keys:
-        LGR.info(f'Compute {k} part of timeseries.')
+        LGR.info(f"Compute {k} part of timeseries.")
         ts_split[k] = graph_fourier_transform(fourier_coeff, evec_split[k].T)
 
     return evec_split, ts_split
@@ -282,14 +297,16 @@ def functional_connectivity(timeseries, mean=False):
         """
         timeseries = timeseries.squeeze()
         if timeseries.ndim < 2:
-            LGR.warning('Computing functional connectivity of a 1D array (== 1)!')
+            LGR.warning("Computing functional connectivity of a 1D array (== 1)!")
             return 1
         elif timeseries.ndim == 2:
             return np.corrcoef(timeseries)
         else:
             # reshape the array to allow reiteration on unknown dimensions of timeseries
             temp_ts, _ = prepare_ndim_iteration(timeseries, 2)
-            fcorr = np.empty(([temp_ts.shape[0]] * 2 + [temp_ts.shape[-1]]), dtype='float32')
+            fcorr = np.empty(
+                ([temp_ts.shape[0]] * 2 + [temp_ts.shape[-1]]), dtype="float32"
+            )
             for i in range(temp_ts.shape[-1]):
                 fcorr[:, :, i] = np.corrcoef(temp_ts[..., i])
 

@@ -9,16 +9,19 @@ from nigsp.operations import graph
 # ### Unit tests
 def test_zerocross():
     """Test zerocross with legendre polynomials."""
+
     def _bonnet(d, x):
-        if(d == 0):
+        if d == 0:
             return np.ones_like(x)
-        elif(d == 1):
+        elif d == 1:
             return x
         else:
-            return ((2*d-1)*x*_bonnet(d-1, x)-(d-1)*_bonnet(d-2, x))/d
+            return (
+                (2 * d - 1) * x * _bonnet(d - 1, x) - (d - 1) * _bonnet(d - 2, x)
+            ) / d
 
     x = np.linspace(-1, 1, 100)
-    legendre = np.empty([100, 5], dtype='float32')
+    legendre = np.empty([100, 5], dtype="float32")
     for n in range(5):
         legendre[:, n] = _bonnet(n, x)
 
