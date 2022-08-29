@@ -36,7 +36,7 @@ jobs:
         isort .
         black nigsp
     - name: Push on master branch
-      uses: github-actions-x/commit@v2.8
+      uses: github-actions-x/commit@v2.9
       with:
         github-token: ${{ secrets.GH_TOKEN }}
         push-branch: 'master'
