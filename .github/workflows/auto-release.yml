@@ -36,14 +36,14 @@ jobs:
         isort .
         black nisgp
     - name: Push on master branch
-        uses: github-actions-x/commit@v2.8
-        with:
-          github-token: ${{ secrets.GH_TOKEN }}
-          push-branch: 'master'
-          commit-message: 'Commit formatted code [skip ci]'
-          files: .
-          name: Stefano Moia
-          email: s.moia.research@gmail.com
+      uses: github-actions-x/commit@v2.8
+      with:
+        github-token: ${{ secrets.GH_TOKEN }}
+        push-branch: 'master'
+        commit-message: 'Commit formatted code [skip ci]'
+        files: .
+        name: Stefano Moia
+        email: s.moia.research@gmail.com
     - name: Download and install latest auto
       env:
         # OS can be linux, macos, or win
