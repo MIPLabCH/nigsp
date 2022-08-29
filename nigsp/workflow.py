@@ -16,10 +16,10 @@ import sys
 
 import numpy as np
 
-from nigsp import _version, blocks, io
+from nigsp import _version, blocks, io, references
 from nigsp import surrogates as surr
 from nigsp import timeseries as ts
-from nigsp import references, utils, viz
+from nigsp import utils, viz
 from nigsp.cli.run import _get_parser
 from nigsp.due import due
 from nigsp.objects import SCGraph
