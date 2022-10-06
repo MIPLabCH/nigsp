@@ -15,25 +15,38 @@ import numpy as np
 LGR = logging.getLogger(__name__)
 
 
-def symmetric_normalisation(mtx):
+def symmetric_normalisation(mtx, d=None, fix_zeros=True):
     """
-    Compute symmetrically normalised Laplacian matrix.
+    Compute symmetrically normalised Laplacian (SNL) matrix.
 
+    The SNL is obtained by pre- and post- multiplying mtx by its diagonal.
+    Alternatively, it is possible to specify a different diagonal to do so.
+    With zero-order nodes, the diagonals will contain 0s, returning a Laplacian
+    with NaN elements. To avoid that, 0 elements in d will be changed to 1. 
+    
     Parameters
     ----------
     mtx : numpy.ndarray
         A [structural] matrix
-
+    d : None, optional
+        Description
+    fix_zeros : bool, optional
+        Description
+    
     Returns
     -------
     numpy.ndarray
         The symmetrically normalised version of mtx
-
+    
     See Also
     --------
     https://en.wikipedia.org/wiki/Laplacian_matrix#Symmetrically_normalized_Laplacian_2
     """
-    d = np.diag(mtx.sum(axis=-1) ** (-1 / 2))
+    if d is None:
+        d = np.diag(mtx.sum(axis=-1) ** (-1 / 2))
+
+    if fix_zeros:
+        d[d == 0] = 1
 
     symm_norm = d @ mtx @ d
 
