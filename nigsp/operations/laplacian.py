@@ -42,11 +42,12 @@ def symmetric_normalisation(mtx, d=None, fix_zeros=True):
     --------
     https://en.wikipedia.org/wiki/Laplacian_matrix#Symmetrically_normalized_Laplacian_2
     """
-    if d is None:
-        d = np.diag(mtx.sum(axis=-1) ** (-1 / 2))
 
+    colsum = mtx.sum(axis=-1)
     if fix_zeros:
-        d[d == 0] = 1
+        colsum[colsum == 0] = 1
+    if d is None:
+        d = np.diag(colsum ** (-1 / 2))
 
     symm_norm = d @ mtx @ d
 
