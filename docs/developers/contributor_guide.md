@@ -27,7 +27,7 @@ open an issue on GitHub and don't be afraid to ask questions!
 
 ### Contributing with test files
 
-If you want a particular filetype supported, think about opening an issue or writing to the main developer with an example file - and the very good reason to add support for that filetype! 
+If you want a particular filetype supported, think about opening an issue or writing to the main developer with an example file - and the very good reason to add support for that filetype!
 
 ### Contributing documentation through GitHub
 
@@ -90,20 +90,20 @@ right PR labels**!
 
 - ![Documentation](https://img.shields.io/badge/-Documentation-1D70CF?style=flat-square) Improvements or additions to documentation. This
   category includes (but is not limited to) docs pages, docstrings,
-  and code comments. 
+  and code comments.
 
 - ![Duplicate](https://img.shields.io/badge/-Duplicate-CFD3D7?style=flat-square) Whatever this is, it exists already! Maybe it's a closed
-  Issue/PR, that should be reopened. 
+  Issue/PR, that should be reopened.
 
 - ![Enhancement](https://img.shields.io/badge/-Enhancement-A2EEEF?style=flat-square) New features added or requested. This normally goes with a `minormod` label for PRs.
 
 - ![Outreach](https://img.shields.io/badge/-Outreach-0E8A16?style=flat-square) As part of the scientific community, we care about outreach. Check the relevant section about it, but know that this
   Issue/PR contains information or tasks about abstracts, talks,
-  demonstrations, papers. 
+  demonstrations, papers.
 
 - ![Paused](https://img.shields.io/badge/-Paused-F7C38C?style=flat-square) Issue or PR should not be worked on until the resolution of other issues or PRs.
 
-- ![released](https://img.shields.io/badge/-released-ffffff?style=flat-square) This Issue or PR has been released. 
+- ![released](https://img.shields.io/badge/-released-ffffff?style=flat-square) This Issue or PR has been released.
 
 - ![Testing](https://img.shields.io/badge/-Testing-FFB5B4?style=flat-square) This is for testing features, writing tests or producing testing code. Both user testing and CI testing!
 
@@ -140,7 +140,7 @@ right PR labels**!
 
 - ![Question](https://img.shields.io/badge/-Question-D876E3?style=flat-square) Further information is requested, from users to
   developers. Try to respond to this!
-  
+
 - ![Wontfix](https://img.shields.io/badge/-Wontfix-ffffff?style=flat-square) This will not be worked on, until further notice.
 
 ### PR-only labels
@@ -159,7 +159,7 @@ right PR labels**!
 
 - ![Minormod](https://img.shields.io/badge/-Minormod-05246D?style=flat-square) This PR generally closes an `Enhancement` issue. It increments the minor version (0.+1.0)
 
-- ![Minormod-breaking](https://img.shields.io/badge/-Minormod&ndash;breaking-05246D?style=flat-square) This label should be used during development stages (<1.0.0) only. These PRs call for a new minor release during development (0.+1.0) that **will** break backward compatibility. 
+- ![Minormod-breaking](https://img.shields.io/badge/-Minormod&ndash;breaking-05246D?style=flat-square) This label should be used during development stages (<1.0.0) only. These PRs call for a new minor release during development (0.+1.0) that **will** break backward compatibility.
 
 - ![Internal](https://img.shields.io/badge/-Internal-ffffff?style=flat-square) This PR contains changes to the internal API. It won\'t
   trigger a release, but it will be reported in the changelog.
