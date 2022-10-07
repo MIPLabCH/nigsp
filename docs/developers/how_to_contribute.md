@@ -77,6 +77,36 @@ This will install:
  build the docs locally before submitting them.
 - All **test** modules (`pytest`, `coverage`), in order for you to test your
  code locally before committing it!
+- `pre-commit`, for commit hooks.
+
+## Install pre-commit hooks
+
+`pre-commit` is a tool that aloows you to _automagically_ run smaller CI operations locally when commiting code with git. For instance, it will check for merge conflicts and black the code, improving the quality of your PRs.
+
+Go to the `nigsp` repository folder and execute the command:
+
+```shell
+$ cd nigsp
+$ pre-commit install
+```
+
+To check that pre-commits are correctly installed, run:
+
+```shell
+$ pre-commit run --all-files
+```
+
+The output should look like:
+
+```
+trim trailing whitespace.................................................Passed
+fix end of files.........................................................Passed
+check yaml...............................................................Passed
+check for added large files..............................................Passed
+check for case conflicts.................................................Passed
+check for merge conflicts................................................Passed
+black....................................................................Passed
+```
 
 ## Check your installation!
 

@@ -362,10 +362,9 @@ Before approving and/or merging PRs, be sure that:
 
 Docstrings should follow
 [numpydoc](https://numpydoc.readthedocs.io/en/latest/format.html)
-convention. We encourage extensive documentation. The python code itself
-should follow [PEP8](https://www.python.org/dev/peps/pep-0008/)
-convention whenever possible: there are continuous integration tests
-checking that! You can use linters to help you write your code following
+convention. We encourage extensive documentation.
+The python code itself is blackened during commits, but we invite you to follow the [PEP8](https://www.python.org/dev/peps/pep-0008/) convention or [Black](https://black.readthedocs.io/en/stable/) whenever possible, as it will smooth `pre-commit`'s job.
+You can use linters to help you write your code following
 style conventions. Linters are add-ons that you can run on the written
 script file. We suggest the use of **flake8** for Python 3. Many editors
 (Atom, VScode, Sublimetext, \...) support addons for online lintering,
