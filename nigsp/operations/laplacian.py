@@ -28,8 +28,8 @@ def symmetric_normalisation(mtx, d=None, fix_zeros=True):
     ----------
     mtx : numpy.ndarray
         A [structural] matrix
-    d : None, optional
-        Description
+    d : np.ndarray or None, optional
+        Either an array or a 
     fix_zeros : bool, optional
         Description
     
@@ -42,6 +42,19 @@ def symmetric_normalisation(mtx, d=None, fix_zeros=True):
     --------
     https://en.wikipedia.org/wiki/Laplacian_matrix#Symmetrically_normalized_Laplacian_2
     """
+
+    if d is not None:
+        if d.ndim == 1:
+            if d.size == 0:
+                raise ValueError('The provided diagonal is empty.')
+            d = np.diag(d)
+        else:
+            if np.diag(d).sum() != d.sum():
+                raise ValueError('The provided matrix for symmetric normalisation '
+                                 'is not a diagonal matrix.')
+        if d.shape != mtx.shape:
+            raise ValueError(f'The provided diagonal has shape {d.shape} while the '
+                             f'provided matrix has shape {mtx.shape}.')
 
     colsum = mtx.sum(axis=-1)
     if fix_zeros:
