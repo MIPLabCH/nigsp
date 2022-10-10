@@ -112,5 +112,5 @@ cite also:
    :maxdepth: 5
 
    How to Contribute <developers/how_to_contribute>
-   Contributor Guide <developers/contributor_guide> 
+   Contributor Guide <developers/contributor_guide>
    Code of Conduct <developers/code_of_conduct>

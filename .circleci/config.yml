@@ -60,7 +60,7 @@ jobs:
           paths:
             - src/coverage/.coverage.py37
 
-  test310: 
+  test310:
     docker:
       - image: cimg/python:3.10
     working_directory: /tmp/src/nigsp
@@ -87,7 +87,7 @@ jobs:
           paths:
             - src/coverage/.coverage.py310
 
-  style_check: 
+  style_check:
     docker:
       - image: cimg/python:3.7
     working_directory: /tmp/src/nigsp
@@ -147,4 +147,3 @@ workflows:
           requires:
             - test37
             - test310
-
