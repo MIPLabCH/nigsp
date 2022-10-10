@@ -22,22 +22,22 @@ def symmetric_normalisation(mtx, d=None, fix_zeros=True):
     The SNL is obtained by pre- and post- multiplying mtx by its diagonal.
     Alternatively, it is possible to specify a different diagonal to do so.
     With zero-order nodes, the diagonals will contain 0s, returning a Laplacian
-    with NaN elements. To avoid that, 0 elements in d will be changed to 1. 
-    
+    with NaN elements. To avoid that, 0 elements in d will be changed to 1.
+
     Parameters
     ----------
     mtx : numpy.ndarray
         A [structural] matrix
     d : np.ndarray or None, optional
-        Either an array or a 
+        Either an array or a
     fix_zeros : bool, optional
         Description
-    
+
     Returns
     -------
     numpy.ndarray
         The symmetrically normalised version of mtx
-    
+
     See Also
     --------
     https://en.wikipedia.org/wiki/Laplacian_matrix#Symmetrically_normalized_Laplacian_2
@@ -46,15 +46,19 @@ def symmetric_normalisation(mtx, d=None, fix_zeros=True):
     if d is not None:
         if d.ndim == 1:
             if d.size == 0:
-                raise ValueError('The provided diagonal is empty.')
+                raise ValueError("The provided diagonal is empty.")
             d = np.diag(d)
         else:
             if np.diag(d).sum() != d.sum():
-                raise ValueError('The provided matrix for symmetric normalisation '
-                                 'is not a diagonal matrix.')
+                raise ValueError(
+                    "The provided matrix for symmetric normalisation "
+                    "is not a diagonal matrix."
+                )
         if d.shape != mtx.shape:
-            raise ValueError(f'The provided diagonal has shape {d.shape} while the '
-                             f'provided matrix has shape {mtx.shape}.')
+            raise ValueError(
+                f"The provided diagonal has shape {d.shape} while the "
+                f"provided matrix has shape {mtx.shape}."
+            )
 
     colsum = mtx.sum(axis=-1)
     if fix_zeros:
