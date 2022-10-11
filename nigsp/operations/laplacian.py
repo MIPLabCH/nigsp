@@ -49,7 +49,7 @@ def symmetric_normalisation(mtx, d=None, fix_zeros=True):
                 raise ValueError("The provided diagonal is empty.")
             d = np.diag(d)
         else:
-            if np.diag(d).sum() != d.sum():
+            if not (np.diag(d) == d.sum(axis=-1)).all():
                 raise ValueError(
                     "The provided matrix for symmetric normalisation "
                     "is not a diagonal matrix."
