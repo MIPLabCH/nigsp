@@ -44,8 +44,6 @@ jobs:
           name: Run tests
           # This assumes pytest is installed via the install-package step above
           command: |
-            isort .
-            black nigsp
             pytest --cov=./nigsp
             mkdir /tmp/src/coverage
             mv ./.coverage /tmp/src/coverage/.coverage.py37
@@ -75,8 +73,6 @@ jobs:
       - run:
           name: Run tests
           command: |
-            isort .
-            black nigsp
             pytest --cov=./nigsp
             mkdir /tmp/src/coverage
             mv ./.coverage /tmp/src/coverage/.coverage.py310
@@ -102,8 +98,8 @@ jobs:
       - run:
           name: Check style
           command: |
-            isort .
-            black nigsp
+            isort --check .
+            black --check nigsp
             flake8 ./nigsp
 
   merge_coverage:
