@@ -1,3 +1,41 @@
+# 0.9.0 (Wed Oct 12 2022)
+
+#### 🚀 Enhancement
+
+- Add possibility (1) to specify which diagonal to use for matrices symmetric normalisation and (2) to avoid "0" elements in the diagonal [#29](https://github.com/MIPLabCH/nigsp/pull/29) ([@smoia](https://github.com/smoia))
+- Add duecredit to keep track of citations [#27](https://github.com/MIPLabCH/nigsp/pull/27) ([@smoia](https://github.com/smoia))
+- int: Bump up github-action-x/commit to 2.9 [#27](https://github.com/MIPLabCH/nigsp/pull/27) ([@smoia](https://github.com/smoia))
+
+#### 💻 Refactored
+
+- Apply automatic formatting (black & isort) on code (tests and push) [#26](https://github.com/MIPLabCH/nigsp/pull/26) ([@smoia](https://github.com/smoia))
+
+#### 🐛 Bug Fix
+
+- Remove auto restyling in tests and PR merges given pre-commit [#33](https://github.com/MIPLabCH/nigsp/pull/33) ([@smoia](https://github.com/smoia))
+- Fix diagonal matrix check in `operations.laplacian.symmetric_normalisation` [#32](https://github.com/MIPLabCH/nigsp/pull/32) ([@smoia](https://github.com/smoia))
+
+#### ⚠️ Pushed to `master`
+
+- int: Remove empty line in config ([@smoia](https://github.com/smoia))
+- int: Fix path for black formatting ([@smoia](https://github.com/smoia))
+
+#### ⚠️ Tests
+
+- Add style check test (flake8) [#25](https://github.com/MIPLabCH/nigsp/pull/25) ([@smoia](https://github.com/smoia))
+
+#### 🏠 Internal
+
+- Add isort, flake8, pydocstyle, and rst pre-coomit hooks (and dev dependencies) [#31](https://github.com/MIPLabCH/nigsp/pull/31) ([@smoia](https://github.com/smoia))
+- Add pre-commit to repository [#30](https://github.com/MIPLabCH/nigsp/pull/30) ([@smoia](https://github.com/smoia) [@pre-commit-ci[bot]](https://github.com/pre-commit-ci[bot]))
+
+#### Authors: 2
+
+- [@pre-commit-ci[bot]](https://github.com/pre-commit-ci[bot])
+- Stefano Moia ([@smoia](https://github.com/smoia))
+
+---
+
 # 0.8.0 (Thu Aug 25 2022)
 
 #### 💥 Breaking Change during development
