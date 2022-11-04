@@ -13,8 +13,8 @@ __all__ = []
 
 path = dirname(abspath(__file__))
 
-for loader, module_name, is_pkg in pkgutil.walk_packages(path):
-    if "tests" not in module_name:
-        __all__.append(module_name)
-        _module = loader.find_module(module_name).load_module(module_name)
-        globals()[module_name] = _module
+# for loader, module_name, is_pkg in pkgutil.walk_packages(path):
+#     if "tests" not in module_name:
+#         __all__.append(module_name)
+#         _module = loader.find_module(module_name).load_module(module_name)
+#         globals()[module_name] = _module
