@@ -237,6 +237,108 @@ def plot_nodes(ns, atlas, filename=None, thr=None, closeplot=False):
     return 0
 
 
+def plot_connectivity(mtx, atlas, filename=None, thr=None, closeplot=False):
+    """
+    Create a connectivity plot in the MNI space.
+
+    If mtx has 2 dimensions, average first along last dimension.
+
+    Parameters
+    ----------
+    mtx : numpy.ndarray
+        A 2- or 3- D array that contains the value of the nodes.
+    atlas : str, os.PathLike, 3D Nifti1Image, or numpy.ndarray
+        The 3d nifti image of an atlas, a string or path to its position,
+        or a list of coordinates of the center of mass of parcels.
+    filename : None, str, or os.PathLike, optional
+        The path to save the plot on disk.
+    thr : float, str or None, optional
+        The threshold to use in plotting the nodes. If `str`, needs to express a percentage.
+    closeplot : bool, optional
+        Whether to close plots after saving or not. Mainly used for debug
+        or use with live python/ipython instances.
+
+    Returns
+    -------
+    0
+        If there are no errors.
+
+    Raises
+    ------
+    ImportError
+        If matplotlib and/or nilearn are not installed.
+    ValueError
+        If mtx has more than 3 dimensions.
+        If coordinates can't be extracted from atlas.
+
+    Notes
+    -----
+    Requires `matplotlib` and `nilearn`
+    """
+    try:
+        import matplotlib.pyplot as plt
+        from nilearn.plotting import cm, find_parcellation_cut_coords, plot_connectome
+    except ImportError:
+        raise ImportError(
+            "nilearn and matplotlib are required to plot node images. "
+            "Please see install instructions."
+        )
+    # First check that mtx is a valid source of data.
+    mtx = mtx.squeeze()
+    if mtx.ndim > 3:
+        raise ValueError("Cannot plot node values for matrix of dimensions > 3.")
+    elif mtx.ndim == 3:
+        LGR.warning("Given matrix has 3 dimensions, averaging across last dimension.")
+        mtx = mtx.mean(axis=-1)
+
+    # Then treat atlas
+    if type(atlas) is np.ndarray:
+        if atlas.ndim > 2 or atlas.shape[1] != 3:
+            raise NotImplementedError(
+                "Only atlases in nifti format or list of coordinates are supported."
+            )
+        else:
+            coord = atlas
+    else:
+        coord = find_parcellation_cut_coords(atlas)
+
+    if mtx.shape[0] != coord.shape[0]:
+        raise ValueError("Matrix axis and coordinates array have different length.")
+
+    LGR.info("Creating markerplot.")
+    plt.figure(figsize=FIGSIZE)
+
+    if mtx.min() < 0:
+        plot_connectome(
+            mtx,
+            coord,
+            node_color="black",
+            node_size=5,
+            edge_threshold=thr,
+            colorbar=True,
+        )
+    else:
+        plot_connectome(
+            mtx,
+            coord,
+            node_color="black",
+            node_size=5,
+            edge_threshold=thr,
+            edge_vmin=0,
+            edge_vmax=mtx.max(),
+            edge_cmap=cm.red_transparent_full_alpha_range,
+            colorbar=True,
+        )
+
+    if filename is not None:
+        plt.savefig(filename, dpi=SET_DPI)
+
+    if closeplot:
+        plt.close()
+
+    return 0
+
+
 """
 Copyright 2022, Stefano Moia.
 
