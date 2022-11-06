@@ -308,27 +308,21 @@ def plot_connectivity(mtx, atlas, filename=None, thr=None, closeplot=False):
     LGR.info("Creating markerplot.")
     plt.figure(figsize=FIGSIZE)
 
-    if mtx.min() < 0:
-        plot_connectome(
-            mtx,
-            coord,
-            node_color="black",
-            node_size=5,
-            edge_threshold=thr,
-            colorbar=True,
-        )
-    else:
-        plot_connectome(
-            mtx,
-            coord,
-            node_color="black",
-            node_size=5,
-            edge_threshold=thr,
-            edge_vmin=0,
-            edge_vmax=mtx.max(),
-            edge_cmap=cm.red_transparent_full_alpha_range,
-            colorbar=True,
-        )
+    pc_args = {
+        "adjacency_matrix": mtx,
+        "node_coords": coord,
+        "node_color": "black",
+        "node_size": 5,
+        "edge_threshold": thr,
+        "colorbar": True,
+    }
+
+    if mtx.min() >= 0:
+        pc_args["edge_vmin"] = 0
+        pc_args["edge_vmax"] = mtx.max()
+        pc_args["edge_cmap"] = cm.red_transparent_full_alpha_range
+
+    plot_connectome(**pc_args)
 
     if filename is not None:
         plt.savefig(filename, dpi=SET_DPI)
