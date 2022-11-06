@@ -237,7 +237,7 @@ def plot_nodes(ns, atlas, filename=None, thr=None, closeplot=False):
     return 0
 
 
-def plot_connectomes(mtx, atlas, filename=None, thr=None, closeplot=False):
+def plot_edges(mtx, atlas, filename=None, thr=None, closeplot=False):
     """
     Create a connectivity plot in the MNI space.
 
