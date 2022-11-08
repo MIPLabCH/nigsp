@@ -400,10 +400,10 @@ def nigsp(
             viz.plot_connectivity(scgraph.fc_split[k], f"{outprefix}fc_{k}.png")
         # Plot timeseries
         LGR.info("Plot original timeseries.")
-        viz.plot_grayplot(scgraph.timeseries, f"{outprefix}grayplot.png")
+        viz.plot_greyplot(scgraph.timeseries, f"{outprefix}greyplot.png")
         for k in scgraph.split_keys:
             LGR.info(f"Plot {k} timeseries.")
-            viz.plot_grayplot(scgraph.ts_split[k], f"{outprefix}grayplot_{k}.png")
+            viz.plot_greyplot(scgraph.ts_split[k], f"{outprefix}greyplot_{k}.png")
 
         if atlasname is not None:
             LGR.info(f"Plot {metric_name} markerplot.")

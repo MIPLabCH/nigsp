@@ -93,9 +93,9 @@ def plot_connectivity(mtx, filename=None, closeplot=False):
     return 0
 
 
-def plot_grayplot(timeseries, filename=None, closeplot=False):
+def plot_greyplot(timeseries, filename=None, title=None, closeplot=False):
     """
-    Create a grayplot (a.k.a. carpet plot a.k.a. timeseries plot).
+    Create a greyplot (a.k.a. carpet plot a.k.a. timeseries plot).
 
     If timeseries has 3 dimensions, average first along the last axis.
 
@@ -106,6 +106,8 @@ def plot_grayplot(timeseries, filename=None, closeplot=False):
         second dimension.
     filename : None, str, or os.PathLike, optional
         The path to save the plot on disk.
+    title : None or str, optional
+        Add a title to the graph
     closeplot : bool, optional
         Whether to close plots after saving or not. Mainly used for debug
         or use with live python/ipython instances.
@@ -143,6 +145,8 @@ def plot_grayplot(timeseries, filename=None, closeplot=False):
 
     LGR.info("Creating grayplot.")
     plt.figure(figsize=FIGSIZE)
+    if title is not None:
+        plt.title(title)
     vmax = np.percentile(timeseries, 99)
     vmin = np.percentile(timeseries, 1)
     plt.imshow(timeseries, cmap="gray", vmin=vmin, vmax=vmax)
@@ -253,7 +257,8 @@ def plot_edges(mtx, atlas, filename=None, thr=None, closeplot=False):
     filename : None, str, or os.PathLike, optional
         The path to save the plot on disk.
     thr : float, str or None, optional
-        The threshold to use in plotting the nodes. If `str`, needs to express a percentage.
+        The threshold to use in plotting the nodes.
+        If `str`, needs to express a percentage.
     closeplot : bool, optional
         Whether to close plots after saving or not. Mainly used for debug
         or use with live python/ipython instances.

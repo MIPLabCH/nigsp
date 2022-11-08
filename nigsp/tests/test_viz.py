@@ -27,8 +27,8 @@ def test_plot_connectivity(mtx):
 
 
 @mark.parametrize("timeseries", [(rand(3, 50)), (rand(3, 50, 3)), (rand(3, 50, 4, 1))])
-def test_plot_grayplot(timeseries):
-    viz.plot_grayplot(timeseries, "troy.png", closeplot=True)
+def test_plot_greyplot(timeseries):
+    viz.plot_greyplot(timeseries, "troy.png", closeplot=True)
 
     assert isfile("troy.png")
     matplotlib.pyplot.close()
@@ -61,16 +61,16 @@ def test_break_plot_connectivity():
     matplotlib.pyplot.close()
 
 
-def test_break_plot_grayplot():
+def test_break_plot_greyplot():
     sys.modules["matplotlib"] = None
     with raises(ImportError) as errorinfo:
-        viz.plot_grayplot(rand(3, 3), "dan.png")
+        viz.plot_greyplot(rand(3, 3), "dan.png")
     assert "is required" in str(errorinfo.value)
     sys.modules["matplotlib"] = matplotlib
 
     with raises(ValueError) as errorinfo:
-        viz.plot_grayplot(rand(3, 3, 3, 4), "dan.png")
-    assert "plot grayplots" in str(errorinfo.value)
+        viz.plot_greyplot(rand(3, 3, 3, 4), "dan.png")
+    assert "plot greyplots" in str(errorinfo.value)
 
     matplotlib.pyplot.close()
 
