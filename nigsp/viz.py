@@ -22,6 +22,8 @@ import logging
 
 import numpy as np
 
+from nigsp.operations.timeseries import spc_ts
+
 LGR = logging.getLogger(__name__)
 SET_DPI = 100
 FIGSIZE = (18, 10)
@@ -94,7 +96,7 @@ def plot_connectivity(mtx, filename=None, closeplot=False):
     return 0
 
 
-def plot_greyplot(timeseries, filename=None, title=None, closeplot=False):
+def plot_greyplot(timeseries, filename=None, title=None, spc=True, closeplot=False):
     """
     Create a greyplot (a.k.a. carpet plot a.k.a. timeseries plot).
 
@@ -109,6 +111,8 @@ def plot_greyplot(timeseries, filename=None, title=None, closeplot=False):
         The path to save the plot on disk.
     title : None or str, optional
         Add a title to the graph
+    normalise : bool, optional
+        If true, spc the signal before plotting.
     closeplot : bool, optional
         Whether to close plots after saving or not. Mainly used for debug
         or use with live python/ipython instances.
@@ -139,12 +143,16 @@ def plot_greyplot(timeseries, filename=None, title=None, closeplot=False):
 
     timeseries = timeseries.squeeze()
     if timeseries.ndim > 3:
-        raise ValueError("Cannot plot grayplots for timeseries of dimensions > 3.")
+        raise ValueError("Cannot plot greyplots for timeseries of dimensions > 3.")
     elif timeseries.ndim == 3:
         LGR.warning("Since timeseries is 3D, averaging across last dimension.")
         timeseries = timeseries.mean(axis=-1)
 
-    LGR.info("Creating grayplot.")
+    if spc:
+        LGR.info("Expressing timeseries in signal percentage change")
+        timeseries = spc_ts(timeseries)
+
+    LGR.info("Creating greyplot.")
     plt.figure(figsize=FIGSIZE)
     if title is not None:
         plt.title(title)
