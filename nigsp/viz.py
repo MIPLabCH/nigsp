@@ -86,6 +86,7 @@ def plot_connectivity(mtx, filename=None, closeplot=False):
 
     if filename is not None:
         plt.savefig(filename, dpi=SET_DPI)
+        closeplot = True
 
     if closeplot:
         plt.close()
@@ -153,6 +154,7 @@ def plot_greyplot(timeseries, filename=None, title=None, closeplot=False):
 
     if filename is not None:
         plt.savefig(filename, dpi=SET_DPI)
+        closeplot = True
 
     if closeplot:
         plt.close()
@@ -234,6 +236,7 @@ def plot_nodes(ns, atlas, filename=None, thr=None, closeplot=False):
 
     if filename is not None:
         plt.savefig(filename, dpi=SET_DPI)
+        closeplot = True
 
     if closeplot:
         plt.close()
@@ -331,6 +334,7 @@ def plot_edges(mtx, atlas, filename=None, thr=None, closeplot=False):
 
     if filename is not None:
         plt.savefig(filename, dpi=SET_DPI)
+        closeplot = True
 
     if closeplot:
         plt.close()
