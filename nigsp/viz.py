@@ -27,6 +27,8 @@ from nigsp.operations.timeseries import spc_ts
 LGR = logging.getLogger(__name__)
 SET_DPI = 100
 FIGSIZE = (18, 10)
+FIGSIZE_SQUARE = (6, 5)
+FIGSIZE_LONG = (10, 5)
 
 
 def plot_connectivity(mtx, filename=None, closeplot=False):
@@ -83,7 +85,7 @@ def plot_connectivity(mtx, filename=None, closeplot=False):
         LGR.warning("Given matrix is not a square matrix!")
 
     LGR.info("Creating connectivity plot.")
-    plt.figure(figsize=FIGSIZE)
+    plt.figure(figsize=FIGSIZE_SQUARE)
     plot_matrix(mtx)
 
     if filename is not None:
@@ -153,12 +155,13 @@ def plot_greyplot(timeseries, filename=None, title=None, spc=True, closeplot=Fal
         timeseries = spc_ts(timeseries)
 
     LGR.info("Creating greyplot.")
-    plt.figure(figsize=FIGSIZE)
+    plt.figure(figsize=FIGSIZE_LONG)
     if title is not None:
         plt.title(title)
     vmax = np.percentile(timeseries, 99)
     vmin = np.percentile(timeseries, 1)
     plt.imshow(timeseries, cmap="gray", vmin=vmin, vmax=vmax)
+    plt.tight_layout()
 
     if filename is not None:
         plt.savefig(filename, dpi=SET_DPI)
