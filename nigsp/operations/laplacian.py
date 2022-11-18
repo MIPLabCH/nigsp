@@ -209,6 +209,11 @@ def symmetric_normalised_laplacian(mtx, d=None, fix_zeros=True):
             )
 
     colsum = mtx.sum(axis=-1)
+
+    identity_mat = np.zeros_like(colsum)
+    identity_mat[colsum != 0] = 1
+    identity_mat = np.diag(identity_mat)
+
     if fix_zeros:
         colsum[colsum == 0] = 1
     if d is None:
@@ -216,7 +221,8 @@ def symmetric_normalised_laplacian(mtx, d=None, fix_zeros=True):
 
     symm_norm = d @ mtx @ d
 
-    return np.eye(mtx.shape[0]) - symm_norm
+    return identity_mat - symm_norm
+    # ## Fix Identity matrix by giving
 
 
 def decomposition(mtx):
