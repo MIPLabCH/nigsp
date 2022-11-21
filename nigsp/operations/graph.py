@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Operations on graphs and graph derived properties.
+Compute graph properties.
 
 Attributes
 ----------

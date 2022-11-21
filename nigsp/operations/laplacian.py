@@ -97,6 +97,43 @@ def decomposition(mtx):
     return eigenval, eigenvec
 
 
+def recomposition(eigenval, eigenvec):
+    """
+    Recompose a matrxi from its eigenvalues and eigenvectors.
+
+    At the moment, it supports only 2D (not stacks).
+
+    Parameters
+    ----------
+    eigenval : numpy.ndarray
+        Array of eigenvalues. The program detects if it's a diagonal matrix or not.
+    eigenvec : numpy.ndarray
+        Matrix of eigenvectors.
+
+    Returns
+    -------
+    numpy.ndarray
+        The reconstructed matrix
+    """
+    if eigenvec.ndim > 2:
+        raise NotImplementedError(
+            f"Given matrix dimensionality ({eigenvec.ndim}) is not supported."
+        )
+
+    if eigenval.ndim == eigenvec.ndim - 1:
+        eigenval = np.diag(eigenval)
+    elif eigenval.ndim < eigenvec.ndim - 1:
+        raise ValueError("Not enough dimensions in given eigenvalue matrix.")
+    elif eigenval.ndim > eigenvec.ndim:
+        raise ValueError("Too many dimensions in given eigenvalue matrix.")
+    elif not (np.diag(eigenval) == eigenval.sum(axis=-1)).all():
+        raise ValueError("The provided eigenvalue matrix is not a diagonal matrix.")
+
+    mtx = eigenvec @ eigenval @ eigenvec.T
+
+    return mtx
+
+
 """
 Copyright 2022, Stefano Moia.
 
