@@ -99,13 +99,20 @@ def test_break_recomposition():
     eival = np.random.rand(4)
 
     with raises(NotImplementedError) as errorinfo:
-        laplacian.recomposition(eivec, eival)
-    assert "matrix dimensionality 3" in str(errorinfo.value)
+        laplacian.recomposition(eival, eivec)
+    assert "matrix dimensionality (3)" in str(errorinfo.value)
 
-    with raises(ValueError) as errorinfo:
-        laplacian.recomposition(eivec, eival)
-    assert "Not enough dimensions" in str(errorinfo.value)
+    eivec = np.random.rand(4, 4)
+    # with raises(ValueError) as errorinfo:
+    #     laplacian.recomposition(eival, eivec)
+    # assert "Not enough dimensions" in str(errorinfo.value)
 
+    eival = np.random.rand(4, 4)
     with raises(ValueError) as errorinfo:
-        laplacian.recomposition(eivec, eival)
+        laplacian.recomposition(eival, eivec)
+    assert "not a diagonal" in str(errorinfo.value)
+
+    eival = np.random.rand(4, 4, 6)
+    with raises(ValueError) as errorinfo:
+        laplacian.recomposition(eival, eivec)
     assert "Too many dimensions" in str(errorinfo.value)

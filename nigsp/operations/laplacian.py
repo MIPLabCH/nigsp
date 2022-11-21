@@ -126,6 +126,8 @@ def recomposition(eigenval, eigenvec):
         raise ValueError("Not enough dimensions in given eigenvalue matrix.")
     elif eigenval.ndim > eigenvec.ndim:
         raise ValueError("Too many dimensions in given eigenvalue matrix.")
+    elif not (np.diag(eigenval) == eigenval.sum(axis=-1)).all():
+        raise ValueError("The provided eigenvalue matrix is not a diagonal matrix.")
 
     mtx = eigenvec @ eigenval @ eigenvec.T
 
