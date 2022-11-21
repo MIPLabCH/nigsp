@@ -1,3 +1,15 @@
+# 0.10.0 (Mon Nov 21 2022)
+
+#### 🚀 Enhancement
+
+- Add function to recompose laplacian from eigenvalues and eigenvectors [#34](https://github.com/MIPLabCH/nigsp/pull/34) ([@smoia](https://github.com/smoia))
+
+#### Authors: 1
+
+- Stefano Moia ([@smoia](https://github.com/smoia))
+
+---
+
 # 0.9.0 (Wed Oct 12 2022)
 
 #### 🚀 Enhancement
