@@ -100,6 +100,7 @@ def decomposition(mtx):
 def recomposition(eigenval, eigenvec):
     """
     Recompose a matrxi from its eigenvalues and eigenvectors.
+
     At the moment, it supports only 2D (not stacks).
 
     Parameters
@@ -122,9 +123,9 @@ def recomposition(eigenval, eigenvec):
     if eigenval.ndim == eigenvec.ndim - 1:
         eigenval = np.diag(eigenval)
     elif eigenval.ndim < eigenvec.ndim - 1:
-        raise ValueError("Not enough dimensions in given eigenval.")
+        raise ValueError("Not enough dimensions in given eigenvalue matrix.")
     elif eigenval.ndim > eigenvec.ndim:
-        raise ValueError("Too many dimensions in given eigenval.")
+        raise ValueError("Too many dimensions in given eigenvalue matrix.")
 
     mtx = eigenvec @ eigenval @ eigenvec.T
 

@@ -45,7 +45,6 @@ def test_decomposition(sc_mtx):
 
     idx = np.argsort(eival)
     eival = eival[idx]
-    # #!# Check that eigenvec has the right index and not inverted
     eivec = eivec[:, idx]
 
     eigenval, eigenvec = laplacian.decomposition(mtx)
@@ -56,8 +55,25 @@ def test_decomposition(sc_mtx):
     remove(sc_mtx)
 
 
+def test_recomposition(sc_mtx):
+    mtx = read_mat(sc_mtx)
+    mtx = mtx["SC_avg56"]
+
+    eival, eivec = np.linalg.eig(mtx)
+
+    idx = np.argsort(eival)
+    eival = eival[idx]
+    eivec = eivec[:, idx]
+
+    mtx_rec = laplacian.recomposition(eival, eivec)
+
+    assert abs(mtx - mtx_rec).sum().round(6) < 10**-6
+
+    remove(sc_mtx)
+
+
 # ### Break tests
-def test_break_decomposition():
+def test_break_symmetric_noramlisation():
 
     mtx = np.random.rand(4, 4)
 
@@ -75,3 +91,21 @@ def test_break_decomposition():
     with raises(ValueError) as errorinfo:
         laplacian.symmetric_normalisation(mtx, d)
     assert "has shape" in str(errorinfo.value)
+
+
+def test_break_recomposition():
+
+    eivec = np.random.rand(4, 4, 2)
+    eival = np.random.rand(4)
+
+    with raises(NotImplementedError) as errorinfo:
+        laplacian.recomposition(eivec, eival)
+    assert "matrix dimensionality 3" in str(errorinfo.value)
+
+    with raises(ValueError) as errorinfo:
+        laplacian.recomposition(eivec, eival)
+    assert "Not enough dimensions" in str(errorinfo.value)
+
+    with raises(ValueError) as errorinfo:
+        laplacian.recomposition(eivec, eival)
+    assert "Too many dimensions" in str(errorinfo.value)
