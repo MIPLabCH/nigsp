@@ -52,9 +52,9 @@ def test_integration(timeseries, sc_mtx, atlas, mean_fc, sdi, testdir):
     assert isfile(join(testdir, "testfile_fc.png"))
     assert isfile(join(testdir, "testfile_fc_low.png"))
     assert isfile(join(testdir, "testfile_fc_high.png"))
-    assert isfile(join(testdir, "testfile_grayplot.png"))
-    assert isfile(join(testdir, "testfile_grayplot_low.png"))
-    assert isfile(join(testdir, "testfile_grayplot_high.png"))
+    assert isfile(join(testdir, "testfile_greyplot.png"))
+    assert isfile(join(testdir, "testfile_greyplot_low.png"))
+    assert isfile(join(testdir, "testfile_greyplot_high.png"))
     assert isfile(join(testdir, "testfile_sdi.png"))
     assert isfile(join(testdir, "testfile_mkd_sdi.png"))
 
