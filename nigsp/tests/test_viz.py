@@ -46,14 +46,14 @@ def test_plot_nodes(sdi, atlas):
     remove(atlas)
 
 
-def test_plot_edges(sdi, atlas):
-    ns = genfromtxt(sdi)
-    viz.plot_edges(ns, atlas, "britta.png", closeplot=True)
+def test_plot_edges(atlas):
+    mtx = rand(360, 360)
+    mtx = mtx - mtx.min() + 0.3
+    viz.plot_edges(mtx, atlas, "britta.png", thr="75%", closeplot=True)
 
     assert isfile("britta.png")
     matplotlib.pyplot.close()
     remove("britta.png")
-    remove(sdi)
     remove(atlas)
 
 
@@ -154,3 +154,6 @@ def test_break_plot_edges(atlas):
 
     matplotlib.pyplot.close()
     remove(atlas)
+
+
+# ..and a movie!!!

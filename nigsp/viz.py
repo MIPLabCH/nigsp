@@ -324,7 +324,7 @@ def plot_edges(mtx, atlas, filename=None, thr=None, closeplot=False):
     if mtx.shape[0] != coord.shape[0]:
         raise ValueError("Matrix axis and coordinates array have different length.")
 
-    LGR.info("Creating markerplot.")
+    LGR.info("Creating connectome-like plot.")
     plt.figure(figsize=FIGSIZE)
 
     pc_args = {
