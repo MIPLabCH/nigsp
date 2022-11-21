@@ -46,6 +46,17 @@ def test_plot_nodes(sdi, atlas):
     remove(atlas)
 
 
+def test_plot_edges(sdi, atlas):
+    ns = genfromtxt(sdi)
+    viz.plot_edges(ns, atlas, "britta.png", closeplot=True)
+
+    assert isfile("britta.png")
+    matplotlib.pyplot.close()
+    remove("britta.png")
+    remove(sdi)
+    remove(atlas)
+
+
 # ### Break tests
 def test_break_plot_connectivity():
     sys.modules["matplotlib"] = None
@@ -53,6 +64,12 @@ def test_break_plot_connectivity():
         viz.plot_connectivity(rand(3, 3), "craig.png")
     assert "is required" in str(errorinfo.value)
     sys.modules["matplotlib"] = matplotlib
+
+    sys.modules["nilearn.plotting"] = None
+    with raises(ImportError) as errorinfo:
+        viz.plot_connectivity(rand(3, 3), "craig.png")
+    assert "are required" in str(errorinfo.value)
+    sys.modules["nilearn.plotting"] = nilearn.plotting
 
     with raises(ValueError) as errorinfo:
         viz.plot_connectivity(rand(3, 3, 3, 4), "craig.png")
@@ -101,6 +118,38 @@ def test_break_plot_nodes(atlas):
 
     with raises(ValueError) as errorinfo:
         viz.plot_nodes(rand(3), rand(4, 3))
+    assert "different length" in str(errorinfo.value)
+
+    matplotlib.pyplot.close()
+    remove(atlas)
+
+
+def test_break_plot_edges(atlas):
+    sys.modules["matplotlib"] = None
+    with raises(ImportError) as errorinfo:
+        viz.plot_edges(rand(3), rand(3, 3))
+    assert "are required" in str(errorinfo.value)
+    sys.modules["matplotlib"] = matplotlib
+
+    sys.modules["nilearn.plotting"] = None
+    with raises(ImportError) as errorinfo:
+        viz.plot_edges(rand(3), rand(3, 3))
+    assert "are required" in str(errorinfo.value)
+    sys.modules["nilearn.plotting"] = nilearn.plotting
+
+    with raises(ValueError) as errorinfo:
+        viz.plot_edges(rand(3, 3, 4), rand(3, 3))
+    assert "plot node values" in str(errorinfo.value)
+
+    with raises(NotImplementedError) as errorinfo:
+        viz.plot_edges(rand(3), rand(3, 3, 2))
+    assert "atlases in nifti" in str(errorinfo.value)
+    with raises(NotImplementedError) as errorinfo:
+        viz.plot_edges(rand(3), rand(3, 4))
+    assert "atlases in nifti" in str(errorinfo.value)
+
+    with raises(ValueError) as errorinfo:
+        viz.plot_edges(rand(3), rand(4, 3))
     assert "different length" in str(errorinfo.value)
 
     matplotlib.pyplot.close()
