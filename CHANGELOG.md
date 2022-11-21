@@ -1,3 +1,15 @@
+# 0.10.1 (Mon Nov 21 2022)
+
+#### 🐛 Bug Fix
+
+- Fix initialisation (remove test packages) [#37](https://github.com/MIPLabCH/nigsp/pull/37) (s.moia@bcbl.eu)
+
+#### Authors: 1
+
+- Stefano Moia ([@smoia](https://github.com/smoia))
+
+---
+
 # 0.10.0 (Mon Nov 21 2022)
 
 #### 🚀 Enhancement
