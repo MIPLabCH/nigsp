@@ -73,7 +73,7 @@ def test_recomposition(sc_mtx):
 
 
 # ### Break tests
-def test_break_symmetric_noramlisation():
+def test_break_symmetric_normalisation():
 
     mtx = np.random.rand(4, 4)
 
