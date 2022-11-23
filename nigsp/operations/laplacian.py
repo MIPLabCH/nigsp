@@ -38,7 +38,7 @@ def compute_laplacian(mtx, negval="absolute"):
     numpy.ndarray
         The laplacian of mtx
     numpy.ndarray
-        The degree matrix of mtx
+        The degree matrix of mtx as a (mtx.ndim-1)D array
 
     See Also
     --------
@@ -53,113 +53,88 @@ def compute_laplacian(mtx, negval="absolute"):
             mtx = (mtx - mtx.min()) / mtx.max()
         else:
             raise ValueError(
-                f'Behaviour "{negval}" to deal with negative values is not ' "supported"
+                f'Behaviour "{negval}" to deal with negative values is not supported'
             )
 
-    degree = mtx.sum(axis=-1)
-    adjacency = mtx - (np.diag(mtx) * np.eye(mtx.shape[0]))
+    degree = mtx.sum(axis=1)  # This is fixed to columns
 
-    return degree - adjacency, degree
+    adjacency = mtx
+    adjacency[np.diag_indices(adjacency.shape[0])] = 0
+
+    degree_mat = np.zeros_like(mtx)
+    degree_mat[np.diag_indices(degree_mat.shape[0])] = degree
+
+    return degree_mat - adjacency, degree
 
 
-def random_walk_normalisation(lapl, degree, fix_zeros=True):
+def normalisation(lapl, degree, norm="symmetric", fix_zeros=True):
     """
-    Normalise a Laplacian (L) matrix using random walk normalisation.
+    Normalise a Laplacian (L) matrix using either symmetric or random walk normalisation.
 
     Parameters
     ----------
     lapl : numpy.ndarray
-        A square matrix that is a Laplacian
+        A square matrix that is a Laplacian, or a stack of Laplacian matrices.
     degree : np.ndarray or None, optional
-        Either an array or a diagonal matrix. If specified, this will be used as the
+        An array, a diagonal matrix, or a stack of either. This will be used as the
         the degree matrix for the normalisation.
+        It's assumed that degree.ndim == lapl.ndim or degree.ndim == lapl.ndim-1.
+    norm : "symmetric" or "random walk", optional
+        The type of normalisation to perform. Default to symmetric.
     fix_zeros : bool, optional
-        Whether to change 0 elements in the degree matrix to 1 to avoid multiplying by 0
+        Whether to change 0 elements in the degree matrix to 1 to avoid multiplying by 0.
+        Default is to do so.
 
     Returns
     -------
     numpy.ndarray
-        The laplacian of mtx
+        The normalised laplacian
 
     Raises
     ------
-        ValueError
-            If `d` in not a diagonal matrix or an array
-            If `d` and `mtx` have different shapes.
+    NotImplementedError
+        If `lapl.ndim` - `degree.ndim` > 1
+        If "norm" is not supported.
+    ValueError
+        If `d` in not a diagonal matrix or an array
+        If `d` and `mtx` have different shapes.
 
     See Also
     --------
     https://en.wikipedia.org/wiki/Laplacian_matrix
     """
-    if degree.ndim == 1:
-        degree = np.diag(degree)
-    elif not (np.diag(degree) == degree.sum(axis=-1)).all():
-        raise ValueError(
-            "The provided matrix for symmetric normalisation "
-            "is not a diagonal matrix."
+    if lapl.ndim - degree.ndim > 1:
+        raise NotImplementedError(
+            f"The provided degree matrix is {degree.ndim}D while the "
+            f"provided laplacian matrix is {lapl.shape}D."
         )
+        if not (degree.diagonal() == degree.sum(axis=1)).all():
+            raise ValueError(
+                "The provided matrix for symmetric normalisation "
+                "is not a diagonal matrix (or a stack of)."
+            )
+    elif lapl.ndim == degree.ndim:
+        degree = degree.diagonal()
 
-    if degree.shape != lapl.shape:
+    if degree.shape != lapl.shape[:-1]:
         raise ValueError(
             f"The provided diagonal has shape {degree.shape} while the "
             f"provided matrix has shape {lapl.shape}."
         )
 
     if fix_zeros:
-        degree[degree == 0] = np.eye(degree.shape[0])
+        degree[degree == 0] = 1
 
-    return (degree ** (-1)) @ lapl
+    d = np.zeros_like(lapl)
 
-
-def symmetric_normalisation(lapl, degree, fix_zeros=True):
-    """
-    Symmetrically normalise Laplacian (L) matrix.
-
-    Parameters
-    ----------
-    lapl : numpy.ndarray
-        A square matrix that is a Laplacian
-    degree : np.ndarray or None, optional
-        Either an array or a diagonal matrix. If specified, this will be used as the
-        the degree matrix for the normalisation.
-    fix_zeros : bool, optional
-        Whether to change 0 elements in the degree matrix to 1 to avoid multiplying by 0
-
-    Returns
-    -------
-    numpy.ndarray
-        The laplacian of mtx
-
-    Raises
-    ------
-        ValueError
-            If `d` in not a diagonal matrix or an array
-            If `d` and `mtx` have different shapes.
-
-    See Also
-    --------
-    https://en.wikipedia.org/wiki/Laplacian_matrix
-    """
-    if degree.ndim == 1:
-        degree = np.diag(degree)
-    elif not (np.diag(degree) == degree.sum(axis=-1)).all():
-        raise ValueError(
-            "The provided matrix for symmetric normalisation "
-            "is not a diagonal matrix."
-        )
-
-    if degree.shape != lapl.shape:
-        raise ValueError(
-            f"The provided diagonal has shape {degree.shape} while the "
-            f"provided matrix has shape {lapl.shape}."
-        )
-
-    if fix_zeros:
-        degree[degree == 0] = np.eye(degree.shape[0])
-
-    d = degree ** (-1 / 2)
-
-    return d @ lapl @ d
+    if norm in ["symmetric", "symm"]:
+        d[np.diag_indices(d.shape[0])] = degree ** (-1 / 2)
+        return d @ lapl @ d
+    elif norm in ["random walk", "rw", "randomwalk"]:
+        d[np.diag_indices(d.shape[0])] = degree ** (-1)
+        return d @ lapl
+    else:
+        raise NotImplementedError(f"Normalisation type {norm} is not supported.")
 
 
 def symmetric_normalised_laplacian(mtx, d=None, fix_zeros=True):
