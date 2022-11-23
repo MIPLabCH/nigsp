@@ -1,3 +1,15 @@
+# 0.11.0 (Wed Nov 23 2022)
+
+#### 🚀 Enhancement
+
+- Add edges vs nodes plotting, improve plotting in general [#35](https://github.com/MIPLabCH/nigsp/pull/35) ([@smoia](https://github.com/smoia))
+
+#### Authors: 1
+
+- Stefano Moia ([@smoia](https://github.com/smoia))
+
+---
+
 # 0.10.1 (Mon Nov 21 2022)
 
 #### 🐛 Bug Fix
