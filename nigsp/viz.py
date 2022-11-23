@@ -22,9 +22,13 @@ import logging
 
 import numpy as np
 
+from nigsp.operations.timeseries import spc_ts
+
 LGR = logging.getLogger(__name__)
 SET_DPI = 100
 FIGSIZE = (18, 10)
+FIGSIZE_SQUARE = (6, 5)
+FIGSIZE_LONG = (10, 5)
 
 
 def plot_connectivity(mtx, filename=None, closeplot=False):
@@ -40,7 +44,8 @@ def plot_connectivity(mtx, filename=None, closeplot=False):
     filename : None, str, or os.PathLike, optional
         The path to save the plot on disk.
     closeplot : bool, optional
-        Whether to close plots after saving or not. Mainly used for debug.
+        Whether to close plots after saving or not. Mainly used for debug
+        or use with live python/ipython instances.
 
     Returns
     -------
@@ -50,40 +55,42 @@ def plot_connectivity(mtx, filename=None, closeplot=False):
     Raises
     ------
     ImportError
-        If matplotlib is not installed.
+        If matplotlib and/or nilearn are not installed.
     ValueError
         If mtx has more than 3 dimensions.
 
     Notes
     -----
-    Requires `matplotlib`
+    Requires `matplotlib` and `nilearn`
     """
     try:
         import matplotlib.pyplot as plt
+        from nilearn.plotting import plot_matrix
     except ImportError:
         raise ImportError(
-            "matplotlib is required to plot connectivity matrices. "
+            "nilearn and matplotlib are required to plot node images. "
             "Please see install instructions."
         )
 
     mtx = mtx.squeeze()
     if mtx.ndim > 3:
         raise ValueError(
-            "Cannot plot connectivity matrices for matrix of " "dimensions > 3."
+            "Cannot plot connectivity matrices for matrix of dimensions > 3."
         )
     elif mtx.ndim == 3:
-        LGR.warning("Since matrix is 3D, averaging across last " "dimension.")
+        LGR.warning("Since matrix is 3D, averaging across last dimension.")
         mtx = mtx.mean(axis=-1)
 
     if mtx.shape[0] != mtx.shape[1]:
         LGR.warning("Given matrix is not a square matrix!")
 
     LGR.info("Creating connectivity plot.")
-    plt.figure(figsize=FIGSIZE)
-    plt.imshow(mtx, cmap="RdBu")
+    plt.figure(figsize=FIGSIZE_SQUARE)
+    plot_matrix(mtx)
 
     if filename is not None:
         plt.savefig(filename, dpi=SET_DPI)
+        closeplot = True
 
     if closeplot:
         plt.close()
@@ -91,9 +98,9 @@ def plot_connectivity(mtx, filename=None, closeplot=False):
     return 0
 
 
-def plot_grayplot(timeseries, filename=None, closeplot=False):
+def plot_greyplot(timeseries, filename=None, title=None, spc=True, closeplot=False):
     """
-    Create a grayplot (a.k.a. carpet plot a.k.a. timeseries plot).
+    Create a greyplot (a.k.a. carpet plot a.k.a. timeseries plot).
 
     If timeseries has 3 dimensions, average first along the last axis.
 
@@ -104,8 +111,13 @@ def plot_grayplot(timeseries, filename=None, closeplot=False):
         second dimension.
     filename : None, str, or os.PathLike, optional
         The path to save the plot on disk.
+    title : None or str, optional
+        Add a title to the graph
+    normalise : bool, optional
+        If true, spc the signal before plotting.
     closeplot : bool, optional
-        Whether to close plots after saving or not. Mainly used for debug.
+        Whether to close plots after saving or not. Mainly used for debug
+        or use with live python/ipython instances.
 
     Returns
     -------
@@ -127,25 +139,33 @@ def plot_grayplot(timeseries, filename=None, closeplot=False):
         import matplotlib.pyplot as plt
     except ImportError:
         raise ImportError(
-            "matplotlib is required to plot grayplots. "
+            "matplotlib is required to plot node images. "
             "Please see install instructions."
         )
 
     timeseries = timeseries.squeeze()
     if timeseries.ndim > 3:
-        raise ValueError("Cannot plot grayplots for timeseries of " "dimensions > 3.")
+        raise ValueError("Cannot plot greyplots for timeseries of dimensions > 3.")
     elif timeseries.ndim == 3:
-        LGR.warning("Since timeseries is 3D, averaging across last " "dimension.")
+        LGR.warning("Since timeseries is 3D, averaging across last dimension.")
         timeseries = timeseries.mean(axis=-1)
 
-    LGR.info("Creating grayplot.")
-    plt.figure(figsize=FIGSIZE)
+    if spc:
+        LGR.info("Expressing timeseries in signal percentage change")
+        timeseries = spc_ts(timeseries)
+
+    LGR.info("Creating greyplot.")
+    plt.figure(figsize=FIGSIZE_LONG)
+    if title is not None:
+        plt.title(title)
     vmax = np.percentile(timeseries, 99)
     vmin = np.percentile(timeseries, 1)
     plt.imshow(timeseries, cmap="gray", vmin=vmin, vmax=vmax)
+    plt.tight_layout()
 
     if filename is not None:
         plt.savefig(filename, dpi=SET_DPI)
+        closeplot = True
 
     if closeplot:
         plt.close()
@@ -171,7 +191,8 @@ def plot_nodes(ns, atlas, filename=None, thr=None, closeplot=False):
     thr : float or None, optional
         The threshold to use in plotting the nodes.
     closeplot : bool, optional
-        Whether to close plots after saving or not. Mainly used for debug.
+        Whether to close plots after saving or not. Mainly used for debug
+        or use with live python/ipython instances.
 
     Returns
     -------
@@ -201,18 +222,16 @@ def plot_nodes(ns, atlas, filename=None, thr=None, closeplot=False):
     # First check that ns is a valid source of data.
     ns = ns.squeeze()
     if ns.ndim > 2:
-        raise ValueError("Cannot plot node values for matrix of " "dimensions > 2.")
+        raise ValueError("Cannot plot node values for matrix of dimensions > 2.")
     elif ns.ndim == 2:
-        LGR.warning(
-            "Given matrix has 2 dimensions, averaging across last " "dimension."
-        )
+        LGR.warning("Given matrix has 2 dimensions, averaging across last dimension.")
         ns = ns.mean(axis=-1)
 
     # Then treat atlas
     if type(atlas) is np.ndarray:
         if atlas.ndim > 2 or atlas.shape[1] != 3:
             raise NotImplementedError(
-                "Only atlases in nifti format or " "list of coordinates are supported."
+                "Only atlases in nifti format or list of coordinates are supported."
             )
         else:
             coord = atlas
@@ -228,6 +247,105 @@ def plot_nodes(ns, atlas, filename=None, thr=None, closeplot=False):
 
     if filename is not None:
         plt.savefig(filename, dpi=SET_DPI)
+        closeplot = True
+
+    if closeplot:
+        plt.close()
+
+    return 0
+
+
+def plot_edges(mtx, atlas, filename=None, thr=None, closeplot=False):
+    """
+    Create a connectivity plot in the MNI space.
+
+    If mtx has 2 dimensions, average first along last dimension.
+
+    Parameters
+    ----------
+    mtx : numpy.ndarray
+        A 2- or 3- D array that contains the value of the nodes.
+    atlas : str, os.PathLike, 3D Nifti1Image, or numpy.ndarray
+        The 3d nifti image of an atlas, a string or path to its position,
+        or a list of coordinates of the center of mass of parcels.
+    filename : None, str, or os.PathLike, optional
+        The path to save the plot on disk.
+    thr : float, str or None, optional
+        The threshold to use in plotting the nodes.
+        If `str`, needs to express a percentage.
+    closeplot : bool, optional
+        Whether to close plots after saving or not. Mainly used for debug
+        or use with live python/ipython instances.
+
+    Returns
+    -------
+    0
+        If there are no errors.
+
+    Raises
+    ------
+    ImportError
+        If matplotlib and/or nilearn are not installed.
+    ValueError
+        If mtx has more than 3 dimensions.
+        If coordinates can't be extracted from atlas.
+
+    Notes
+    -----
+    Requires `matplotlib` and `nilearn`
+    """
+    try:
+        import matplotlib.pyplot as plt
+        from nilearn.plotting import cm, find_parcellation_cut_coords, plot_connectome
+    except ImportError:
+        raise ImportError(
+            "nilearn and matplotlib are required to plot node images. "
+            "Please see install instructions."
+        )
+    # First check that mtx is a valid source of data.
+    mtx = mtx.squeeze()
+    if mtx.ndim > 3:
+        raise ValueError("Cannot plot node values for matrix of dimensions > 3.")
+    elif mtx.ndim == 3:
+        LGR.warning("Given matrix has 3 dimensions, averaging across last dimension.")
+        mtx = mtx.mean(axis=-1)
+
+    # Then treat atlas
+    if type(atlas) is np.ndarray:
+        if atlas.ndim > 2 or atlas.shape[1] != 3:
+            raise NotImplementedError(
+                "Only atlases in nifti format or list of coordinates are supported."
+            )
+        else:
+            coord = atlas
+    else:
+        coord = find_parcellation_cut_coords(atlas)
+
+    if mtx.shape[0] != coord.shape[0]:
+        raise ValueError("Matrix axis and coordinates array have different length.")
+
+    LGR.info("Creating connectome-like plot.")
+    plt.figure(figsize=FIGSIZE)
+
+    pc_args = {
+        "adjacency_matrix": mtx,
+        "node_coords": coord,
+        "node_color": "black",
+        "node_size": 5,
+        "edge_threshold": thr,
+        "colorbar": True,
+    }
+
+    if mtx.min() >= 0:
+        pc_args["edge_vmin"] = 0
+        pc_args["edge_vmax"] = mtx.max()
+        pc_args["edge_cmap"] = cm.red_transparent_full_alpha_range
+
+    plot_connectome(**pc_args)
+
+    if filename is not None:
+        plt.savefig(filename, dpi=SET_DPI)
+        closeplot = True
 
     if closeplot:
         plt.close()

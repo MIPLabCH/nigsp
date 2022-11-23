@@ -51,6 +51,38 @@ def normalise_ts(timeseries):
     return z
 
 
+def spc_ts(timeseries):
+    """
+    Express timeseries in signal percentage change.
+
+    It is assumed that time is encoded in the second dimension (axis 1),
+    e.g. for 90 voxels and 300 timepoints, shape is [90, 300].
+
+    Parameters
+    ----------
+    timeseries : numpy.ndarray
+        The input timeseries. It is assumed that the second dimension is time.
+
+    Returns
+    -------
+    numpy.ndarray
+        The timeseries in SPC if timeseries is not a 1D array.
+        If timeseries is a 1D array, it is returned as is.
+    """
+    if timeseries.ndim < 2 or (timeseries.ndim == 2 and timeseries.shape[1] == 1):
+        LGR.warning(
+            "Given timeseries seems to be a single timepoint. " "Returning it as is."
+        )
+        return timeseries
+
+    scp = (timeseries - timeseries.mean(axis=1)[:, np.newaxis, ...]) / timeseries.mean(
+        axis=1
+    )[:, np.newaxis, ...]
+    scp[np.isnan(scp)] = timeseries[np.isnan(scp)]
+
+    return scp
+
+
 def graph_fourier_transform(timeseries, eigenvec, energy=False, mean=False):
     """
     Projet a graph decomposition onto the timeseries.
