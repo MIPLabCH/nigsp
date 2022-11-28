@@ -1,3 +1,15 @@
+# 0.12.0 (Mon Nov 28 2022)
+
+#### 💥 Breaking Change during development
+
+- Add laplacian computation and normalisation independent functions [#36](https://github.com/MIPLabCH/nigsp/pull/36) ([@smoia](https://github.com/smoia))
+
+#### Authors: 1
+
+- Stefano Moia ([@smoia](https://github.com/smoia))
+
+---
+
 # 0.11.0 (Wed Nov 23 2022)
 
 #### 🚀 Enhancement
