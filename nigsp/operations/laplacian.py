@@ -9,6 +9,7 @@ LGR
 """
 
 import logging
+from copy import deepcopy
 
 import numpy as np
 
@@ -49,6 +50,7 @@ def compute_laplacian(mtx, negval="absolute"):
     NotImplementedError
         If negval is not "absolute", "remove", or "rescale"
     """
+    mtx = deepcopy(mtx)
     if mtx.min() < 0:
         if negval == "absolute":
             mtx = abs(mtx)
@@ -63,7 +65,7 @@ def compute_laplacian(mtx, negval="absolute"):
 
     degree = mtx.sum(axis=1)  # This is fixed to across columns
 
-    adjacency = mtx
+    adjacency = deepcopy(mtx)
     adjacency[np.diag_indices(adjacency.shape[0])] = 0
 
     degree_mat = np.zeros_like(mtx)
@@ -108,6 +110,7 @@ def normalisation(lapl, degree, norm="symmetric", fix_zeros=True):
     --------
     https://en.wikipedia.org/wiki/Laplacian_matrix
     """
+    degree = deepcopy(degree)
     if lapl.ndim - degree.ndim > 1:
         raise NotImplementedError(
             f"The provided degree matrix is {degree.ndim}D while the "

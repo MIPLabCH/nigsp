@@ -35,17 +35,17 @@ def test_compute_laplacian():
     mtx_res = (mtx - mtx.min()) / mtx.max()
 
     L, deg = glap(mtx_abs)
-    lapl, degree = laplacian.compute_laplacian(mtx_abs, negval="absolute")
+    lapl, degree = laplacian.compute_laplacian(mtx, negval="absolute")
     assert (lapl == L).all()
     assert (degree == deg).all()
 
     L, deg = glap(mtx_rem)
-    lapl, degree = laplacian.compute_laplacian(mtx_rem, negval="remove")
+    lapl, degree = laplacian.compute_laplacian(mtx, negval="remove")
     assert (lapl == L).all()
     assert (degree == deg).all()
 
     L, deg = glap(mtx_res)
-    lapl, degree = laplacian.compute_laplacian(mtx_res, negval="rescale")
+    lapl, degree = laplacian.compute_laplacian(mtx, negval="rescale")
     assert (lapl == L).all()
     assert (degree == deg).all()
 
