@@ -14,7 +14,7 @@ For example, calling `nigsp.operations.metrics.sdi` is equivalent to calling
 
 # Import all operations.
 from .graph import nodestrength, zerocross
-from .laplacian import decomposition, symmetric_normalisation
+from .laplacian import decomposition, symmetric_normalised_laplacian
 from .metrics import gsdi, sdi
 from .nifti import apply_atlas, apply_mask, mat_to_vol, unfold_atlas, unmask, vol_to_mat
 from .surrogates import random_sign, sc_informed, sc_uninformed, test_significance

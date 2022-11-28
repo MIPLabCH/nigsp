@@ -9,17 +9,147 @@ LGR
 """
 
 import logging
+from copy import deepcopy
 
 import numpy as np
 
 LGR = logging.getLogger(__name__)
 
 
-def symmetric_normalisation(mtx, d=None, fix_zeros=True):
+def compute_laplacian(mtx, negval="absolute"):
     """
-    Compute symmetrically normalised Laplacian (SNL) matrix.
+    Compute Laplacian (L) matrix from a square matrix.
 
-    The SNL is obtained by pre- and post- multiplying mtx by its diagonal.
+    mtx is supposed to be a connectivity matrix - its diagonal will be removed.
+    L is obtained by subtracting the adjacency matrix from the degree matrix.
+
+    Parameters
+    ----------
+    mtx : numpy.ndarray
+        A square matrix
+    negval : "absolute", "remove", or "rescale"
+        The intended behaviour to deal with negative values:
+        - "absolute" will take absolute values of the matrix
+        - "remove" will set all negative elements to 0
+        - "rescale" will rescale the matrix between 0 and 1.
+        Default is "absolute".
+
+    Returns
+    -------
+    numpy.ndarray
+        The laplacian of mtx
+    numpy.ndarray
+        The degree matrix of mtx as a (mtx.ndim-1)D array
+
+    See Also
+    --------
+    https://en.wikipedia.org/wiki/Laplacian_matrix
+
+    Raises
+    ------
+    NotImplementedError
+        If negval is not "absolute", "remove", or "rescale"
+    """
+    mtx = deepcopy(mtx)
+    if mtx.min() < 0:
+        if negval == "absolute":
+            mtx = abs(mtx)
+        elif negval == "remove":
+            mtx[mtx < 0] = 0
+        elif negval == "rescale":
+            mtx = (mtx - mtx.min()) / mtx.max()
+        else:
+            raise NotImplementedError(
+                f'Behaviour "{negval}" to deal with negative values is not supported'
+            )
+
+    degree = mtx.sum(axis=1)  # This is fixed to across columns
+
+    adjacency = deepcopy(mtx)
+    adjacency[np.diag_indices(adjacency.shape[0])] = 0
+
+    degree_mat = np.zeros_like(mtx)
+    degree_mat[np.diag_indices(degree_mat.shape[0])] = degree
+
+    return degree_mat - adjacency, degree
+
+
+def normalisation(lapl, degree, norm="symmetric", fix_zeros=True):
+    """
+    Normalise a Laplacian (L) matrix using either symmetric or random walk normalisation.
+
+    Parameters
+    ----------
+    lapl : numpy.ndarray
+        A square matrix that is a Laplacian, or a stack of Laplacian matrices.
+    degree : np.ndarray or None, optional
+        An array, a diagonal matrix, or a stack of either. This will be used as the
+        the degree matrix for the normalisation.
+        It's assumed that degree.ndim == lapl.ndim or degree.ndim == lapl.ndim-1.
+    norm : "symmetric" or "random walk", optional
+        The type of normalisation to perform. Default to symmetric.
+    fix_zeros : bool, optional
+        Whether to change 0 elements in the degree matrix to 1 to avoid multiplying by 0.
+        Default is to do so.
+
+    Returns
+    -------
+    numpy.ndarray
+        The normalised laplacian
+
+    Raises
+    ------
+    NotImplementedError
+        If `lapl.ndim` - `degree.ndim` > 1
+        If "norm" is not supported.
+    ValueError
+        If `d` in not a diagonal matrix or an array
+        If `d` and `mtx` have different shapes.
+
+    See Also
+    --------
+    https://en.wikipedia.org/wiki/Laplacian_matrix
+    """
+    degree = deepcopy(degree)
+    if lapl.ndim - degree.ndim > 1:
+        raise NotImplementedError(
+            f"The provided degree matrix is {degree.ndim}D while the "
+            f"provided laplacian matrix is {lapl.ndim}D."
+        )
+    elif lapl.ndim == degree.ndim:
+        if not (degree.diagonal() == degree.sum(axis=1)).all():
+            raise ValueError(
+                "The provided degree matrix is not a diagonal matrix (or a stack of)."
+            )
+        degree = degree.diagonal()
+
+    if degree.shape != lapl.shape[:-1]:
+        raise ValueError(
+            f"The provided degree matrix has shape {degree.shape} while the "
+            f"provided matrix has shape {lapl.shape}."
+        )
+
+    if fix_zeros:
+        degree[degree == 0] = 1
+
+    d = np.zeros_like(lapl)
+
+    if norm in ["symmetric", "symm"]:
+        d[np.diag_indices(d.shape[0])] = degree ** (-1 / 2)
+        return d @ lapl @ d
+    elif norm in ["random walk", "rw", "randomwalk"]:
+        d[np.diag_indices(d.shape[0])] = degree ** (-1)
+        return d @ lapl
+    else:
+        raise NotImplementedError(f'Normalisation type "{norm}" is not supported.')
+
+
+def symmetric_normalised_laplacian(mtx, d=None, fix_zeros=True):
+    """
+    Compute symmetric normalised Laplacian (SNL) matrix.
+
+    The SNL is obtained by pre- and post- multiplying mtx by the square root of the
+    inverse of the diagonal and subtract the result from the identity matrix.
     Alternatively, it is possible to specify a different diagonal to do so.
     With zero-order nodes, the diagonals will contain 0s, returning a Laplacian
     with NaN elements. To avoid that, 0 elements in d will be changed to 1.
@@ -29,31 +159,39 @@ def symmetric_normalisation(mtx, d=None, fix_zeros=True):
     mtx : numpy.ndarray
         A [structural] matrix
     d : np.ndarray or None, optional
-        Either an array or a
+        Either an array or a diagonal matrix. If specified, d will be used as the
+        **normalisation factor** (not the degree matrix).
     fix_zeros : bool, optional
-        Description
+        Whether to change 0 elements in the degree matrix to 1 to avoid multiplying by 0
 
     Returns
     -------
     numpy.ndarray
-        The symmetrically normalised version of mtx
+        The symmetric normalised laplacian of mtx
+
+    Raises
+    ------
+        ValueError
+            If `d` in not a diagonal matrix or an array
+            If `d` and `mtx` have different shapes.
+
+    Note
+    ----
+    This is here mainly for tests and legacy code, but it would be better not to use it!
 
     See Also
     --------
     https://en.wikipedia.org/wiki/Laplacian_matrix#Symmetrically_normalized_Laplacian_2
     """
-
     if d is not None:
         if d.ndim == 1:
-            if d.size == 0:
-                raise ValueError("The provided diagonal is empty.")
             d = np.diag(d)
-        else:
-            if not (np.diag(d) == d.sum(axis=-1)).all():
-                raise ValueError(
-                    "The provided matrix for symmetric normalisation "
-                    "is not a diagonal matrix."
-                )
+        elif not (np.diag(d) == d.sum(axis=-1)).all():
+            raise ValueError(
+                "The provided matrix for symmetric normalisation "
+                "is not a diagonal matrix."
+            )
+
         if d.shape != mtx.shape:
             raise ValueError(
                 f"The provided diagonal has shape {d.shape} while the "
@@ -99,7 +237,7 @@ def decomposition(mtx):
 
 def recomposition(eigenval, eigenvec):
     """
-    Recompose a matrxi from its eigenvalues and eigenvectors.
+    Recompose a matrix from its eigenvalues and eigenvectors.
 
     At the moment, it supports only 2D (not stacks).
 

@@ -109,9 +109,9 @@ class SCGraph:
     # # Methods
     # Skip some methods as they are tested elsewhere ("pragma" comments)
     # Only test split_graph, create_surrogates, compute_fc
-    def symmetric_normalisation(self):  # pragma: no cover
-        """Implement laplacian.symmetric_normalisation as class method."""
-        self.lapl_mtx = operations.symmetric_normalisation(self.mtx)
+    def symmetric_normalised_laplacian(self):  # pragma: no cover
+        """Implement laplacian.symmetric_normalised_laplacian as class method."""
+        self.lapl_mtx = operations.symmetric_normalised_laplacian(self.mtx)
         return self
 
     def decomposition(self):  # pragma: no cover
@@ -121,7 +121,7 @@ class SCGraph:
 
     def structural_decomposition(self):  # pragma: no cover
         """Implement both laplacian operations."""
-        return self.symmetric_normalisation().decomposition()
+        return self.symmetric_normalised_laplacian().decomposition()
 
     def compute_graph_energy(self, mean=False):  # pragma: no cover
         """Implement timeseries.graph_fourier_transform for energy as class method."""
