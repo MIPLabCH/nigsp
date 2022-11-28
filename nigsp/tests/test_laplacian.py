@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Tests for operations.laplacian."""
+from copy import deepcopy as dc
 from os import remove
 
 import numpy as np
@@ -11,14 +12,64 @@ from nigsp.operations import laplacian
 
 # ### Unit tests
 def test_compute_laplacian():
+    def glap(mtx):
+        deg = mtx.sum(axis=1)
+        adj = dc(mtx)
+        adj[np.diag_indices(mtx.shape[0])] = 0
+
+        L = np.diag(deg) - adj
+        return deg, L
+
     mtx = np.random.rand(4, 4)
     mtx = (mtx + mtx.T) / 2
 
-    return
+    L, deg = glap(mtx)
+    lapl, degree = laplacian.compute_laplacian(mtx)
+
+    assert (lapl == L).all()
+    assert (degree == deg).all()
+
+    mtx = mtx - mtx.mean()
+
+    mtx_abs = abs(mtx)
+    mtx_rem = dc(mtx)
+    mtx_rem[mtx < 0] = 0
+    mtx_res = (mtx - mtx.min()) / mtx.max()
+
+    L, deg = glap(mtx_abs)
+    lapl, degree = laplacian.compute_laplacian(mtx_abs, negval="absolute")
+    assert (lapl == L).all()
+    assert (degree == deg).all()
+
+    L, deg = glap(mtx_rem)
+    lapl, degree = laplacian.compute_laplacian(mtx_rem, negval="remove")
+    assert (lapl == L).all()
+    assert (degree == deg).all()
+
+    L, deg = glap(mtx_res)
+    lapl, degree = laplacian.compute_laplacian(mtx_res, negval="rescale")
+    assert (lapl == L).all()
+    assert (degree == deg).all()
 
 
 def test_normalisation():
-    return
+
+    lapl = np.random.rand(4, 4)
+    lapl = (lapl + lapl.T) / 2
+    degree = np.random.rand(4)
+    degree[2] = 0
+
+    lapl_symm = laplacian.normalisation(lapl, degree, norm="symmetric")
+
+    d = np.diag(degree)
+    lapl_rw = laplacian.normalisation(lapl, d, norm="random walk")
+
+    degree[2] = 1
+    d_symm = np.diag(degree ** (-1 / 2))
+    d_rw = np.diag(degree ** (-1))
+
+    assert (lapl_symm == (d_symm @ lapl @ d_symm)).all()
+    assert (lapl_rw == d_rw @ lapl).all()
 
 
 def test_symmetric_normalised_laplacian():
@@ -78,6 +129,39 @@ def test_recomposition():
 
 
 # ### Break tests
+def test_break_compute_laplacian():
+    mtx = np.random.rand(4, 4)
+    mtx = mtx - mtx.mean()
+    with raises(NotImplementedError) as errorinfo:
+        laplacian.compute_laplacian(mtx, negval="random")
+    assert 'Behaviour "random" to deal' in str(errorinfo.value)
+
+
+def test_break_normalisation():
+    lapl = np.random.rand(4, 4, 4)
+    d = np.random.rand(4)
+    with raises(NotImplementedError) as errorinfo:
+        laplacian.normalisation(lapl, d)
+    assert "degree matrix is 1D" in str(errorinfo.value)
+
+    lapl = np.random.rand(4, 4)
+    d = np.diag(d)
+    d[1, 2] = 1
+    with raises(ValueError) as errorinfo:
+        laplacian.normalisation(lapl, d)
+    assert "not a diagonal matrix" in str(errorinfo.value)
+
+    d = np.random.rand(6)
+    with raises(ValueError) as errorinfo:
+        laplacian.normalisation(lapl, d)
+    assert "degree matrix has shape" in str(errorinfo.value)
+
+    d = np.random.rand(4)
+    with raises(NotImplementedError) as errorinfo:
+        laplacian.normalisation(lapl, d, norm="echo")
+    assert 'Normalisation type "echo"' in str(errorinfo.value)
+
+
 def test_break_symmetric_normalised_laplacian():
 
     mtx = np.random.rand(4, 4)

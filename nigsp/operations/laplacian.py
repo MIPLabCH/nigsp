@@ -111,19 +111,18 @@ def normalisation(lapl, degree, norm="symmetric", fix_zeros=True):
     if lapl.ndim - degree.ndim > 1:
         raise NotImplementedError(
             f"The provided degree matrix is {degree.ndim}D while the "
-            f"provided laplacian matrix is {lapl.shape}D."
+            f"provided laplacian matrix is {lapl.ndim}D."
         )
+    elif lapl.ndim == degree.ndim:
         if not (degree.diagonal() == degree.sum(axis=1)).all():
             raise ValueError(
-                "The provided matrix for symmetric normalisation "
-                "is not a diagonal matrix (or a stack of)."
+                "The provided degree matrix is not a diagonal matrix (or a stack of)."
             )
-    elif lapl.ndim == degree.ndim:
         degree = degree.diagonal()
 
     if degree.shape != lapl.shape[:-1]:
         raise ValueError(
-            f"The provided diagonal has shape {degree.shape} while the "
+            f"The provided degree matrix has shape {degree.shape} while the "
             f"provided matrix has shape {lapl.shape}."
         )
 
@@ -139,7 +138,7 @@ def normalisation(lapl, degree, norm="symmetric", fix_zeros=True):
         d[np.diag_indices(d.shape[0])] = degree ** (-1)
         return d @ lapl
     else:
-        raise NotImplementedError(f"Normalisation type {norm} is not supported.")
+        raise NotImplementedError(f'Normalisation type "{norm}" is not supported.')
 
 
 def symmetric_normalised_laplacian(mtx, d=None, fix_zeros=True):
