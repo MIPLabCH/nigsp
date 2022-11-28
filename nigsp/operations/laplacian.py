@@ -43,6 +43,11 @@ def compute_laplacian(mtx, negval="absolute"):
     See Also
     --------
     https://en.wikipedia.org/wiki/Laplacian_matrix
+
+    Raises
+    ------
+    NotImplementedError
+        If negval is not "absolute", "remove", or "rescale"
     """
     if mtx.min() < 0:
         if negval == "absolute":
@@ -52,11 +57,11 @@ def compute_laplacian(mtx, negval="absolute"):
         elif negval == "rescale":
             mtx = (mtx - mtx.min()) / mtx.max()
         else:
-            raise ValueError(
+            raise NotImplementedError(
                 f'Behaviour "{negval}" to deal with negative values is not supported'
             )
 
-    degree = mtx.sum(axis=1)  # This is fixed to columns
+    degree = mtx.sum(axis=1)  # This is fixed to across columns
 
     adjacency = mtx
     adjacency[np.diag_indices(adjacency.shape[0])] = 0
@@ -230,7 +235,7 @@ def decomposition(mtx):
 
 def recomposition(eigenval, eigenvec):
     """
-    Recompose a matrxi from its eigenvalues and eigenvectors.
+    Recompose a matrix from its eigenvalues and eigenvectors.
 
     At the moment, it supports only 2D (not stacks).
 

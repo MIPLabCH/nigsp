@@ -10,9 +10,20 @@ from nigsp.operations import laplacian
 
 
 # ### Unit tests
-def test_symmetric_normalised_laplacian(sc_mtx):
-    mtx = read_mat(sc_mtx)
-    mtx = mtx["SC_avg56"]
+def test_compute_laplacian():
+    mtx = np.random.rand(4, 4)
+    mtx = (mtx + mtx.T) / 2
+
+    return
+
+
+def test_normalisation():
+    return
+
+
+def test_symmetric_normalised_laplacian():
+    mtx = np.random.rand(4, 4)
+    mtx = (mtx + mtx.T) / 2
 
     d = np.diag(mtx.sum(axis=-1) ** (-1 / 2))
 
@@ -34,12 +45,10 @@ def test_symmetric_normalised_laplacian(sc_mtx):
 
     assert (lapl_in == lapl_out).all()
 
-    remove(sc_mtx)
 
-
-def test_decomposition(sc_mtx):
-    mtx = read_mat(sc_mtx)
-    mtx = mtx["SC_avg56"]
+def test_decomposition():
+    mtx = np.random.rand(4, 4)
+    mtx = (mtx + mtx.T) / 2
 
     eival, eivec = np.linalg.eig(mtx)
 
@@ -52,12 +61,10 @@ def test_decomposition(sc_mtx):
     assert (eival == eigenval).all()
     assert (eivec == eigenvec).all()
 
-    remove(sc_mtx)
 
-
-def test_recomposition(sc_mtx):
-    mtx = read_mat(sc_mtx)
-    mtx = mtx["SC_avg56"]
+def test_recomposition():
+    mtx = np.random.rand(4, 4)
+    mtx = (mtx + mtx.T) / 2
 
     eival, eivec = np.linalg.eig(mtx)
 
@@ -68,8 +75,6 @@ def test_recomposition(sc_mtx):
     mtx_rec = laplacian.recomposition(eival, eivec)
 
     assert abs(mtx - mtx_rec).sum().round(6) < 10**-6
-
-    remove(sc_mtx)
 
 
 # ### Break tests
