@@ -18,7 +18,7 @@ def test_compute_laplacian():
         adj[np.diag_indices(mtx.shape[0])] = 0
 
         L = np.diag(deg) - adj
-        return deg, L
+        return L, deg
 
     mtx = np.random.rand(4, 4)
     mtx = (mtx + mtx.T) / 2
@@ -54,22 +54,22 @@ def test_compute_laplacian():
 
 def test_normalisation():
 
-    lapl = np.random.rand(4, 4)
-    lapl = (lapl + lapl.T) / 2
-    degree = np.random.rand(4)
-    degree[2] = 0
+    L = np.random.rand(4, 4)
+    L = (L + L.T) / 2
+    d = np.random.rand(4)
+    d[2] = 0
 
-    lapl_symm = laplacian.normalisation(lapl, degree, norm="symmetric")
+    lapl_symm = laplacian.normalisation(L, d, norm="symmetric")
 
-    d = np.diag(degree)
-    lapl_rw = laplacian.normalisation(lapl, d, norm="random walk")
+    d = np.diag(d)
+    lapl_rw = laplacian.normalisation(L, d, norm="random walk")
 
-    degree[2] = 1
-    d_symm = np.diag(degree ** (-1 / 2))
-    d_rw = np.diag(degree ** (-1))
+    d[2] = 1
+    d_symm = np.diag(d ** (-1 / 2))
+    d_rw = np.diag(d ** (-1))
 
-    assert (lapl_symm == (d_symm @ lapl @ d_symm)).all()
-    assert (lapl_rw == d_rw @ lapl).all()
+    assert (lapl_symm == (d_symm @ L @ d_symm)).all()
+    assert (lapl_rw == d_rw @ L).all()
 
 
 def test_symmetric_normalised_laplacian():
