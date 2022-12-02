@@ -1,3 +1,24 @@
+# 0.12.1 (Fri Dec 02 2022)
+
+:tada: This release contains work from a new contributor! :tada:
+
+Thank you, Mathieu Scheltienne ([@mscheltienne](https://github.com/mscheltienne)), for all your work!
+
+#### 🐛 Bug Fix
+
+- Syncronise required packages versions and add DS_Store to .gitignore [#41](https://github.com/MIPLabCH/nigsp/pull/41) ([@mscheltienne](https://github.com/mscheltienne))
+
+#### 🏠 Internal
+
+- [pre-commit.ci] pre-commit autoupdate [#39](https://github.com/MIPLabCH/nigsp/pull/39) ([@pre-commit-ci[bot]](https://github.com/pre-commit-ci[bot]))
+
+#### Authors: 2
+
+- [@pre-commit-ci[bot]](https://github.com/pre-commit-ci[bot])
+- Mathieu Scheltienne ([@mscheltienne](https://github.com/mscheltienne))
+
+---
+
 # 0.12.0 (Mon Nov 28 2022)
 
 #### 💥 Breaking Change during development
