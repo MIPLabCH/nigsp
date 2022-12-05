@@ -16,20 +16,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-### Standard docker
+### BIDS docker
 # Use official python 3.8.13 (Debian Buster)
-FROM python:3.8.13-slim-buster AS nigspdock
+FROM python:3.8.13-slim-buster AS nigspbidsapp
 
-WORKDIR /app
+WORKDIR /bidsapp
 
-# Prepare environment
 COPY .. .
-RUN pip3 install .[all]
+
+RUN pip3 install .[all,bids]
 
 ENV LANG="en_US.UTF-8" \
     LC_ALL="en_US.UTF-8"
 
-CMD nigsp
+CMD bidsapp/run.py
 
 ARG BUILD_DATE
 ARG VCS_REF

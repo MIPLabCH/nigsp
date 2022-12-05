@@ -1,3 +1,18 @@
+# GitHub things
+docker/
+.circleci/
+.git
+.github
+codecov.yml
+.autorc
+.coveragerc
+.gitattributes
+.gitignore
+.mailmap
+.pre-commit-config.*
+.readthedocs.*
+.zenodo.json
+
 # Containers
 *.sif
 *.img
@@ -135,6 +150,3 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
-
-# macOS
-.DS_Store
