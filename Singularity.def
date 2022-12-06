@@ -1,0 +1,15 @@
+Bootstrap: docker
+From: python:3.8.13-slim-buster
+
+%environment
+export DEBIAN_FRONTEND=noninteractive
+export TZ=Europe/Brussels
+
+%post
+# Set install variables, create tmp folder
+export DEBIAN_FRONTEND=noninteractive
+export TZ=Europe/Brussels
+# Prepare repos and install dependencies
+pip3 install nigsp[all]
+# Final removal of lists and cleanup
+rm -rf /var/lib/apt/lists/*
