@@ -22,7 +22,7 @@ import logging
 
 import numpy as np
 
-from nigsp.operations.timeseries import spc_ts
+from nigsp.operations.timeseries import resize_ts
 
 LGR = logging.getLogger(__name__)
 SET_DPI = 100
@@ -98,7 +98,7 @@ def plot_connectivity(mtx, filename=None, closeplot=False):
     return 0
 
 
-def plot_greyplot(timeseries, filename=None, title=None, spc=True, closeplot=False):
+def plot_greyplot(timeseries, filename=None, title=None, resize=None, closeplot=False):
     """
     Create a greyplot (a.k.a. carpet plot a.k.a. timeseries plot).
 
@@ -108,13 +108,21 @@ def plot_greyplot(timeseries, filename=None, title=None, spc=True, closeplot=Fal
     ----------
     timeseries : numpy.ndarray
         An array representing a timeseries. Time has to be encoded in the
-        second dimension.
+        second dimension (axis=1).
     filename : None, str, or os.PathLike, optional
         The path to save the plot on disk.
     title : None or str, optional
         Add a title to the graph
-    normalise : bool, optional
-        If true, spc the signal before plotting.
+    resize : 'spc', 'norm', 'gnorm', 'demean', 'gdemean' tuple, list, or None, optional
+        Whether to resize the signal or not before plotting.
+        If 'spc', compute signal percentage change
+        If 'norm', normalise signals (z-score)
+        If 'gnorm', globally normalise signals (keep relationship between timeseries)
+        If 'demean', remove signal average
+        If 'gdemean', remove global average
+        If 'gsr', remove global signal (average across points)
+        If tuple or list, rescale signals between those two values
+        If None, don't do anything (default)
     closeplot : bool, optional
         Whether to close plots after saving or not. Mainly used for debug
         or use with live python/ipython instances.
@@ -134,6 +142,7 @@ def plot_greyplot(timeseries, filename=None, title=None, spc=True, closeplot=Fal
     Notes
     -----
     Requires `matplotlib`
+    See `timeseries.rescale_ts`
     """
     try:
         import matplotlib.pyplot as plt
@@ -150,9 +159,7 @@ def plot_greyplot(timeseries, filename=None, title=None, spc=True, closeplot=Fal
         LGR.warning("Since timeseries is 3D, averaging across last dimension.")
         timeseries = timeseries.mean(axis=-1)
 
-    if spc:
-        LGR.info("Expressing timeseries in signal percentage change")
-        timeseries = spc_ts(timeseries)
+    timeseries = resize_ts(timeseries, resize)
 
     LGR.info("Creating greyplot.")
     plt.figure(figsize=FIGSIZE_LONG)
@@ -161,6 +168,7 @@ def plot_greyplot(timeseries, filename=None, title=None, spc=True, closeplot=Fal
     vmax = np.percentile(timeseries, 99)
     vmin = np.percentile(timeseries, 1)
     plt.imshow(timeseries, cmap="gray", vmin=vmin, vmax=vmax)
+    plt.colorbar()
     plt.tight_layout()
 
     if filename is not None:
@@ -169,6 +177,8 @@ def plot_greyplot(timeseries, filename=None, title=None, spc=True, closeplot=Fal
 
     if closeplot:
         plt.close()
+    else:
+        plt.show()
 
     return 0
 
