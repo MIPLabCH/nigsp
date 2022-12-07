@@ -1,3 +1,21 @@
+# 0.13.0 (Wed Dec 07 2022)
+
+#### 🚀 Enhancement
+
+- Add timeseries resizing methods and improve colorbar plotting options [#43](https://github.com/MIPLabCH/nigsp/pull/43) ([@smoia](https://github.com/smoia))
+
+#### 🏠 Internal
+
+- Bump actions/checkout from 2 to 3 [#44](https://github.com/MIPLabCH/nigsp/pull/44) ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump actions/setup-python from 2 to 4 [#45](https://github.com/MIPLabCH/nigsp/pull/45) ([@dependabot[bot]](https://github.com/dependabot[bot]))
+
+#### Authors: 2
+
+- [@dependabot[bot]](https://github.com/dependabot[bot])
+- Stefano Moia ([@smoia](https://github.com/smoia))
+
+---
+
 # 0.12.2 (Wed Dec 07 2022)
 
 #### 🐛 Bug Fix
