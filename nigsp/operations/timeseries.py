@@ -17,7 +17,7 @@ from nigsp.utils import change_var_type, pairwise, prepare_ndim_iteration
 LGR = logging.getLogger(__name__)
 
 
-def normalise_ts(timeseries):
+def normalise_ts(timeseries, globally=False):
     """
     Normalise given timeseries (i.e. mean=0, std=1).
 
@@ -30,6 +30,8 @@ def normalise_ts(timeseries):
     ----------
     timeseries : numpy.ndarray
         The input timeseries. It is assumed that the second dimension is time.
+    globally : bool, optional
+        If True, normalise timeseries across the first two axes
 
     Returns
     -------
@@ -43,15 +45,21 @@ def normalise_ts(timeseries):
         )
         return timeseries
 
-    z = (timeseries - timeseries.mean(axis=1)[:, np.newaxis, ...]) / timeseries.std(
-        axis=1, ddof=1
-    )[:, np.newaxis, ...]
+    if globally:
+        z = (timeseries - timeseries.mean(axis=(0, 1))) / timeseries.std(
+            axis=(0, 1), ddof=1
+        )
+    else:
+        z = (timeseries - timeseries.mean(axis=1)[:, np.newaxis, ...]) / timeseries.std(
+            axis=1, ddof=1
+        )[:, np.newaxis, ...]
+
     z[np.isnan(z)] = 0
 
     return z
 
 
-def spc_ts(timeseries):
+def spc_ts(timeseries, globally=False):
     """
     Express timeseries in signal percentage change.
 
@@ -62,6 +70,8 @@ def spc_ts(timeseries):
     ----------
     timeseries : numpy.ndarray
         The input timeseries. It is assumed that the second dimension is time.
+    globally : bool, optional
+        If True, SPC timeseries across the first two axes (mainly for similarity with other functions.)
 
     Returns
     -------
@@ -75,12 +85,150 @@ def spc_ts(timeseries):
         )
         return timeseries
 
-    scp = (timeseries - timeseries.mean(axis=1)[:, np.newaxis, ...]) / timeseries.mean(
-        axis=1
-    )[:, np.newaxis, ...]
+    if globally:
+        scp = (timeseries - timeseries.mean(axis=(0, 1))) / timeseries.mean(axis=(0, 1))
+    else:
+        scp = (
+            timeseries - timeseries.mean(axis=1)[:, np.newaxis, ...]
+        ) / timeseries.mean(axis=1)[:, np.newaxis, ...]
+
     scp[np.isnan(scp)] = timeseries[np.isnan(scp)]
 
     return scp
+
+
+def demean_ts(timeseries, globally=False):
+    """
+    Demean timeseries.
+
+    It is assumed that time is encoded in the second dimension (axis 1),
+    e.g. for 90 voxels and 300 timepoints, shape is [90, 300].
+
+    Parameters
+    ----------
+    timeseries : numpy.ndarray
+        The input timeseries. It is assumed that the second dimension is time.
+    globally : bool, optional
+        If True, demean timeseries across the first two axes.
+
+    Returns
+    -------
+    numpy.ndarray
+        The demeaned timeseries if timeseries is not a 1D array.
+        If timeseries is a 1D array, it is returned as is.
+    """
+    if timeseries.ndim < 2 or (timeseries.ndim == 2 and timeseries.shape[1] == 1):
+        LGR.warning(
+            "Given timeseries seems to be a single timepoint. " "Returning it as is."
+        )
+        return timeseries
+
+    if globally:
+        return timeseries - timeseries.mean(axis=(0, 1))
+    else:
+        return timeseries - timeseries.mean(axis=1)[:, np.newaxis, ...]
+
+
+def rescale_ts(timeseries, vmin=0, vmax=1, globally=False):
+    """
+    Rescale given timeseries between given max and min value.
+
+    It is assumed that time is encoded in the second dimension (axis 1),
+    e.g. for 90 voxels and 300 timepoints, shape is [90, 300].
+
+    Any timeseries with std == 0 is returned as a series of 0s.
+
+    Parameters
+    ----------
+    timeseries : numpy.ndarray
+        The input timeseries. It is assumed that the second dimension is time.
+    vmin : float, optional
+        The minimum value to scale between
+    vmax : float, optional
+        The maximum value to scale between
+    globally : bool, optional
+        If True, rescale timeseries across the first two axes
+
+    Returns
+    -------
+    numpy.ndarray
+        The normalised timeseries (mean=0 std=1) if timeseries is not a 1D array.
+        If timeseries is a 1D array, it is returned as is.
+    """
+    if timeseries.ndim < 2 or (timeseries.ndim == 2 and timeseries.shape[1] == 1):
+        LGR.warning(
+            "Given timeseries seems to be a single timepoint. " "Returning it as is."
+        )
+        return timeseries
+
+    if globally:
+        res = timeseries - timeseries.min(axis=(0, 1))
+        res = res / res.max(axis=(0, 1))
+    else:
+        res = timeseries - timeseries.min(axis=1)[:, np.newaxis, ...]
+        res = res / res.max(axis=1)[:, np.newaxis, ...]
+
+    res = res * (vmax - vmin) + vmin
+    return res
+
+
+def resize_ts(timeseries, resize=None, globally=False):
+    """
+    Rescale timeseries with some methods.
+
+    It is assumed that time is encoded in the second dimension (axis 1),
+    e.g. for 90 voxels and 300 timepoints, shape is [90, 300].
+
+    Parameters
+    ----------
+    timeseries : numpy.ndarray
+        The input timeseries. It is assumed that the second dimension is time.
+    resize : 'spc', 'norm', 'gnorm', 'demean', 'gdemean' tuple, list, or None, optional
+        Whether to resize the signal or not before plotting.
+        If 'spc', compute signal percentage change
+        If 'norm', normalise signals (z-score)
+        If 'demean', remove signal average
+        If 'gsr', remove global signal (average across points)
+        If tuple or list, rescale signals between those two values
+        If None, don't do anything (default)
+    globally : bool, optional
+        If True, rescale timeseries across the first two axes
+
+    Returns
+    -------
+    numpy.ndarray
+        The timeseries after resizing if timeseries is not a 1D array.
+        If timeseries is a 1D array, it is returned as is.
+
+    """
+    if resize and timeseries.ndim > 1:
+        if resize == "spc":  # pragma: no cover
+            LGR.info("Expressing timeseries in signal percentage change")
+            timeseries = spc_ts(timeseries, globally=globally)
+        elif resize == "norm":  # pragma: no cover
+            LGR.info("Normalise timeseries")
+            timeseries = normalise_ts(timeseries, globally=globally)
+        elif resize == "demean":  # pragma: no cover
+            LGR.info("Demean timeseries")
+            timeseries = demean_ts(timeseries, globally=globally)
+        elif resize == "gsr":
+            LGR.info("Remove Global Signal from timeseries")
+            timeseries = timeseries - timeseries.mean(axis=0)
+        elif type(resize) in [tuple, list]:
+            if len(resize) != 2:
+                raise NotImplementedError("Required two elements to express rescaling")
+            LGR.info(
+                f"Expressing timeseries in given range {resize}"
+            )  # pragma: no cover
+            timeseries = resize(
+                timeseries, vmin=resize[0], vmax=resize[1], globally=globally
+            )  # pragma: no cover
+        else:
+            raise NotImplementedError(
+                f"Chosen rescaling method {resize} is not supported."
+            )
+
+    return timeseries
 
 
 def graph_fourier_transform(timeseries, eigenvec, energy=False, mean=False):
