@@ -1,3 +1,15 @@
+# 0.12.2 (Wed Dec 07 2022)
+
+#### 🐛 Bug Fix
+
+- Add dependabot config to keep GitHub actions up-to date [#42](https://github.com/MIPLabCH/nigsp/pull/42) ([@mscheltienne](https://github.com/mscheltienne))
+
+#### Authors: 1
+
+- Mathieu Scheltienne ([@mscheltienne](https://github.com/mscheltienne))
+
+---
+
 # 0.12.1 (Fri Dec 02 2022)
 
 :tada: This release contains work from a new contributor! :tada:
