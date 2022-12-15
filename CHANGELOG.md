@@ -1,3 +1,20 @@
+# 0.14.0 (Thu Dec 15 2022)
+
+#### 💥 Breaking Change during development
+
+- Make FC a metric with optional computation [#24](https://github.com/MIPLabCH/nigsp/pull/24) ([@smoia](https://github.com/smoia) [@pre-commit-ci[bot]](https://github.com/pre-commit-ci[bot]))
+
+#### 🏠 Internal
+
+- [pre-commit.ci] pre-commit autoupdate [#46](https://github.com/MIPLabCH/nigsp/pull/46) ([@pre-commit-ci[bot]](https://github.com/pre-commit-ci[bot]))
+
+#### Authors: 2
+
+- [@pre-commit-ci[bot]](https://github.com/pre-commit-ci[bot])
+- Stefano Moia ([@smoia](https://github.com/smoia))
+
+---
+
 # 0.13.0 (Wed Dec 07 2022)
 
 #### 🚀 Enhancement
