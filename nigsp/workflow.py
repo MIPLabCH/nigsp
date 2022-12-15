@@ -367,10 +367,6 @@ def nigsp(
         elif len(scgraph.split_keys) > 2:
             metric_name = "gsdi"
             scgraph.compute_gsdi()
-        else:
-            raise ValueError(
-                "Data is not splitted enough to compute SDI or similar indexes."
-            )
         # Export non-thresholded metrics
         LGR.info(f"Export non-thresholded version of {metric_name}.")
         blocks.export_metric(scgraph, outext, outprefix)
