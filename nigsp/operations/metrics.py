@@ -171,6 +171,7 @@ def gsdi(ts_split, mean=False, keys=None):
     return gsdi
 
 
+@due.dcite(references.GRIFFA_2022)
 def functional_connectivity(timeseries, mean=False):
     """
     Compute Functional Connectivity of timeseries.
