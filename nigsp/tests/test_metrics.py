@@ -106,7 +106,7 @@ def test_functional_connectivity():
     ts = rand(3, 6, 2, 2)
 
     tst, _ = prepare_ndim_iteration(ts, 2)
-    fc = np.empty(([tst.shape[0]] * 2 + [tst.shape[-1]]), dtype='float32')
+    fc = np.empty(([tst.shape[0]] * 2 + [tst.shape[-1]]), dtype="float32")
     for i in range(tst.shape[-1]):
         fc[:, :, i] = np.corrcoef(tst[..., i])
 
@@ -117,7 +117,7 @@ def test_functional_connectivity():
 
     assert (fc == fc_t).all()
 
-    tsd = {'hi': rand(3, 6), 'lo': rand(3, 6)}
+    tsd = {"hi": rand(3, 6), "lo": rand(3, 6)}
 
     fcd = metrics.functional_connectivity(tsd)
 

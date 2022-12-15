@@ -56,29 +56,41 @@ def _get_parser():
         required=True,
     )
 
-    opt_metrics = parser.add_argument_group('Optional Arguments for metrics computation',
-                                            description=('Use these flag to '
-                                                         'select which metric '
-                                                         'should be computed. '
-                                                         'Note that the default '
-                                                         'behaviour is to compute '
-                                                         'all metrics.'
-                                                         )
-                                            )
-    opt_metrics.add_argument('-sdi', '--structural-decoupling-index',
-                             dest='comp_metric',
-                             action='append_const',
-                             const='sdi',
-                             help=('Compute the structural decoupling index '
-                                   '(see Preti et al, 2019, Nat. Commun.)'),
-                             default=None)
-    opt_metrics.add_argument('-dfc', '--decoupled-functional-connectivity',
-                             dest='comp_metric',
-                             action='append_const',
-                             const='dfc',
-                             help=('Compute the decoupledd functional connectivity '
-                                   '(see Griffa et al, 2022, NeuroImage)'),
-                             default=None)
+    opt_metrics = parser.add_argument_group(
+        "Optional Arguments for metrics computation",
+        description=(
+            "Use these flag to "
+            "select which metric "
+            "should be computed. "
+            "Note that the default "
+            "behaviour is to compute "
+            "all metrics."
+        ),
+    )
+    opt_metrics.add_argument(
+        "-sdi",
+        "--structural-decoupling-index",
+        dest="comp_metric",
+        action="append_const",
+        const="sdi",
+        help=(
+            "Compute the structural decoupling index "
+            "(see Preti et al, 2019, Nat. Commun.)"
+        ),
+        default=None,
+    )
+    opt_metrics.add_argument(
+        "-dfc",
+        "--decoupled-functional-connectivity",
+        dest="comp_metric",
+        action="append_const",
+        const="dfc",
+        help=(
+            "Compute the decoupledd functional connectivity "
+            "(see Griffa et al, 2022, NeuroImage)"
+        ),
+        default=None,
+    )
 
     opt_proc = parser.add_argument_group("Optional Arguments for data processing")
     opt_proc.add_argument(

@@ -17,10 +17,9 @@ from nigsp import references
 from nigsp.due import due
 from nigsp.utils import prepare_ndim_iteration
 
-
 LGR = logging.getLogger(__name__)
 
-SUPPORTED_METRICS = ['sdi', 'dfc', 'fc']
+SUPPORTED_METRICS = ["sdi", "dfc", "fc"]
 
 
 @due.dcite(references.PRETI_2019)
@@ -215,15 +214,16 @@ def functional_connectivity(timeseries, mean=False):
         """
         timeseries = timeseries.squeeze()
         if timeseries.ndim < 2:
-            LGR.warning('Computing functional connectivity of a 1D array (== 1)!')
+            LGR.warning("Computing functional connectivity of a 1D array (== 1)!")
             return 1
         elif timeseries.ndim == 2:
             return np.corrcoef(timeseries)
         else:
             # reshape the array to allow reiteration on unknown dimensions of timeseries
             temp_ts, _ = prepare_ndim_iteration(timeseries, 2)
-            fcorr = np.empty(([temp_ts.shape[0]] * 2 + [temp_ts.shape[-1]]),
-                             dtype='float32')
+            fcorr = np.empty(
+                ([temp_ts.shape[0]] * 2 + [temp_ts.shape[-1]]), dtype="float32"
+            )
             for i in range(temp_ts.shape[-1]):
                 fcorr[:, :, i] = np.corrcoef(temp_ts[..., i])
 
