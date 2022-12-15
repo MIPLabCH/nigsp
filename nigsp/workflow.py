@@ -23,6 +23,7 @@ from nigsp import utils, viz
 from nigsp.cli.run import _get_parser
 from nigsp.due import due
 from nigsp.objects import SCGraph
+from nigsp.operations.metrics import SUPPORTED_METRICS
 
 LGR = logging.getLogger(__name__)
 LGR.setLevel(logging.INFO)
@@ -75,6 +76,7 @@ def nigsp(
     atlasname=None,
     outname=None,
     outdir=None,
+    comp_metric=[],
     index="median",
     surr_type=None,
     n_surr=1000,
@@ -108,6 +110,9 @@ def nigsp(
         Path to the output folder. If it doesn't exist, it will be created.
         If both `outdir` and `outname` are declared, `outdir` overrides the path
         specified in `outname` (but not the filename!)
+    comp_metric : list or None, optional
+        List of metrics that should be computed. If empty (default), compute all
+        metrics available.
     index : 'median' or int, optional
         The index of the eigenvector/harmonic of the graph to split the graph in
         multiple parts, or the method to find this index. Currently supports
@@ -265,9 +270,26 @@ def nigsp(
         )
     if p < 0 or p > 1:
         raise ValueError(
-            f"P value must be higher than 0 and lower than 1, but "
-            f"p value {p} was provided instead."
+            "P value must be between 0 and 1, but {p} was provided instead."
         )
+
+    # Check what metric to compute
+    if comp_metric not in [[], None]:
+        for item in comp_metric:
+            if item not in SUPPORTED_METRICS:
+                raise NotImplementedError(
+                    f"Metric {item} is not supported. "
+                    f"Supported metrics are: {SUPPORTED_METRICS}"
+                )
+    else:
+        comp_metric = SUPPORTED_METRICS
+
+    # #### Prepare Outputs #### #
+    if outname is not None:
+        _, outprefix, outext = io.check_ext(io.EXT_ALL, outname, remove=True)
+        outprefix = os.path.join(outdir, f"{os.path.split(outprefix)[1]}_")
+    else:
+        outprefix = f"{outdir}{os.sep}"
 
     # #### Read in data #### #
 
@@ -327,7 +349,8 @@ def nigsp(
 
     # #### Assign SCGraph object #### #
     scgraph = SCGraph(mtx, timeseries, atlas=atlas, img=img)
-    # #### Compute SDI (split low vs high timeseries) and FC #### #
+
+    # #### Compute SDI (split low vs high timeseries) and FC and output them #### #
 
     # Run laplacian decomposition and actually filter timeseries.
     LGR.info("Run laplacian decomposition of structural graph.")
@@ -335,35 +358,29 @@ def nigsp(
     LGR.info("Compute the energy of the graph and split it in parts.")
     scgraph.compute_graph_energy(mean=True).split_graph()
 
-    # If there are more than two splits in the timeseries, compute Generalised SDI
-    # This should not happen in this moment.
-    if len(scgraph.split_keys) == 2:
-        metric_name = "sdi"
-        scgraph.compute_sdi()
-    elif len(scgraph.split_keys) > 2:
-        metric_name = "gsdi"
-        scgraph.compute_gsdi()
-    else:
-        raise ValueError(
-            "Data is not splitted enough to compute SDI or similar " "indexes."
-        )
+    if "sdi" in comp_metric or "gsdi" in comp_metric:
+        # If there are more than two splits in the timeseries, compute Generalised SDI
+        # This should not happen in this moment.
+        if len(scgraph.split_keys) == 2:
+            metric_name = "sdi"
+            scgraph.compute_sdi()
+        elif len(scgraph.split_keys) > 2:
+            metric_name = "gsdi"
+            scgraph.compute_gsdi()
+        # Export non-thresholded metrics
+        LGR.info(f"Export non-thresholded version of {metric_name}.")
+        blocks.export_metric(scgraph, outext, outprefix)
 
-    LGR.info("Compute functional connectivity.")
-    scgraph.compute_fc(mean=True)
+    if "dfc" in comp_metric or "fc" in comp_metric:
+        scgraph.compute_fc(mean=True)
+        for k in scgraph.split_keys:
+            LGR.info(f"Export {k} FC (data).")
+            io.export_mtx(scgraph.fc_split[k], f"{outprefix}fc_{k}", ext=outext)
+        # Export fc
+        LGR.info("Export original FC (data).")
+        io.export_mtx(scgraph.fc, f"{outprefix}fc", ext=outext)
 
-    # #### Output results (pt. 1) #### #
-
-    # Prepare outputs
-    if outname is not None:
-        _, outprefix, outext = io.check_ext(io.EXT_ALL, outname, remove=True)
-        outprefix = os.path.join(outdir, f"{os.path.split(outprefix)[1]}_")
-    else:
-        outprefix = f"{outdir}{os.sep}"
-        outext = ""
-
-    # Export non-thresholded metrics
-    LGR.info(f"Export non-thresholded version of {metric_name}.")
-    blocks.export_metric(scgraph, outext, outprefix)
+    # #### Output more results (pt. 1) #### #
 
     # Export eigenvalues, eigenvectors, and split timeseries and eigenvectors
     for k in scgraph.split_keys:
@@ -371,10 +388,6 @@ def nigsp(
         io.export_mtx(scgraph.ts_split[k], f"{outprefix}timeseries_{k}", ext=outext)
         LGR.info(f"Export {k} eigenvectors.")
         io.export_mtx(scgraph.evec_split[k], f"{outprefix}eigenvec_{k}", ext=outext)
-        LGR.info(f"Export {k} FC (data).")
-        io.export_mtx(scgraph.fc_split[k], f"{outprefix}fc_{k}", ext=outext)
-    LGR.info("Export original FC (data).")
-    io.export_mtx(scgraph.fc, f"{outprefix}fc", ext=outext)
     LGR.info("Export original eigenvectors.")
     io.export_mtx(scgraph.eigenvec, f"{outprefix}eigenvec", ext=outext)
     LGR.info("Export original eigenvalues.")
@@ -392,12 +405,7 @@ def nigsp(
         viz.plot_connectivity(scgraph.lapl_mtx, f"{outprefix}laplacian.png")
         LGR.info("Plot structural connectivity matrix.")
         viz.plot_connectivity(scgraph.mtx, f"{outprefix}sc.png")
-        # Plot FC
-        LGR.info("Plot original functional connectivity matrix.")
-        viz.plot_connectivity(scgraph.fc, f"{outprefix}fc.png")
-        for k in scgraph.split_keys:
-            LGR.info(f"Plot {k} functional connectivity matrix.")
-            viz.plot_connectivity(scgraph.fc_split[k], f"{outprefix}fc_{k}.png")
+
         # Plot timeseries
         LGR.info("Plot original timeseries.")
         viz.plot_greyplot(scgraph.timeseries, f"{outprefix}greyplot.png")
@@ -405,12 +413,20 @@ def nigsp(
             LGR.info(f"Plot {k} timeseries.")
             viz.plot_greyplot(scgraph.ts_split[k], f"{outprefix}greyplot_{k}.png")
 
-        if atlasname is not None:
-            LGR.info(f"Plot {metric_name} markerplot.")
-            if img is not None:
-                blocks.plot_metric(scgraph, outprefix, img)
-            elif atlas is not None:
-                blocks.plot_metric(scgraph, outprefix, atlas)
+        if "dfc" in comp_metric or "fc" in comp_metric:
+            # Plot FC
+            LGR.info("Plot original functional connectivity matrix.")
+            viz.plot_connectivity(scgraph.fc, f"{outprefix}fc.png")
+            for k in scgraph.split_keys:
+                LGR.info(f"Plot {k} functional connectivity matrix.")
+                viz.plot_connectivity(scgraph.fc_split[k], f"{outprefix}fc_{k}.png")
+        if "sdi" in comp_metric or "gsdi" in comp_metric:
+            if atlasname is not None:
+                LGR.info(f"Plot {metric_name} markerplot.")
+                if img is not None:
+                    blocks.plot_metric(scgraph, outprefix, img)
+                elif atlas is not None:
+                    blocks.plot_metric(scgraph, outprefix, atlas)
 
     except ImportError:
         LGR.warning(
@@ -421,32 +437,30 @@ def nigsp(
     # If required, create surrogates, test, and export masked metrics
     if surr_type is not None:
         outprefix += "mkd_"
-        if scgraph.sdi is not None:
-            metric_name = "sdi"
-        elif scgraph.gsdi is not None:
-            metric_name = "gsdi"
         LGR.info(
             f"Test significant {metric_name} against {n_surr} structurally "
             f"{surr_type} surrogates."
         )
         scgraph.create_surrogates(sc_type=surr_type, n_surr=n_surr, seed=seed)
-        scgraph.test_significance(method=method, p=p, return_masked=True)
-        # Export thresholded metrics
-        blocks.export_metric(scgraph, outext, outprefix)
+        # #!# Export surrogates!
+        if "sdi" in comp_metric or "gsdi" in comp_metric:
+            scgraph.test_significance(method=method, p=p, return_masked=True)
+            # Export thresholded metrics
+            blocks.export_metric(scgraph, outext, outprefix)
 
-        try:
-            import matplotlib as _
-            import nilearn as _
+            try:
+                import matplotlib as _
+                import nilearn as _
 
-            if atlasname is not None:
-                LGR.info(f"Plot {metric_name} markerplot.")
-                if img is not None:
-                    blocks.plot_metric(scgraph, outprefix, atlas=img, thr=0)
-                elif atlas is not None:
-                    blocks.plot_metric(scgraph, outprefix, atlas=atlas, thr=0)
+                if atlasname is not None:
+                    LGR.info(f"Plot {metric_name} markerplot.")
+                    if img is not None:
+                        blocks.plot_metric(scgraph, outprefix, atlas=img, thr=0)
+                    elif atlas is not None:
+                        blocks.plot_metric(scgraph, outprefix, atlas=atlas, thr=0)
 
-        except ImportError:
-            pass
+            except ImportError:
+                pass
 
     LGR.info(f"End of workflow, find results in {outdir}.")
 

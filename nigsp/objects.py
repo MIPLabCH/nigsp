@@ -159,12 +159,12 @@ class SCGraph:
         return self
 
     def compute_sdi(self, mean=False, keys=None):  # pragma: no cover
-        """Implement sdi.sdi as class method."""
+        """Implement metrics.sdi as class method."""
         self.sdi = operations.sdi(self.ts_split, mean, keys)
         return self
 
     def compute_gsdi(self, mean=False, keys=None):  # pragma: no cover
-        """Implement sdi.gsdi as class method."""
+        """Implement metrics.gsdi as class method."""
         self.gsdi = operations.gsdi(self.ts_split, mean, keys)
         return self
 

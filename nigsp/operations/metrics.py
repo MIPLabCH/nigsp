@@ -15,8 +15,11 @@ import numpy as np
 
 from nigsp import references
 from nigsp.due import due
+from nigsp.utils import prepare_ndim_iteration
 
 LGR = logging.getLogger(__name__)
+
+SUPPORTED_METRICS = ["sdi", "dfc", "fc"]
 
 
 @due.dcite(references.PRETI_2019)
@@ -160,12 +163,87 @@ def gsdi(ts_split, mean=False, keys=None):
 
     if list(gsdi.values())[0].ndim >= 2 and mean:
         for k in gsdi.keys():
-            gsdi[k] = gsdi[k].mean(axis=1)
-
-    for k in gsdi.keys():
-        gsdi[k] = np.log2(gsdi[k])
+            gsdi[k] = np.log2(gsdi[k].mean(axis=1))
+    else:
+        for k in gsdi.keys():
+            gsdi[k] = np.log2(gsdi[k])
 
     return gsdi
+
+
+@due.dcite(references.GRIFFA_2022)
+def functional_connectivity(timeseries, mean=False):
+    """
+    Compute Functional Connectivity of timeseries.
+
+    It is assumed that time is encoded in the second dimension (axis 1),
+    e.g. for 90 voxels and 300 timepoints, shape is [90, 300].
+
+    Parameters
+    ----------
+    timeseries : numpy.ndarray or dict of numpy.ndarray
+        Adictionary of (or a single) 2- or 3-D matrix with timeseries along axis 1.
+    mean : bool, optional
+        If timeseries is 3D and this is True, return the average FC along the last axis.
+
+    Returns
+    -------
+    numpy.ndarray or dict of numpy.ndarray
+        Functional Connectivity of the given timeseries input.
+    """
+
+    def _fc(timeseries, mean=False):
+        """
+        Quick functional connectivity computation.
+
+        This is not meant to be used outside of other functions.
+
+        It is assumed that time is encoded in the second dimension (axis 1),
+        e.g. for 90 voxels and 300 timepoints, shape is [90, 300].
+
+        Parameters
+        ----------
+        timeseries : numpy.ndarray
+            A 2- or 3-D matrix containing timeseries along axis 1.
+        mean : bool, optional
+            If timeseries is 3D and this is True, return the average FC along the last axis.
+
+        Returns
+        -------
+        numpy.ndarray
+            FC matrix
+        """
+        timeseries = timeseries.squeeze()
+        if timeseries.ndim < 2:
+            LGR.warning("Computing functional connectivity of a 1D array (== 1)!")
+            return 1
+        elif timeseries.ndim == 2:
+            return np.corrcoef(timeseries)
+        else:
+            # reshape the array to allow reiteration on unknown dimensions of timeseries
+            temp_ts, _ = prepare_ndim_iteration(timeseries, 2)
+            fcorr = np.empty(
+                ([temp_ts.shape[0]] * 2 + [temp_ts.shape[-1]]), dtype="float32"
+            )
+            for i in range(temp_ts.shape[-1]):
+                fcorr[:, :, i] = np.corrcoef(temp_ts[..., i])
+
+            if timeseries.ndim > 3:
+                new_shape = (timeseries.shape[0],) * 2 + timeseries.shape[2:]
+                fcorr = fcorr.reshape(new_shape)
+
+            if mean:
+                fcorr = fcorr.mean(axis=2).squeeze()
+            return fcorr
+
+    if type(timeseries) is dict:
+        fc = dict()
+        for k in timeseries.keys():
+            fc[k] = _fc(timeseries[k], mean)
+    else:
+        fc = _fc(timeseries, mean)
+
+    return fc
 
 
 """
