@@ -193,8 +193,10 @@ def load_nifti_get_mask(fname, is_mask=False, ndim=4):
     is_mask : bool, optional
         If the file contains a mask.
         Default: False
-    ndim : int
-        The number of dimensions expected in the mask
+    ndim : int or None, optional
+        The number of dimensions expected in the data.
+        If None (default), 4 dimensions are expected, unless is_mask=True.
+        In the latter case, 3 dimensions will be checked.
 
     Returns
     -------
@@ -220,6 +222,10 @@ def load_nifti_get_mask(fname, is_mask=False, ndim=4):
     LGR.info(f"Loading {fname}.")
     img = nib.load(fname)
     data = img.get_fdata()
+
+    if ndim is None:
+        ndim = 3 if is_mask else 4
+
     data = check_nifti_dim(fname, data, dim=ndim)
 
     if is_mask:
