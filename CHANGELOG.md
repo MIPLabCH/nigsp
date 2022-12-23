@@ -1,3 +1,20 @@
+# 0.15.0 (Fri Dec 23 2022)
+
+#### 🚀 Enhancement
+
+- Adjust `io.load_nifti_get_mask` to expect 4 dimensions in timeseries and 3 in masks by default [#48](https://github.com/MIPLabCH/nigsp/pull/48) ([@smoia](https://github.com/smoia))
+
+#### 🏠 Internal
+
+- [pre-commit.ci] pre-commit autoupdate [#47](https://github.com/MIPLabCH/nigsp/pull/47) ([@pre-commit-ci[bot]](https://github.com/pre-commit-ci[bot]))
+
+#### Authors: 2
+
+- [@pre-commit-ci[bot]](https://github.com/pre-commit-ci[bot])
+- Stefano Moia ([@smoia](https://github.com/smoia))
+
+---
+
 # 0.14.0 (Thu Dec 15 2022)
 
 #### 💥 Breaking Change during development
