@@ -16,11 +16,11 @@ def test_sdi():
     ts3 = np.arange(5, 7)[..., np.newaxis]
     sdi_in = np.log2(np.arange(3.0, 1.0, -1.0))
 
-    ts = {"low": ts1, "high": ts2}
+    ts = {"low-pass": ts1, "high-pass": ts2}
     sdi_out = metrics.sdi(ts)
     assert (sdi_out == sdi_in).all()
 
-    ts = {"HIGH": ts2, "LOW": ts1}
+    ts = {"HIGH-PASS": ts2, "LOW-PASS": ts1}
     sdi_out = metrics.sdi(ts)
     assert (sdi_out == sdi_in).all()
 
@@ -29,8 +29,8 @@ def test_sdi():
     assert (sdi_out == sdi_in).all()
 
     ts = {
-        "low": np.repeat(np.repeat(ts1[..., np.newaxis], 3, axis=1), 3, axis=2),
-        "high": np.repeat(np.repeat(ts2[..., np.newaxis], 3, axis=1), 3, axis=2),
+        "low-pass": np.repeat(np.repeat(ts1[..., np.newaxis], 3, axis=1), 3, axis=2),
+        "high-pass": np.repeat(np.repeat(ts2[..., np.newaxis], 3, axis=1), 3, axis=2),
     }
     sdi_out = metrics.sdi(ts, mean=True)
     sdi_out = np.around(sdi_out, decimals=15)
@@ -80,7 +80,7 @@ def test_break_sdi():
     ts = {"alpha": ts1, "beta": ts2, "gamma": ts3}
 
     with raises(ValueError) as errorinfo:
-        metrics.sdi(ts, keys=["high", "low"])
+        metrics.sdi(ts, keys=["high-pass", "low-pass"])
     assert "provided keys" in str(errorinfo.value)
 
     with raises(ValueError) as errorinfo:

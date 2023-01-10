@@ -402,31 +402,55 @@ def nigsp(
 
         # Plot original SC and Laplacian
         LGR.info("Plot laplacian matrix.")
-        viz.plot_connectivity(scgraph.lapl_mtx, f"{outprefix}laplacian.png")
+        viz.plot_connectivity(
+            scgraph.lapl_mtx, f"{outprefix}laplacian.png", title="Laplacian matrix"
+        )
         LGR.info("Plot structural connectivity matrix.")
-        viz.plot_connectivity(scgraph.mtx, f"{outprefix}sc.png")
+        viz.plot_connectivity(
+            scgraph.mtx,
+            f"{outprefix}sc.png",
+            title="Structural Connectivity (underlying graph)",
+        )
 
         # Plot timeseries
         LGR.info("Plot original timeseries.")
-        viz.plot_greyplot(scgraph.timeseries, f"{outprefix}greyplot.png")
+        viz.plot_greyplot(
+            scgraph.timeseries, f"{outprefix}greyplot.png", title="Original timeseries"
+        )
         for k in scgraph.split_keys:
             LGR.info(f"Plot {k} timeseries.")
-            viz.plot_greyplot(scgraph.ts_split[k], f"{outprefix}greyplot_{k}.png")
+            viz.plot_greyplot(
+                scgraph.ts_split[k],
+                f"{outprefix}greyplot_{k}.png",
+                title=f"Filtered timeseries ({k} filter)",
+            )
 
         if "dfc" in comp_metric or "fc" in comp_metric:
             # Plot FC
             LGR.info("Plot original functional connectivity matrix.")
-            viz.plot_connectivity(scgraph.fc, f"{outprefix}fc.png")
+            viz.plot_connectivity(
+                scgraph.fc,
+                f"{outprefix}fc.png",
+                title="Original Functional Connectivity",
+            )
             for k in scgraph.split_keys:
                 LGR.info(f"Plot {k} functional connectivity matrix.")
-                viz.plot_connectivity(scgraph.fc_split[k], f"{outprefix}fc_{k}.png")
+                viz.plot_connectivity(
+                    scgraph.fc_split[k],
+                    f"{outprefix}fc_{k}.png",
+                    title=f"Filtered FC ({k} filter)",
+                )
         if "sdi" in comp_metric or "gsdi" in comp_metric:
             if atlasname is not None:
                 LGR.info(f"Plot {metric_name} markerplot.")
                 if img is not None:
-                    blocks.plot_metric(scgraph, outprefix, img)
+                    blocks.plot_metric(
+                        scgraph, outprefix, atlas=img, title=f"{metric_name.upper()}"
+                    )
                 elif atlas is not None:
-                    blocks.plot_metric(scgraph, outprefix, atlas)
+                    blocks.plot_metric(
+                        scgraph, outprefix, atlas=atlas, title=f"{metric_name.upper()}"
+                    )
 
     except ImportError:
         LGR.warning(
@@ -455,9 +479,21 @@ def nigsp(
                 if atlasname is not None:
                     LGR.info(f"Plot {metric_name} markerplot.")
                     if img is not None:
-                        blocks.plot_metric(scgraph, outprefix, atlas=img, thr=0)
+                        blocks.plot_metric(
+                            scgraph,
+                            outprefix,
+                            atlas=img,
+                            title=f"Statistically significant {metric_name.upper()} (Structurally {surr_type} surrogates)",
+                            thr=0,
+                        )
                     elif atlas is not None:
-                        blocks.plot_metric(scgraph, outprefix, atlas=atlas, thr=0)
+                        blocks.plot_metric(
+                            scgraph,
+                            outprefix,
+                            atlas=atlas,
+                            title=f"Statistically significant {metric_name.upper()} (Structurally {surr_type} surrogates)",
+                            thr=0,
+                        )
 
             except ImportError:
                 pass

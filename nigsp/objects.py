@@ -130,7 +130,7 @@ class SCGraph:
         )
         return self
 
-    def split_graph(self, index=None, keys=["low", "high"]):
+    def split_graph(self, index=None, keys=["low-pass", "high-pass"]):
         """Implement timeseries.median_cutoff_frequency_idx as class method."""
         if index is None:
             index = self.index
