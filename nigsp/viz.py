@@ -266,6 +266,7 @@ def plot_nodes(ns, atlas, filename=None, title=None, thr=None, closeplot=False):
     if title is not None:
         fig.suptitle(title)
 
+    plt.tight_layout()
     if filename is not None:
         plt.savefig(filename, dpi=SET_DPI, bbox_inches="tight")
         closeplot = True
@@ -371,6 +372,7 @@ def plot_edges(mtx, atlas, filename=None, title=None, thr=None, closeplot=False)
     if title is not None:
         fig.suptitle(title)
 
+    plt.tight_layout()
     if filename is not None:
         plt.savefig(filename, dpi=SET_DPI, bbox_inches="tight")
         closeplot = True
