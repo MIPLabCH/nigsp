@@ -262,7 +262,7 @@ def plot_nodes(ns, atlas, filename=None, title=None, thr=None, closeplot=False):
     LGR.info("Creating markerplot.")
     fig = plt.figure(figsize=FIGSIZE)
     ax = fig.subplots()
-    plot_markers(ns, coord, axes=ax, node_threshold=thr)
+    plot_markers(ns, coord, axes=ax, node_threshold=thr, node_cmap=plt.cm.Spectral_r)
     if title is not None:
         fig.suptitle(title)
 
