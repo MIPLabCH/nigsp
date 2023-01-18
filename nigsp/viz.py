@@ -189,7 +189,9 @@ def plot_greyplot(timeseries, filename=None, title=None, resize=None, closeplot=
     return 0
 
 
-def plot_nodes(ns, atlas, filename=None, title=None, thr=None, closeplot=False):
+def plot_nodes(
+    ns, atlas, filename=None, title=None, thr=None, cmap=None, closeplot=False
+):
     """
     Create a marker plot in the MNI space.
 
@@ -208,6 +210,8 @@ def plot_nodes(ns, atlas, filename=None, title=None, thr=None, closeplot=False):
         Add a title to the graph
     thr : float or None, optional
         The threshold to use in plotting the nodes.
+    cmap : None or matplotlib.pyplot.cm colormap object, optional.
+        The colormap to adopt in plotting nodes. Defaults to reverse viridis.
     closeplot : bool, optional
         Whether to close plots after saving or not. Mainly used for debug
         or use with live python/ipython instances.
@@ -262,7 +266,9 @@ def plot_nodes(ns, atlas, filename=None, title=None, thr=None, closeplot=False):
     LGR.info("Creating markerplot.")
     fig = plt.figure(figsize=FIGSIZE)
     ax = fig.subplots()
-    plot_markers(ns, coord, axes=ax, node_threshold=thr, node_cmap=plt.cm.Spectral_r)
+
+    cmap = plt.cm.viridis_r if cmap is None else cmap
+    plot_markers(ns, coord, axes=ax, node_threshold=thr, node_cmap=cmap)
     if title is not None:
         fig.suptitle(title)
 
@@ -277,7 +283,9 @@ def plot_nodes(ns, atlas, filename=None, title=None, thr=None, closeplot=False):
     return 0
 
 
-def plot_edges(mtx, atlas, filename=None, title=None, thr=None, closeplot=False):
+def plot_edges(
+    mtx, atlas, filename=None, title=None, thr=None, cmap=None, closeplot=False
+):
     """
     Create a connectivity plot in the MNI space.
 
@@ -297,6 +305,8 @@ def plot_edges(mtx, atlas, filename=None, title=None, thr=None, closeplot=False)
     thr : float, str or None, optional
         The threshold to use in plotting the nodes.
         If `str`, needs to express a percentage.
+    cmap : None or matplotlib.pyplot.cm colormap object, optional.
+        The colormap to adopt in plotting nodes. Defaults to reverse viridis.
     closeplot : bool, optional
         Whether to close plots after saving or not. Mainly used for debug
         or use with live python/ipython instances.
@@ -358,6 +368,7 @@ def plot_edges(mtx, atlas, filename=None, title=None, thr=None, closeplot=False)
         "node_color": "black",
         "node_size": 5,
         "edge_threshold": thr,
+        "edge_cmap": plt.cm.bwr,
         "colorbar": True,
         "axes": ax,
     }
@@ -367,6 +378,7 @@ def plot_edges(mtx, atlas, filename=None, title=None, thr=None, closeplot=False)
         pc_args["edge_vmax"] = mtx.max()
         pc_args["edge_cmap"] = cm.red_transparent_full_alpha_range
 
+    pc_args["edge_cmap"] = pc_args["edge_cmap"] if cmap is None else cmap
     plot_connectome(**pc_args)
 
     if title is not None:
