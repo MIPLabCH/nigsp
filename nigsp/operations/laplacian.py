@@ -86,8 +86,15 @@ def normalisation(lapl, degree, norm="symmetric", fix_zeros=True):
         An array, a diagonal matrix, or a stack of either. This will be used as the
         the degree matrix for the normalisation.
         It's assumed that degree.ndim == lapl.ndim or degree.ndim == lapl.ndim-1.
-    norm : "symmetric" or "random walk", optional
+    norm : ["symmetric", "symm", "random walk", "rw", random walk inflow", "rwi", "random walk outflow", "rwo"], str, optional
         The type of normalisation to perform. Default to symmetric.
+        - "symmetric": D^(-1/2) @ L @ ^(-1/2), a.k.a. symmetric laplacian noramlisation
+        - "random walk", "random walk inflow": D^(-1) @ L, a.k.a. random walk
+          It normalises the inflow, i.e. it is row-optimised (each row = 0).
+          Normally used in e.g. consensus networks.
+        - "random walk outflow": L @ D^(-1)
+          It normalises the outflow, i.e. it is column-optimised (each column = 0).
+          Normally used in e.g. physical distribution networks.
     fix_zeros : bool, optional
         Whether to change 0 elements in the degree matrix to 1 to avoid multiplying by 0.
         Default is to do so.
@@ -137,9 +144,12 @@ def normalisation(lapl, degree, norm="symmetric", fix_zeros=True):
     if norm in ["symmetric", "symm"]:
         d[np.diag_indices(d.shape[0])] = degree ** (-1 / 2)
         return d @ lapl @ d
-    elif norm in ["random walk", "rw", "randomwalk"]:
+    elif norm in ["random walk", "rw", "random walk inflow", "rwi"]:
         d[np.diag_indices(d.shape[0])] = degree ** (-1)
         return d @ lapl
+    elif norm in ["random walk outflow", "rwo"]:
+        d[np.diag_indices(d.shape[0])] = degree ** (-1)
+        return lapl @ d
     else:
         raise NotImplementedError(f'Normalisation type "{norm}" is not supported.')
 

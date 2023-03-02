@@ -60,14 +60,17 @@ def test_normalisation():
     lapl_symm = laplacian.normalisation(L, d, norm="symmetric")
 
     d = np.diag(d)
-    lapl_rw = laplacian.normalisation(L, d, norm="random walk")
+    lapl_rwi = laplacian.normalisation(L, d, norm="random walk")
+
+    lapl_rwo = laplacian.normalisation(L, d, norm="rwo")
 
     d[2] = 1
     d_symm = np.diag(d ** (-1 / 2))
     d_rw = np.diag(d ** (-1))
 
     assert (lapl_symm == (d_symm @ L @ d_symm)).all()
-    assert (lapl_rw == d_rw @ L).all()
+    assert (lapl_rwi == d_rw @ L).all()
+    assert (lapl_rwo == L @ d_rw).all()
 
 
 def test_symmetric_normalised_laplacian():
