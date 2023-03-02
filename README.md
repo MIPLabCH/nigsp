@@ -24,7 +24,7 @@ NiGSP
 A python library (and toolbox!) to run Graph Signal Processing on multimodal MRI data.
 Full documentation [on ReadTheDocs](https://nigsp.readthedocs.io/en/latest)
 
-**The project is currently under development stage alpha**.
+**The project is currently under development stage beta**.
 Any suggestion/bug report is welcome! Feel free to open an issue.
 
 This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
