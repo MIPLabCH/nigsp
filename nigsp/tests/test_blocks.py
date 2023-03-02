@@ -18,7 +18,6 @@ from nigsp.objects import SCGraph
 
 # ### Unit tests
 def test_nifti_to_timeseries(atlastime, atlas):
-
     img_in = nibabel.load(atlas)
     atlas_in = img_in.get_fdata()
     ts_out, atlas_out, img_out = blocks.nifti_to_timeseries(atlastime, atlas)
@@ -35,7 +34,6 @@ def test_nifti_to_timeseries(atlastime, atlas):
 
 @mark.parametrize("ext", [(".nii.gz"), (".csv")])
 def test_export_metrics_txt(ext, sc_mtx, atlas, sdi, testdir):
-
     testdir = join(testdir, "testdir")
     makedirs(testdir, exist_ok=True)
     atlas_in, mask, img = load_nifti_get_mask(atlas, ndim=3)
@@ -61,7 +59,6 @@ def test_export_metrics_txt(ext, sc_mtx, atlas, sdi, testdir):
 
 
 def test_export_metrics_nifti(sc_mtx, atlas, sdi, testdir):
-
     testdir = join(testdir, "testdir")
     makedirs(testdir, exist_ok=True)
     atlas_in, mask, img = load_nifti_get_mask(atlas, ndim=3)
@@ -88,7 +85,6 @@ def test_export_metrics_nifti(sc_mtx, atlas, sdi, testdir):
 
 
 def test_plot_metrics(atlas, sc_mtx, sdi, testdir):
-
     testdir = join(testdir, "testdir")
     makedirs(testdir, exist_ok=True)
     atlas_in, _, img = load_nifti_get_mask(atlas, ndim=3)

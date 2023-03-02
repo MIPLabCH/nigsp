@@ -19,6 +19,7 @@ def test_SCGraph():
     atlas = rand(4, 3)
     filename = "Laudna.nii.gz"
     ts_split = {"high": rand(4, 6), "low": rand(4, 6)}
+
     # Initialise eigenvec to check zerocross
     def _bonnet(d, x):
         if d == 0:

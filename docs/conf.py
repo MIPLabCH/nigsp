@@ -142,6 +142,7 @@ def run_apidoc(_):
 
 # -- Final Setup -------------------------------------------------------------
 
+
 # https://github.com/rtfd/sphinx_rtd_theme/issues/117
 # launch setup
 def setup(app):  # noqa

@@ -52,7 +52,6 @@ def test_compute_laplacian():
 
 @mark.xfail
 def test_normalisation():
-
     L = np.random.rand(4, 4)
     L = (L + L.T) / 2
     d = np.random.rand(4)
@@ -162,7 +161,6 @@ def test_break_normalisation():
 
 
 def test_break_symmetric_normalised_laplacian():
-
     mtx = np.random.rand(4, 4)
 
     d = np.diag(np.ones(4), k=1)
@@ -177,7 +175,6 @@ def test_break_symmetric_normalised_laplacian():
 
 
 def test_break_recomposition():
-
     eivec = np.random.rand(4, 4, 2)
     eival = np.random.rand(4)
 

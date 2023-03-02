@@ -11,7 +11,6 @@ from nigsp.utils import prepare_ndim_iteration
 
 # ### Unit tests
 def test_sdi():
-
     ts1 = np.arange(1, 3)[..., np.newaxis]
     ts2 = np.arange(3, 5)[..., np.newaxis]
     ts3 = np.arange(5, 7)[..., np.newaxis]
