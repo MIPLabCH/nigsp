@@ -1,3 +1,33 @@
+# 0.16.0 (Thu Mar 30 2023)
+
+:tada: This release contains work from a new contributor! :tada:
+
+Thank you, null[@NawalK](https://github.com/NawalK), for all your work!
+
+#### 🚀 Enhancement
+
+- Add map of filetypes to related loading functions for matricial data (`io.LOADMAT_DICT`) [#55](https://github.com/MIPLabCH/nigsp/pull/55) ([@smoia](https://github.com/smoia))
+- Add outflow random walk normalisation (and specify former random walk as inflow random walk) [#54](https://github.com/MIPLabCH/nigsp/pull/54) ([@smoia](https://github.com/smoia))
+
+#### 📝 Documentation
+
+- Add logo folder with guidelines, eps and png files [#52](https://github.com/MIPLabCH/nigsp/pull/52) ([@NawalK](https://github.com/NawalK))
+
+#### 🏠 Internal
+
+- [pre-commit.ci] pre-commit autoupdate [#53](https://github.com/MIPLabCH/nigsp/pull/53) ([@pre-commit-ci[bot]](https://github.com/pre-commit-ci[bot]))
+- [pre-commit.ci] pre-commit autoupdate [#51](https://github.com/MIPLabCH/nigsp/pull/51) ([@pre-commit-ci[bot]](https://github.com/pre-commit-ci[bot]))
+- [pre-commit.ci] pre-commit autoupdate [#50](https://github.com/MIPLabCH/nigsp/pull/50) ([@pre-commit-ci[bot]](https://github.com/pre-commit-ci[bot]))
+- [pre-commit.ci] pre-commit autoupdate [#49](https://github.com/MIPLabCH/nigsp/pull/49) ([@pre-commit-ci[bot]](https://github.com/pre-commit-ci[bot]))
+
+#### Authors: 3
+
+- [@NawalK](https://github.com/NawalK)
+- [@pre-commit-ci[bot]](https://github.com/pre-commit-ci[bot])
+- Stefano Moia ([@smoia](https://github.com/smoia))
+
+---
+
 # 0.15.0 (Fri Dec 23 2022)
 
 #### 🚀 Enhancement
