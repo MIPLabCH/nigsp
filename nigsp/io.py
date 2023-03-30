@@ -535,6 +535,9 @@ def export_mtx(data, fname, ext=None):
     return 0
 
 
+LOADMAT_DICT = {"1D": load_txt, "xls": load_xls, "mat": load_mat}
+
+
 """
 Copyright 2022, Stefano Moia.
 
