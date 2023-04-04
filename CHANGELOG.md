@@ -1,3 +1,15 @@
+# 0.16.1 (Tue Apr 04 2023)
+
+#### 🐛 Bug Fix
+
+- fix: If the matrix diagonal is zeroed, zero the identity matrix ([@smoia](https://github.com/smoia))
+
+#### Authors: 1
+
+- Stefano Moia ([@smoia](https://github.com/smoia))
+
+---
+
 # 0.16.0 (Thu Mar 30 2023)
 
 :tada: This release contains work from a new contributor! :tada:
