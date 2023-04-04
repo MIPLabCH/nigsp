@@ -205,7 +205,7 @@ def resize_ts(timeseries, resize=None, globally=False):
         if resize == "spc":  # pragma: no cover
             LGR.info("Expressing timeseries in signal percentage change")
             timeseries = spc_ts(timeseries, globally=globally)
-        elif resize == "norm":  # pragma: no cover
+        elif resize in ["norm", "zscore"]:  # pragma: no cover
             LGR.info("Normalise timeseries")
             timeseries = normalise_ts(timeseries, globally=globally)
         elif resize == "demean":  # pragma: no cover
