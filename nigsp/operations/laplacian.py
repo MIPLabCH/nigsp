@@ -170,7 +170,8 @@ def normalisation(lapl, degree, norm="symmetric", fix_zeros=True):
 
     d = np.zeros_like(lapl)
 
-    # Attention: using ** to compute inverses works only on arrays and diagonal matrices
+    # Attention: using ** to compute inverses works only on arrays.
+    # Diagonal matrices are ok, but off-diagonal elements needs to be set to 0.
     # Otherwise np.linalg.inv or np.linalg.pinv are necessary.
     if norm in ["symmetric", "symm"]:
         d[np.diag_indices(d.shape[0])] = deg ** (-1 / 2)
