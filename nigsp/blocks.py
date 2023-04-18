@@ -127,7 +127,7 @@ def plot_metric(scgraph, outprefix, atlas=None, thr=None):
                 atlas_plot = atlas
         except AttributeError:
             LGR.warning(
-                "The provided atlas is not in a format supported formarkerplots."
+                "The provided atlas is not in a format supported for markerplots."
             )
             atlas_plot = None
 

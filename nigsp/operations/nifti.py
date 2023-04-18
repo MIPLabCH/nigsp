@@ -64,7 +64,7 @@ def mat_to_vol(data, shape=None, asdata=None):
             )
         shape = asdata.shape
     elif shape is None:
-        raise ValueError("Both shape and asdata are empty.Must specify at least one")
+        raise ValueError("Both shape and asdata are empty. Must specify at least one")
 
     LGR.info(f"Reshape {data.ndim}D matrix into volume with shape {shape}.")
     return data.reshape(shape, order="F")
@@ -145,7 +145,7 @@ def unmask(data, mask, shape=None, asdata=None):
             )
         shape = asdata.shape
     elif shape is None:
-        raise ValueError("Both shape and asdata are empty.Must specify at least one.")
+        raise ValueError("Both shape and asdata are empty. Must specify at least one.")
 
     if shape[: mask.ndim] != mask.shape:
         raise ValueError(
@@ -201,7 +201,7 @@ def apply_atlas(data, atlas, mask=None):
 
     if atlas.ndim > 3:
         raise NotImplementedError(
-            f"Files with {atlas.ndim} dimensions are notsupported as atlases."
+            f"Files with {atlas.ndim} dimensions are not supported as atlases."
         )
     if data.shape[: mask.ndim] != mask.shape:
         raise ValueError(

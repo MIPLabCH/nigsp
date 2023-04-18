@@ -540,7 +540,7 @@ def export_mtx(data, fname, ext=None):
             import scipy
         except ImportError:
             raise ImportError(
-                "To export .mat files, scipy is required.Please install it."
+                "To export .mat files, scipy is required. Please install it."
             )
         scipy.io.savemat(f"{fname}{ext}", {"data": data})
     elif ext.lower() in EXT_XLS:
@@ -549,7 +549,7 @@ def export_mtx(data, fname, ext=None):
         export_txt(data, fname, ext)
     else:
         raise BrokenPipeError(
-            f"This should not have happened: {ext} was theselected extension."
+            f"This should not have happened: {ext} was the selected extension."
         )
 
     return 0
