@@ -1,3 +1,20 @@
+# 0.17.0 (Tue Apr 18 2023)
+
+#### 💥 Breaking Change during development
+
+- Improve extension handling, and make `.tsv.gz` the default extension [#57](https://github.com/MIPLabCH/nigsp/pull/57) ([@smoia](https://github.com/smoia))
+
+#### 🏠 Internal
+
+- [pre-commit.ci] pre-commit autoupdate [#56](https://github.com/MIPLabCH/nigsp/pull/56) ([@pre-commit-ci[bot]](https://github.com/pre-commit-ci[bot]))
+
+#### Authors: 2
+
+- [@pre-commit-ci[bot]](https://github.com/pre-commit-ci[bot])
+- Stefano Moia ([@smoia](https://github.com/smoia))
+
+---
+
 # 0.16.1 (Tue Apr 04 2023)
 
 #### 🐛 Bug Fix
