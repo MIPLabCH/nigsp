@@ -41,7 +41,7 @@ def normalise_ts(timeseries, globally=False):
     """
     if timeseries.ndim < 2 or (timeseries.ndim == 2 and timeseries.shape[1] == 1):
         LGR.warning(
-            "Given timeseries seems to be a single timepoint. " "Returning it as is."
+            "Given timeseries seems to be a single timepoint.Returning it as is."
         )
         return timeseries
 
@@ -81,7 +81,7 @@ def spc_ts(timeseries, globally=False):
     """
     if timeseries.ndim < 2 or (timeseries.ndim == 2 and timeseries.shape[1] == 1):
         LGR.warning(
-            "Given timeseries seems to be a single timepoint. " "Returning it as is."
+            "Given timeseries seems to be a single timepoint.Returning it as is."
         )
         return timeseries
 
@@ -119,7 +119,7 @@ def demean_ts(timeseries, globally=False):
     """
     if timeseries.ndim < 2 or (timeseries.ndim == 2 and timeseries.shape[1] == 1):
         LGR.warning(
-            "Given timeseries seems to be a single timepoint. " "Returning it as is."
+            "Given timeseries seems to be a single timepoint.Returning it as is."
         )
         return timeseries
 
@@ -157,7 +157,7 @@ def rescale_ts(timeseries, vmin=0, vmax=1, globally=False):
     """
     if timeseries.ndim < 2 or (timeseries.ndim == 2 and timeseries.shape[1] == 1):
         LGR.warning(
-            "Given timeseries seems to be a single timepoint. " "Returning it as is."
+            "Given timeseries seems to be a single timepoint.Returning it as is."
         )
         return timeseries
 

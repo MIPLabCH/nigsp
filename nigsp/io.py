@@ -446,7 +446,8 @@ def export_txt(data, fname, ext=None):
     if has_ext:
         if ext is not None:
             LGR.warning(
-                f" Specified filename {fname}{ext_check} has an extension, but the extension {ext} was specified. Forcing specified extension."
+                f"Specified filename {fname}{ext_check} has an extension, but the "
+                f"extension {ext} was specified. Forcing specified extension."
             )
         else:
             ext = ext_check
@@ -519,7 +520,8 @@ def export_mtx(data, fname, ext=None):
             ext = ext_check
         else:
             LGR.warning(
-                f" Specified filename {fname}{ext_check} has an extension, but the extension {ext} was specified. Forcing specified extension."
+                f"Specified filename {fname}{ext_check} has an extension, but the "
+                f"extension {ext} was specified. Forcing specified extension."
             )
 
     if ext in [None, ""]:
@@ -538,7 +540,7 @@ def export_mtx(data, fname, ext=None):
             import scipy
         except ImportError:
             raise ImportError(
-                "To export .mat files, scipy is required. " "Please install it."
+                "To export .mat files, scipy is required.Please install it."
             )
         scipy.io.savemat(f"{fname}{ext}", {"data": data})
     elif ext.lower() in EXT_XLS:
@@ -547,7 +549,7 @@ def export_mtx(data, fname, ext=None):
         export_txt(data, fname, ext)
     else:
         raise BrokenPipeError(
-            f"This should not have happened: {ext} was the " "selected extension."
+            f"This should not have happened: {ext} was theselected extension."
         )
 
     return 0

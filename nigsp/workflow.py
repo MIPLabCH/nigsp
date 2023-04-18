@@ -309,7 +309,7 @@ def nigsp(
             atlas_is["1D"] or atlas_is["mat"] or atlas_is["xls"] or atlas_is["nifti"]
         ) is False:
             raise NotImplementedError(
-                f"Input file {atlasname} is not of a " "supported type."
+                f"Input file {atlasname} is not of asupported type."
             )
         elif atlas_is["1D"]:
             atlas = io.load_txt(atlasname)
