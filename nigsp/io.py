@@ -453,8 +453,8 @@ def export_txt(data, fname, ext=None):
             ext = ext_check
     else:
         if ext_check is None:
-            LGR.warning("Extension not specified. Forcing export in CSV.GZ format.")
-            ext = ".csv.gz"
+            LGR.warning("Extension not specified. Forcing export in TSV.GZ format.")
+            ext = ".tsv.gz"
 
     if ext.lower() in [".csv", ".csv.gz", "", None]:
         delimiter = ","
@@ -527,9 +527,9 @@ def export_mtx(data, fname, ext=None):
     if ext in [None, ""]:
         LGR.warning(
             "Extension not specified, or specified extension not "
-            "supported. Forcing export in CSV format."
+            "supported. Forcing export in TSV.GZ format."
         )
-        ext = ".csv"
+        ext = ".tsv.gz"
     elif ext.lower() in EXT_NIFTI:
         LGR.warning("Found nifti extension, exporting data in .1D instead")
         ext = ".1D"
