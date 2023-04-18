@@ -408,10 +408,7 @@ def export_nifti(data, img, fname):
             "Please see install instructions."
         )
 
-    for e in EXT_NIFTI:
-        has_ext, fname, ext = check_ext(e, fname, remove=True)
-        if has_ext:
-            break
+    has_ext, fname, ext = check_ext(EXT_NIFTI, fname, remove=True)
 
     if ext is None:
         ext = ".nii.gz"
@@ -452,7 +449,7 @@ def export_txt(data, fname, ext=None):
         else:
             ext = ext_check
     else:
-        if ext_check is None:
+        if ext is None:
             LGR.warning("Extension not specified. Forcing export in TSV.GZ format.")
             ext = ".tsv.gz"
 

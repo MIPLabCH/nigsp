@@ -48,7 +48,7 @@ def test_check_ext():
 
         assert has_ext is False
         assert fname_out == fname
-        assert ext_out == ""
+        assert ext_out == None
 
 
 @mark.parametrize("data", [(rand(3, 4)), (rand(3, 4, 1)), (rand(3, 1, 4))])
@@ -135,7 +135,7 @@ def test_export_nifti(atlas):
         (".1D", ".1D"),
         (".csv", ".csv"),
         (".tsv", ".tsv"),
-        ("", ".csv"),
+        ("", ".tsv.gz"),
         (".mat", ".mat"),
     ],
 )
@@ -147,7 +147,7 @@ def test_export_mtx(ext_in, ext_out):
 
     if ext_out in [".csv"]:
         data_in = genfromtxt(f"serenity{ext_out}", delimiter=",")
-    if ext_out in [".tsv", ".1D"]:
+    if ext_out in [".tsv", ".tsv.gz", ".1D"]:
         data_in = genfromtxt(f"serenity{ext_out}")
 
     if ext_out in [".mat"]:
