@@ -72,15 +72,15 @@ def export_metric(scgraph, outext, outprefix):
         except ImportError:
             LGR.warning(
                 "The necessary library for nifti export (nibabel) "
-                "was not found. Exporting metrics in CSV format instead."
+                "was not found. Exporting metrics in TSV format instead."
             )
-            outext = ".csv"
+            outext = ".tsv.gz"
         if scgraph.img is None:
             LGR.warning(
                 "A necessary atlas nifti image was not found. "
-                "Exporting metrics in CSV format instead."
+                "Exporting metrics in TSV format instead."
             )
-            outext = ".csv"
+            outext = ".tsv.gz"
 
     if scgraph.sdi is not None:
         if outext in io.EXT_NIFTI:
@@ -127,7 +127,7 @@ def plot_metric(scgraph, outprefix, atlas=None, thr=None):
                 atlas_plot = atlas
         except AttributeError:
             LGR.warning(
-                "The provided atlas is not in a format supported for " "markerplots."
+                "The provided atlas is not in a format supported for markerplots."
             )
             atlas_plot = None
 

@@ -12,8 +12,12 @@ EXT_NIFTI : list
     List of supported nifti file extensions, in lower case.
 EXT_XLS : list
     List of supported XLS-like file extensions, in lower case.
-LGR
-    Logger
+EXT_ALL : list
+    All supported file extensions, in lower case.
+EXT_DICT : dictionary
+    Dictionary associating values to extension lists
+LOADMAT_DICT : dictionary
+    Dictionary assocting the same values in EXT_DICT to loading functions.
 """
 
 import logging
@@ -25,9 +29,9 @@ import numpy as np
 from nigsp.utils import change_var_type
 
 EXT_1D = [".txt", ".csv", ".tsv", ".1d", ".par", ".tsv.gz", ".csv.gz"]
-EXT_XLS = [".xls"]
 EXT_MAT = [".mat"]
 EXT_NIFTI = [".nii", ".nii.gz"]
+EXT_XLS = [".xls"]
 EXT_ALL = EXT_1D + EXT_XLS + EXT_MAT + EXT_NIFTI
 
 EXT_DICT = {"1D": EXT_1D, "xls": EXT_XLS, "mat": EXT_MAT, "nifti": EXT_NIFTI}
@@ -84,7 +88,7 @@ def check_ext(all_ext, fname, scan=False, remove=False):
         if has_ext:
             obj_return += [fname[: -len(ext)], ext]  # case insensitive solution
         else:
-            obj_return += [fname, ""]
+            obj_return += [fname, None]
     else:
         obj_return += [fname]
 
@@ -404,12 +408,9 @@ def export_nifti(data, img, fname):
             "Please see install instructions."
         )
 
-    for e in EXT_NIFTI:
-        has_ext, fname, ext = check_ext(e, fname, remove=True)
-        if has_ext:
-            break
+    has_ext, fname, ext = check_ext(EXT_NIFTI, fname, remove=True)
 
-    if ext == "":
+    if ext is None:
         ext = ".nii.gz"
 
     LGR.info(f"Exporting nifti data into {fname}{ext}.")
@@ -437,6 +438,21 @@ def export_txt(data, fname, ext=None):
     0
         On a successful run
     """
+    has_ext, fname, ext_check = check_ext(EXT_ALL, fname, remove=True)
+
+    if has_ext:
+        if ext is not None:
+            LGR.warning(
+                f"Specified filename {fname}{ext_check} has an extension, but the "
+                f"extension {ext} was specified. Forcing specified extension."
+            )
+        else:
+            ext = ext_check
+    else:
+        if ext is None:
+            LGR.warning("Extension not specified. Forcing export in TSV.GZ format.")
+            ext = ".tsv.gz"
+
     if ext.lower() in [".csv", ".csv.gz", "", None]:
         delimiter = ","
     elif ext.lower() in [".tsv", ".tsv.gz"]:
@@ -494,22 +510,23 @@ def export_mtx(data, fname, ext=None):
     0
         On a successful run
     """
-    if ext is None:
-        # Check if extension was provided in fname.
-        for e in EXT_ALL:
-            has_ext, fname, ext = check_ext(e, fname, remove=True)
-            if has_ext:
-                break
-    elif ext.lower() not in EXT_ALL:
-        # Check if extension is supported.
-        ext = None
+    has_ext, fname, ext_check = check_ext(EXT_ALL, fname, remove=True)
+
+    if has_ext:
+        if ext is None:
+            ext = ext_check
+        else:
+            LGR.warning(
+                f"Specified filename {fname}{ext_check} has an extension, but the "
+                f"extension {ext} was specified. Forcing specified extension."
+            )
 
     if ext in [None, ""]:
         LGR.warning(
             "Extension not specified, or specified extension not "
-            "supported. Forcing export in CSV format."
+            "supported. Forcing export in TSV.GZ format."
         )
-        ext = ".csv"
+        ext = ".tsv.gz"
     elif ext.lower() in EXT_NIFTI:
         LGR.warning("Found nifti extension, exporting data in .1D instead")
         ext = ".1D"
@@ -520,7 +537,7 @@ def export_mtx(data, fname, ext=None):
             import scipy
         except ImportError:
             raise ImportError(
-                "To export .mat files, scipy is required. " "Please install it."
+                "To export .mat files, scipy is required. Please install it."
             )
         scipy.io.savemat(f"{fname}{ext}", {"data": data})
     elif ext.lower() in EXT_XLS:
@@ -529,13 +546,18 @@ def export_mtx(data, fname, ext=None):
         export_txt(data, fname, ext)
     else:
         raise BrokenPipeError(
-            f"This should not have happened: {ext} was the " "selected extension."
+            f"This should not have happened: {ext} was the selected extension."
         )
 
     return 0
 
 
-LOADMAT_DICT = {"1D": load_txt, "xls": load_xls, "mat": load_mat}
+LOADMAT_DICT = {
+    "1D": load_txt,
+    "xls": load_xls,
+    "mat": load_mat,
+    "nifti": load_nifti_get_mask,
+}
 
 
 """
