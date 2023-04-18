@@ -12,8 +12,12 @@ EXT_NIFTI : list
     List of supported nifti file extensions, in lower case.
 EXT_XLS : list
     List of supported XLS-like file extensions, in lower case.
-LGR
-    Logger
+EXT_ALL : list
+    All supported file extensions, in lower case.
+EXT_DICT : dictionary
+    Dictionary associating values to extension lists
+LOADMAT_DICT : dictionary
+    Dictionary assocting the same values in EXT_DICT (minus nifti) to loading functions.
 """
 
 import logging
@@ -25,9 +29,9 @@ import numpy as np
 from nigsp.utils import change_var_type
 
 EXT_1D = [".txt", ".csv", ".tsv", ".1d", ".par", ".tsv.gz", ".csv.gz"]
-EXT_XLS = [".xls"]
 EXT_MAT = [".mat"]
 EXT_NIFTI = [".nii", ".nii.gz"]
+EXT_XLS = [".xls"]
 EXT_ALL = EXT_1D + EXT_XLS + EXT_MAT + EXT_NIFTI
 
 EXT_DICT = {"1D": EXT_1D, "xls": EXT_XLS, "mat": EXT_MAT, "nifti": EXT_NIFTI}
