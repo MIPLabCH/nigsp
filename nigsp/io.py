@@ -17,7 +17,7 @@ EXT_ALL : list
 EXT_DICT : dictionary
     Dictionary associating values to extension lists
 LOADMAT_DICT : dictionary
-    Dictionary assocting the same values in EXT_DICT (minus nifti) to loading functions.
+    Dictionary assocting the same values in EXT_DICT to loading functions.
 """
 
 import logging
@@ -88,7 +88,7 @@ def check_ext(all_ext, fname, scan=False, remove=False):
         if has_ext:
             obj_return += [fname[: -len(ext)], ext]  # case insensitive solution
         else:
-            obj_return += [fname, ""]
+            obj_return += [fname, None]
     else:
         obj_return += [fname]
 
@@ -413,7 +413,7 @@ def export_nifti(data, img, fname):
         if has_ext:
             break
 
-    if ext == "":
+    if ext is None:
         ext = ".nii.gz"
 
     LGR.info(f"Exporting nifti data into {fname}{ext}.")
@@ -441,6 +441,20 @@ def export_txt(data, fname, ext=None):
     0
         On a successful run
     """
+    has_ext, fname, ext_check = check_ext(EXT_ALL, fname, remove=True)
+
+    if has_ext:
+        if ext is not None:
+            LGR.warning(
+                f" Specified filename {fname}{ext_check} has an extension, but the extension {ext} was specified. Forcing specified extension."
+            )
+        else:
+            ext = ext_check
+    else:
+        if ext_check is None:
+            LGR.warning("Extension not specified. Forcing export in CSV.GZ format.")
+            ext = ".csv.gz"
+
     if ext.lower() in [".csv", ".csv.gz", "", None]:
         delimiter = ","
     elif ext.lower() in [".tsv", ".tsv.gz"]:
@@ -498,15 +512,15 @@ def export_mtx(data, fname, ext=None):
     0
         On a successful run
     """
-    if ext is None:
-        # Check if extension was provided in fname.
-        for e in EXT_ALL:
-            has_ext, fname, ext = check_ext(e, fname, remove=True)
-            if has_ext:
-                break
-    elif ext.lower() not in EXT_ALL:
-        # Check if extension is supported.
-        ext = None
+    has_ext, fname, ext_check = check_ext(EXT_ALL, fname, remove=True)
+
+    if has_ext:
+        if ext is None:
+            ext = ext_check
+        else:
+            LGR.warning(
+                f" Specified filename {fname}{ext_check} has an extension, but the extension {ext} was specified. Forcing specified extension."
+            )
 
     if ext in [None, ""]:
         LGR.warning(
@@ -539,7 +553,12 @@ def export_mtx(data, fname, ext=None):
     return 0
 
 
-LOADMAT_DICT = {"1D": load_txt, "xls": load_xls, "mat": load_mat}
+LOADMAT_DICT = {
+    "1D": load_txt,
+    "xls": load_xls,
+    "mat": load_mat,
+    "nifti": load_nifti_get_mask,
+}
 
 
 """
