@@ -70,14 +70,14 @@ def test_export_metrics_nifti(sc_mtx, atlas, sdi, testdir):
     scgraph = SCGraph(mtx, ts, atlas=atlas_in, sdi=sdi_in)
     blocks.export_metric(scgraph, ".nii.gz", join(testdir, "molly_"))
 
-    assert isfile(join(testdir, "molly_sdi.csv"))
+    assert isfile(join(testdir, "molly_sdi.tsv"))
 
     sys.modules["nibabel"] = None
     scgraph = SCGraph(mtx, ts, atlas=atlas_in, img=img, sdi=sdi_in)
     blocks.export_metric(scgraph, ".nii.gz", join(testdir, "molly_"))
     sys.modules["nibabel"] = nibabel
 
-    assert isfile(join(testdir, "molly_sdi.csv"))
+    assert isfile(join(testdir, "molly_sdi.tsv"))
     shutil.rmtree(testdir)
     remove(sc_mtx)
     remove(atlas)
