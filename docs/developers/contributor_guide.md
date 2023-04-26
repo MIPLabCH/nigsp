@@ -350,7 +350,7 @@ reviewing PRs:
 Before approving and/or merging PRs, be sure that:
 
 - All the tests in CircleCI pass without errors.
-- Prefereably, codecov checks pass as well. If they don\'t, discuss
+- Preferably, codecov checks pass as well. If they don\'t, discuss
   what to do.
 - The title describes the content of the PR clearly enough to be
   meaningful on its own - remember that it will appear in the version

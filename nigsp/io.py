@@ -54,7 +54,7 @@ def check_ext(all_ext, fname, scan=False, remove=False):
         If True and no path declared, check if fname has a path, if not scan '.'
         If False, don't scan any folder
     remove : bool, optional
-        Remove the extention from fname if it has one
+        Remove the extension from fname if it has one
 
     Returns
     -------
@@ -156,7 +156,7 @@ def check_mtx_dim(fname, data, shape=None):
         If `shape` is not None but `data` is 3D.
     ValueError
         If `data` is empty
-        If `shape` == 'square' and `data` dimensions have different lenghts.
+        If `shape` == 'square' and `data` dimensions have different lengths.
     """
     data = data.squeeze()
     LGR.info("Checking data shape.")

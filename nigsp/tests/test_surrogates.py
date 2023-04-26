@@ -87,7 +87,7 @@ def test_sc_uninformed():
 
 
 def test_test_significance():
-    # Create surrogates so that one subject has 3 significant obervations over 4,
+    # Create surrogates so that one subject has 3 significant observations over 4,
     # and in group 1 observation is significant over 5
     surr = np.array(
         [

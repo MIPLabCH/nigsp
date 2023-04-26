@@ -103,7 +103,7 @@ class SCGraph:
 
     @property
     def split_keys(self):
-        """Return the names of the splitted timeseries."""
+        """Return the names of the split timeseries."""
         return list(self.ts_split.keys())
 
     # # Methods

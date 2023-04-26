@@ -281,7 +281,7 @@ def test_significance(
     Returns
     -------
     numpy.ndarray
-        A numpy.ndarray shaped obervations[, subjects]. If return_masked is True,
+        A numpy.ndarray shaped observations[, subjects]. If return_masked is True,
         returns the masked version of `data`, otherwise returns the mask.
         If mean is True, returns the average along the subject axis.
 
