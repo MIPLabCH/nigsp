@@ -12,10 +12,54 @@
       "avatar_url": "https://avatars3.githubusercontent.com/u/35300580?v=4",
       "profile": "https://github.com/smoia",
       "contributions": [
-        "code",
         "ideas",
+        "code",
         "infra",
+        "doc",
         "projectManagement"
+      ]
+    },
+    {
+      "login": "NawalK",
+      "name": "Nawal Kinani",
+      "avatar_url": "https://avatars.githubusercontent.com/u/7520520?v=4",
+      "profile": "https://github.com/NawalK",
+      "contributions": [
+        "design"
+      ]
+    },
+    {
+      "login": "mscheltienne",
+      "name": "Mathieu Scheltienne",
+      "avatar_url": "https://avatars.githubusercontent.com/u/73893616?v=4",
+      "profile": "https://github.com/mscheltienne",
+      "contributions": [
+        "infra",
+        "platform"
+      ]
+    },
+    {
+      "login": "gpreti",
+      "name": "Maria Giulia Preti",
+      "avatar_url": "https://avatars.githubusercontent.com/u/50864430?v=4",
+      "profile": "https://github.com/gpreti",
+      "contributions": [
+        "mentoring",
+        "ideas",
+        "code",
+        "content"
+      ]
+    },
+    {
+      "login": "dvdevill",
+      "name": "Dimitri Van De Ville",
+      "avatar_url": "https://avatars.githubusercontent.com/u/25682226?v=4",
+      "profile": "http://miplab.epfl.ch/",
+      "contributions": [
+        "mentoring",
+        "ideas",
+        "content",
+        "financial"
       ]
     }
   ],
@@ -24,5 +68,6 @@
   "projectOwner": "smoia",
   "repoType": "github",
   "repoHost": "https://github.com",
-  "skipCi": true
+  "skipCi": true,
+  "commitConvention": "angular"
 }
