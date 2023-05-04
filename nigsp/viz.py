@@ -31,7 +31,7 @@ FIGSIZE_SQUARE = (6, 5)
 FIGSIZE_LONG = (12, 4)
 
 
-def plot_connectivity(mtx, filename=None, title=None, closeplot=False):
+def plot_connectivity(mtx, filename=None, title=None, crange=None, closeplot=False):
     """
     Create a connectivity matrix plot.
 
@@ -45,6 +45,8 @@ def plot_connectivity(mtx, filename=None, title=None, closeplot=False):
         The path to save the plot on disk.
     title : None or str, optional
         Add a title to the graph
+    range : None or list, optional
+        Set vmin and vmax
     closeplot : bool, optional
         Whether to close plots after saving or not. Mainly used for debug
         or use with live python/ipython instances.
@@ -89,7 +91,24 @@ def plot_connectivity(mtx, filename=None, title=None, closeplot=False):
     LGR.info("Creating connectivity plot.")
     fig = plt.figure(figsize=FIGSIZE_SQUARE)
     ax = fig.subplots()
-    plot_matrix(mtx, axes=ax)
+
+    pc_args = {"mat": mtx, "axes": ax}
+    if crange is not None:
+        if type(crange) in [list, tuple]:
+            pc_args["vmin"] = crange[0]
+            pc_args["vmax"] = crange[1]
+        else:
+            vmax = np.nanpercentile(mtx, 98)  # mtx.max()
+            vmin = np.abs(np.nanpercentile(mtx, 2))  # mtx.min()
+            if crange == "auto-symm" and mtx.min() < 0 and vmax > 0:
+                pc_args["vmax"] = vmax if vmax > vmin else vmin
+                pc_args["vmin"] = -vmin if vmin > vmax else -vmax
+            elif crange == "auto-zero" or mtx.min() > 0 or vmax < 0:
+                pass
+            else:
+                raise NotImplementedError(f"{crange} option not implemented.")
+
+    plot_matrix(**pc_args)
     if title is not None:
         fig.suptitle(title)
 
