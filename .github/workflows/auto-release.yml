@@ -37,7 +37,7 @@ jobs:
         chmod a+x ~/auto
     - name: Create release without version prefix
       env:
-        GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+        GH_TOKEN: ${{ secrets.GH_TOKEN }}
         # Run auto release, don't use 'v' prefix, and be verbose
       run: |
         ~/auto shipit --no-version-prefix -v
