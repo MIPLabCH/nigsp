@@ -41,14 +41,14 @@ def sdi(ts_split, mean=False, keys=None):
     ts_split : dict or numpy.ndarrays
         A dictionary containing two entries. If the two entries are "low" and
         "high", then SDI will be computed as the norm of the high vs the norm
-        of the low, oterwise as the ratio between the second (second key in
+        of the low, otherwise as the ratio between the second (second key in
         sorted keys) and the first.
     mean : bool, optional
         If True, compute mean over the last axis (e.g. between subjects)
     keys : None or list of strings, optional
         Can be used to select two entries from a bigger dictionary
         and/or to specify the order in which the keys should be read (e.g.
-        forcing a different order from teh sorted keys).
+        forcing a different order from the sorted keys).
 
     Returns
     -------
@@ -104,14 +104,14 @@ def gsdi(ts_split, mean=False, keys=None):
     ts_split : dict or numpy.ndarrays
         A dictionary containing two entries. If the two entries are "low" and
         "high", then SDI will be computed as the norm of the high vs the norm
-        of the low, oterwise as the ratio between the second (second key in
+        of the low, otherwise as the ratio between the second (second key in
         sorted keys) and the first.
     mean : bool, optional
         If True, compute mean over the last axis (e.g. between subjects)
     keys : None or list of strings, optional
         Can be used to select two entries from a bigger dictionary
         and/or to specify the order in which the keys should be read (e.g.
-        forcing a different order from teh sorted keys).
+        forcing a different order from the sorted keys).
 
     Returns
     -------

@@ -3,7 +3,7 @@
 """
 `nigsp` main workflow and related functions.
 
-The workflow is callable either as a python function, or (prefereably)
+The workflow is callable either as a python function, or (preferably)
 in a shell session:
 ```shell
 $ nigsp --help
@@ -161,7 +161,7 @@ def nigsp(
     ValueError
         If `index` is not int or is not `median`.
         If `p` is not in the range [0 1].
-        If the projected timeseries are not splitted to compute SDI or gSDI.
+        If the projected timeseries are not split to compute SDI or gSDI.
 
     See also
     --------

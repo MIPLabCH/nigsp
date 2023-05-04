@@ -233,7 +233,7 @@ def resize_ts(timeseries, resize=None, globally=False):
 
 def graph_fourier_transform(timeseries, eigenvec, energy=False, mean=False):
     """
-    Projet a graph decomposition onto the timeseries.
+    Project a graph decomposition onto the timeseries.
 
     It returns the result of the projection or the energy of the spectral
     density of the projection.
@@ -318,7 +318,7 @@ def median_cutoff_frequency_idx(energy):
     if energy.ndim == 2:
         energy = energy.mean(axis=-1)
     half_tot_auc = np.trapz(energy, axis=0) / 2
-    LGR.debug(f"Total AUC = {half_tot_auc*2}, targetting half of total AUC")
+    LGR.debug(f"Total AUC = {half_tot_auc*2}, targeting half of total AUC")
 
     # Compute the AUC from first to one to last frequency,
     # skipping first component because AUC(1)=0.
@@ -359,7 +359,7 @@ def graph_filter(timeseries, eigenvec, freq_idx, keys=["low", "high"]):
         (more or less) equal parts - i.e. the index of the first frequency in
         the "high" component.
     keys : list, optional
-        The keys to call the splitted parts with
+        The keys to call the split parts with
 
     Returns
     -------

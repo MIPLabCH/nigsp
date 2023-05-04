@@ -129,7 +129,7 @@ Thank you, Mathieu Scheltienne ([@mscheltienne](https://github.com/mscheltienne)
 
 #### 🐛 Bug Fix
 
-- Syncronise required packages versions and add DS_Store to .gitignore [#41](https://github.com/MIPLabCH/nigsp/pull/41) ([@mscheltienne](https://github.com/mscheltienne))
+- Synchronise required packages versions and add DS_Store to .gitignore [#41](https://github.com/MIPLabCH/nigsp/pull/41) ([@mscheltienne](https://github.com/mscheltienne))
 
 #### 🏠 Internal
 

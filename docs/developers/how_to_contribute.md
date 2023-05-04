@@ -81,7 +81,7 @@ This will install:
 
 ## Install pre-commit hooks
 
-`pre-commit` is a tool that aloows you to _automagically_ run smaller CI operations locally when commiting code with git. For instance, it will check for merge conflicts and black the code, improving the quality of your PRs.
+`pre-commit` is a tool that allows you to _automagically_ run smaller CI operations locally when committing code with git. For instance, it will check for merge conflicts and black the code, improving the quality of your PRs.
 
 Go to the `nigsp` repository folder and execute the command:
 
