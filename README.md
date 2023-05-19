@@ -17,7 +17,7 @@ NiGSP
 [![Supports python version](https://img.shields.io/pypi/pyversions/nigsp?style=flat&logo=python&logoColor=white)](https://pypi.org/project/nigsp/)
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat)](#contributors)
+[![All Contributors](https://img.shields.io/badge/all_contributors-5-orange.svg?style=flat)](#contributors)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 
@@ -46,10 +46,21 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
 <!-- prettier-ignore-start -->
 <!-- markdownlint-disable -->
+<table>
+  <tbody>
+    <tr>
+      <td align="center" valign="top" width="20%"><a href="https://github.com/smoia"><img src="https://avatars3.githubusercontent.com/u/35300580?v=4?s=100" width="100px;" alt="Stefano Moia"/><br /><sub><b>Stefano Moia</b></sub></a><br /><a href="#ideas-smoia" title="Ideas, Planning, & Feedback">🤔</a> <a href="https://github.com/smoia/nigsp/commits?author=smoia" title="Code">💻</a> <a href="#infra-smoia" title="Infrastructure (Hosting, Build-Tools, etc)">🚇</a> <a href="https://github.com/smoia/nigsp/commits?author=smoia" title="Documentation">📖</a> <a href="#projectManagement-smoia" title="Project Management">📆</a></td>
+      <td align="center" valign="top" width="20%"><a href="https://github.com/NawalK"><img src="https://avatars.githubusercontent.com/u/7520520?v=4?s=100" width="100px;" alt="Nawal Kinani"/><br /><sub><b>Nawal Kinani</b></sub></a><br /><a href="#design-NawalK" title="Design">🎨</a></td>
+      <td align="center" valign="top" width="20%"><a href="https://github.com/mscheltienne"><img src="https://avatars.githubusercontent.com/u/73893616?v=4?s=100" width="100px;" alt="Mathieu Scheltienne"/><br /><sub><b>Mathieu Scheltienne</b></sub></a><br /><a href="#infra-mscheltienne" title="Infrastructure (Hosting, Build-Tools, etc)">🚇</a> <a href="#platform-mscheltienne" title="Packaging/porting to new platform">📦</a></td>
+      <td align="center" valign="top" width="20%"><a href="https://github.com/gpreti"><img src="https://avatars.githubusercontent.com/u/50864430?v=4?s=100" width="100px;" alt="Maria Giulia Preti"/><br /><sub><b>Maria Giulia Preti</b></sub></a><br /><a href="#mentoring-gpreti" title="Mentoring">🧑‍🏫</a> <a href="#ideas-gpreti" title="Ideas, Planning, & Feedback">🤔</a> <a href="https://github.com/smoia/nigsp/commits?author=gpreti" title="Code">💻</a> <a href="#content-gpreti" title="Content">🖋</a></td>
+      <td align="center" valign="top" width="20%"><a href="http://miplab.epfl.ch/"><img src="https://avatars.githubusercontent.com/u/25682226?v=4?s=100" width="100px;" alt="Dimitri Van De Ville"/><br /><sub><b>Dimitri Van De Ville</b></sub></a><br /><a href="#mentoring-dvdevill" title="Mentoring">🧑‍🏫</a> <a href="#ideas-dvdevill" title="Ideas, Planning, & Feedback">🤔</a> <a href="#content-dvdevill" title="Content">🖋</a> <a href="#financial-dvdevill" title="Financial">💵</a></td>
+    </tr>
+  </tbody>
+</table>
 
-
-<!-- markdownlint-enable -->
+<!-- markdownlint-restore -->
 <!-- prettier-ignore-end -->
+
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 
 
