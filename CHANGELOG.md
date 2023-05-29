@@ -1,3 +1,27 @@
+# 0.18.0 (Mon May 29 2023)
+
+#### 🚀 Enhancement
+
+- Add settings to consider self-loops when computing Laplacians [#64](https://github.com/MIPLabCH/nigsp/pull/64) ([@smoia](https://github.com/smoia) [@pre-commit-ci[bot]](https://github.com/pre-commit-ci[bot]))
+- docs: Save DOI badge version [#64](https://github.com/MIPLabCH/nigsp/pull/64) ([@smoia](https://github.com/smoia))
+
+#### 📝 Documentation
+
+- Update contributions [#62](https://github.com/MIPLabCH/nigsp/pull/62) ([@smoia](https://github.com/smoia))
+
+#### 🏠 Internal
+
+- Add codespell to code checks [#60](https://github.com/MIPLabCH/nigsp/pull/60) ([@smoia](https://github.com/smoia))
+- Attempt to fix the auto release error [#61](https://github.com/MIPLabCH/nigsp/pull/61) ([@smoia](https://github.com/smoia))
+- int: update CI/CD Ubuntu version [#58](https://github.com/MIPLabCH/nigsp/pull/58) ([@smoia](https://github.com/smoia))
+
+#### Authors: 2
+
+- [@pre-commit-ci[bot]](https://github.com/pre-commit-ci[bot])
+- Stefano Moia ([@smoia](https://github.com/smoia))
+
+---
+
 # 0.17.0 (Tue Apr 18 2023)
 
 #### 💥 Breaking Change during development
