@@ -8,7 +8,7 @@ NiGSP
 [![See the documentation at: https://nigsp.readthedocs.io](https://img.shields.io/badge/docs-read%20latest-informational?style=flat&logo=readthedocs)](https://nigsp.readthedocs.io/en/latest/?badge=latest)
 [![Latest DOI](https://zenodo.org/badge/446805866.svg?style=flat&logo=zenodo)](https://zenodo.org/badge/latestdoi/446805866)
 <!-- For badge only:
-[![Latest DOI](https://img.shields.io/badge/DOI-<NEWDOI>%2Fzenodo.7842386-blue?style=for-the-badge&logo=zenodo)](https://img.shields.io/badge/DOI-<NEWDOI>%2Fzenodo.7842386-blue?style=for-the-badge&logo=zenodo) 
+[![Latest DOI](https://img.shields.io/badge/DOI-<NEWDOI>%2Fzenodo.7842386-blue?style=for-the-badge&logo=zenodo)](https://img.shields.io/badge/DOI-<NEWDOI>%2Fzenodo.7842386-blue?style=for-the-badge&logo=zenodo)
 -->
 [![Licensed Apache 2.0](https://img.shields.io/github/license/MIPLabCH/nigsp?style=flat&logo=apache)](https://github.com/MIPLabCH/nigsp/blob/master/LICENSE)
 

@@ -16,7 +16,7 @@ import numpy as np
 LGR = logging.getLogger(__name__)
 
 
-def compute_laplacian(mtx, negval="absolute"):
+def compute_laplacian(mtx, negval="absolute", selfloops=False):
     """
     Compute Laplacian (L) matrix from a square matrix.
 
@@ -28,18 +28,24 @@ def compute_laplacian(mtx, negval="absolute"):
     mtx : numpy.ndarray
         A square matrix
     negval : "absolute", "remove", or "rescale"
-        The intended behaviour to deal with negative values:
+        The intended behaviour to deal with negative values in matrix:
         - "absolute" will take absolute values of the matrix
         - "remove" will set all negative elements to 0
         - "rescale" will rescale the matrix between 0 and 1.
         Default is "absolute".
+    selfloops : "degree", bool, or numpy.ndarray
+        Allow or remove self-loops in input matrix. A numpy array can be used to specify
+        particular loops directly in the adjacency matrix.
+        The degree matrix of the Adjacency matrix can also be used instead.
+        In the last two cases, the degree matrix will be updated accordingly.
+        Default is to remove self loops (False).
 
     Returns
     -------
     numpy.ndarray
         The laplacian of mtx
     numpy.ndarray
-        The degree matrix of mtx as a (mtx.ndim-1)D array
+        The degree matrix of mtx as a (mtx.ndim-1)D array, updated with selfloops in case.
 
     See Also
     --------
@@ -49,6 +55,7 @@ def compute_laplacian(mtx, negval="absolute"):
     ------
     NotImplementedError
         If negval is not "absolute", "remove", or "rescale"
+        If selfloop
     """
     mtx = deepcopy(mtx)
     if mtx.min() < 0:
@@ -66,7 +73,30 @@ def compute_laplacian(mtx, negval="absolute"):
     degree = mtx.sum(axis=1)  # This is fixed to across columns
 
     adjacency = deepcopy(mtx)
-    adjacency[np.diag_indices(adjacency.shape[0])] = 0
+
+    if selfloops is False:
+        adjacency[np.diag_indices(adjacency.shape[0])] = 0
+    elif selfloops is True:
+        pass
+    elif type(selfloops) == np.ndarray:
+        if selfloops.ndim > 1:
+            raise NotImplementedError(
+                "Multidimensional arrays are not implemented to specify self-loops"
+            )
+        if selfloops.shape[0] != mtx.shape[0]:
+            raise ValueError(
+                f"Array specified for self-loops has {selfloops.shape[0]} elements, "
+                f"but specified matrix has {mtx.shape[0]} diagonal elements."
+            )
+        adjacency[np.diag_indices(adjacency.shape[0])] = selfloops
+        degree = degree + selfloops
+    elif selfloops == "degree":
+        adjacency[np.diag_indices(adjacency.shape[0])] = degree
+        degree = degree * 2
+    else:
+        raise NotImplementedError(
+            f'Value "{selfloops}" for self-loops settings is not supported'
+        )
 
     degree_mat = np.zeros_like(mtx)
     degree_mat[np.diag_indices(degree_mat.shape[0])] = degree
