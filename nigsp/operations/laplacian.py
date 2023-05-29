@@ -76,9 +76,8 @@ def compute_laplacian(mtx, negval="absolute", selfloops=False):
 
     if selfloops is False:
         adjacency[np.diag_indices(adjacency.shape[0])] = 0
-    elif selfloops == "degree":
-        adjacency[np.diag_indices(adjacency.shape[0])] = degree
-        degree = degree * 2
+    elif selfloops is True:
+        pass
     elif type(selfloops) == np.ndarray:
         if selfloops.ndim > 1:
             raise NotImplementedError(
@@ -91,8 +90,9 @@ def compute_laplacian(mtx, negval="absolute", selfloops=False):
             )
         adjacency[np.diag_indices(adjacency.shape[0])] = selfloops
         degree = degree + selfloops
-    elif selfloops is True:
-        pass
+    elif selfloops == "degree":
+        adjacency[np.diag_indices(adjacency.shape[0])] = degree
+        degree = degree * 2
     else:
         raise NotImplementedError(
             f'Value "{selfloops}" for self-loops settings is not supported'

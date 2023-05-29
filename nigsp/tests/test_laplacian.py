@@ -27,6 +27,27 @@ def test_compute_laplacian():
     assert (lapl == L).all()
     assert (degree == deg).all()
 
+    lapl, degree = laplacian.compute_laplacian(mtx, selfloops=True)
+    Lsl = np.diag(mtx.sum(axis=1)) - mtx
+    assert (lapl == Lsl).all()
+    assert (degree == deg).all()
+
+    rn_deg = np.random.rand(4)
+    lapl, degree = laplacian.compute_laplacian(mtx, selfloops=rn_deg)
+    updeg = deg + rn_deg
+    adj = dc(mtx)
+    adj[np.diag_indices(mtx.shape[0])] = rn_deg
+    Lsl = np.diag(updeg) - adj
+    assert (lapl == Lsl).all()
+    assert (degree == updeg).all()
+
+    lapl, degree = laplacian.compute_laplacian(mtx, selfloops="degree")
+    updeg = deg + deg
+    adj[np.diag_indices(mtx.shape[0])] = deg
+    Lsl = np.diag(updeg) - adj
+    assert (lapl == Lsl).all()
+    assert (degree == updeg).all()
+
     mtx = mtx - mtx.mean()
 
     mtx_abs = abs(mtx)
