@@ -1,3 +1,6 @@
+
+<img alt="nigsp" src="https://github.com/miplabch/nigsp/blob/master/logos/png/full_logos/nigsp_logo_coral_background.png" height="150">
+
 NiGSP
 =====
 
