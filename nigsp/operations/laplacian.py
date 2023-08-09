@@ -70,7 +70,7 @@ def compute_laplacian(mtx, negval="absolute", selfloops=False):
                 f'Behaviour "{negval}" to deal with negative values is not supported'
             )
 
-    degree = mtx.sum(axis=1)  # This is fixed to across columns
+    degree = mtx.sum(axis=1) - 1  # This is fixed to across columns
 
     adjacency = deepcopy(mtx)
 
