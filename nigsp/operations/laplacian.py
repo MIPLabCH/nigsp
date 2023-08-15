@@ -78,7 +78,7 @@ def compute_laplacian(mtx, negval="absolute", selfloops=False):
         adjacency[np.diag_indices(adjacency.shape[0])] = 0
     elif selfloops is True:
         pass
-    elif type(selfloops) == np.ndarray:
+    elif type(selfloops) is np.ndarray:
         if selfloops.ndim > 1:
             raise NotImplementedError(
                 "Multidimensional arrays are not implemented to specify self-loops"
