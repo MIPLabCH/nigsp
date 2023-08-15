@@ -70,8 +70,6 @@ def compute_laplacian(mtx, negval="absolute", selfloops=False):
                 f'Behaviour "{negval}" to deal with negative values is not supported'
             )
 
-    degree = mtx.sum(axis=1) - 1  # This is fixed to across columns
-
     adjacency = deepcopy(mtx)
 
     if selfloops is False:
@@ -89,14 +87,15 @@ def compute_laplacian(mtx, negval="absolute", selfloops=False):
                 f"but specified matrix has {mtx.shape[0]} diagonal elements."
             )
         adjacency[np.diag_indices(adjacency.shape[0])] = selfloops
-        degree = degree + selfloops
     elif selfloops == "degree":
-        adjacency[np.diag_indices(adjacency.shape[0])] = degree
-        degree = degree * 2
+        adjacency[np.diag_indices(adjacency.shape[0])] = 0
+        adjacency[np.diag_indices(adjacency.shape[0])] = adjacency.sum(axis=1)
     else:
         raise NotImplementedError(
             f'Value "{selfloops}" for self-loops settings is not supported'
         )
+
+    degree = adjacency.sum(axis=1)  # This is fixed to across columns
 
     degree_mat = np.zeros_like(mtx)
     degree_mat[np.diag_indices(degree_mat.shape[0])] = degree
