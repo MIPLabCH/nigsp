@@ -3,7 +3,8 @@
 from copy import deepcopy as dc
 
 import numpy as np
-from pytest import mark, raises
+from numpy.testing import assert_allclose
+from pytest import raises
 
 from nigsp.operations import laplacian
 
@@ -24,29 +25,29 @@ def test_compute_laplacian():
     L, deg = glap(adj)
     lapl, degree = laplacian.compute_laplacian(mtx)
 
-    assert np.allclose(lapl, L)
-    assert np.allclose(degree, deg)
+    assert_allclose(lapl, L)
+    assert_allclose(degree, deg)
 
     lapl, degree = laplacian.compute_laplacian(mtx, selfloops=True)
     L, deg = glap(mtx)
-    assert np.allclose(lapl, L)
-    assert np.allclose(degree, deg)
+    assert_allclose(lapl, L)
+    assert_allclose(degree, deg)
 
     rn_deg = np.random.rand(4)
     lapl, degree = laplacian.compute_laplacian(mtx, selfloops=rn_deg)
     adj = dc(mtx)
     adj[np.diag_indices(mtx.shape[0])] = rn_deg
     L, deg = glap(adj)
-    assert np.allclose(lapl, L)
-    assert np.allclose(degree, deg)
+    assert_allclose(lapl, L)
+    assert_allclose(degree, deg)
 
     lapl, degree = laplacian.compute_laplacian(mtx, selfloops="degree")
     adj[np.diag_indices(mtx.shape[0])] = 0
     _, deg = glap(adj)
     adj[np.diag_indices(mtx.shape[0])] = deg
     L, deg = glap(adj)
-    assert np.allclose(lapl, L)
-    assert np.allclose(degree, deg)
+    assert_allclose(lapl, L)
+    assert_allclose(degree, deg)
 
     mtx = mtx - mtx.mean()
 
@@ -57,18 +58,18 @@ def test_compute_laplacian():
 
     L, deg = glap(mtx_abs)
     lapl, degree = laplacian.compute_laplacian(mtx, negval="absolute", selfloops=True)
-    assert np.allclose(lapl, L)
-    assert np.allclose(degree, deg)
+    assert_allclose(lapl, L)
+    assert_allclose(degree, deg)
 
     L, deg = glap(mtx_rem)
     lapl, degree = laplacian.compute_laplacian(mtx, negval="remove", selfloops=True)
-    assert np.allclose(lapl, L)
-    assert np.allclose(degree, deg)
+    assert_allclose(lapl, L)
+    assert_allclose(degree, deg)
 
     L, deg = glap(mtx_res)
     lapl, degree = laplacian.compute_laplacian(mtx, negval="rescale", selfloops=True)
-    assert np.allclose(lapl, L)
-    assert np.allclose(degree, deg)
+    assert_allclose(lapl, L)
+    assert_allclose(degree, deg)
 
 
 def test_normalisation():
