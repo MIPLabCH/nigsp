@@ -147,6 +147,7 @@ autosectionlabel_prefix_document = True
 # -- sphinxcontrib-bibtex ----------------------------------------------------
 bibtex_bibfiles = []
 
+
 # -- Generate API automagically -----------------------------------------------
 def run_apidoc(_):
     from sphinx.ext.apidoc import main
