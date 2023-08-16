@@ -1,3 +1,20 @@
+# 0.18.1 (Wed Aug 16 2023)
+
+#### 🐛 Bug Fix
+
+- Fix computation of degree matrix (from normal matrix to its adjacency) [#67](https://github.com/MIPLabCH/nigsp/pull/67) ([@smoia](https://github.com/smoia))
+
+#### 🏠 Internal
+
+- [pre-commit.ci] pre-commit autoupdate [#65](https://github.com/MIPLabCH/nigsp/pull/65) ([@pre-commit-ci[bot]](https://github.com/pre-commit-ci[bot]) [@smoia](https://github.com/smoia))
+
+#### Authors: 2
+
+- [@pre-commit-ci[bot]](https://github.com/pre-commit-ci[bot])
+- Stefano Moia ([@smoia](https://github.com/smoia))
+
+---
+
 # 0.18.0 (Mon May 29 2023)
 
 #### 🚀 Enhancement
