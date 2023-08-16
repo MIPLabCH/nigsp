@@ -34,7 +34,7 @@ Cite
 ----
 
 If you use ``nigsp`` in your work, please cite either the all-time
-Zenodo DOI |general Zenodo :hide-toc:DOI| or the Zenodo DOI related to the version
+Zenodo DOI |general Zenodo DOI| or the Zenodo DOI related to the version
 you are using. Please cite the following paper(s) too:
 
    Preti, M.G., Van De Ville, D. *Decoupling of brain function from
