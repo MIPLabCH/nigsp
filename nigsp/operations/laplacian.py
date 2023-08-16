@@ -70,8 +70,6 @@ def compute_laplacian(mtx, negval="absolute", selfloops=False):
                 f'Behaviour "{negval}" to deal with negative values is not supported'
             )
 
-    degree = mtx.sum(axis=1)  # This is fixed to across columns
-
     adjacency = deepcopy(mtx)
 
     if selfloops is False:
@@ -89,14 +87,15 @@ def compute_laplacian(mtx, negval="absolute", selfloops=False):
                 f"but specified matrix has {mtx.shape[0]} diagonal elements."
             )
         adjacency[np.diag_indices(adjacency.shape[0])] = selfloops
-        degree = degree + selfloops
     elif selfloops == "degree":
-        adjacency[np.diag_indices(adjacency.shape[0])] = degree
-        degree = degree * 2
+        adjacency[np.diag_indices(adjacency.shape[0])] = 0
+        adjacency[np.diag_indices(adjacency.shape[0])] = adjacency.sum(axis=1)
     else:
         raise NotImplementedError(
             f'Value "{selfloops}" for self-loops settings is not supported'
         )
+
+    degree = adjacency.sum(axis=1)  # This is fixed to across columns
 
     degree_mat = np.zeros_like(mtx)
     degree_mat[np.diag_indices(degree_mat.shape[0])] = degree
@@ -147,38 +146,38 @@ def normalisation(lapl, degree, norm="symmetric", fix_zeros=True):
     --------
     https://en.wikipedia.org/wiki/Laplacian_matrix
     """
-    degree = deepcopy(degree)
-    if lapl.ndim - degree.ndim > 1:
+    deg = deepcopy(degree)
+    if lapl.ndim - deg.ndim > 1:
         raise NotImplementedError(
-            f"The provided degree matrix is {degree.ndim}D while the "
+            f"The provided degree matrix is {deg.ndim}D while the "
             f"provided laplacian matrix is {lapl.ndim}D."
         )
-    elif lapl.ndim == degree.ndim:
-        if not (degree.diagonal() == degree.sum(axis=1)).all():
+    elif lapl.ndim == deg.ndim:
+        if not (deg.diagonal() == deg.sum(axis=1)).all():
             raise ValueError(
                 "The provided degree matrix is not a diagonal matrix (or a stack of)."
             )
-        degree = degree.diagonal()
+        deg = deepcopy(deg.diagonal())
 
-    if degree.shape != lapl.shape[:-1]:
+    if deg.shape != lapl.shape[:-1]:
         raise ValueError(
-            f"The provided degree matrix has shape {degree.shape} while the "
+            f"The provided degree matrix has shape {deg.shape} while the "
             f"provided matrix has shape {lapl.shape}."
         )
 
     if fix_zeros:
-        degree[degree == 0] = 1
+        deg[deg == 0] = 1
 
     d = np.zeros_like(lapl)
 
     if norm in ["symmetric", "symm"]:
-        d[np.diag_indices(d.shape[0])] = degree ** (-1 / 2)
+        d[np.diag_indices(d.shape[0])] = deg ** (-1 / 2)
         return d @ lapl @ d
     elif norm in ["random walk", "rw", "random walk inflow", "rwi"]:
-        d[np.diag_indices(d.shape[0])] = degree ** (-1)
+        d[np.diag_indices(d.shape[0])] = deg ** (-1)
         return d @ lapl
     elif norm in ["random walk outflow", "rwo"]:
-        d[np.diag_indices(d.shape[0])] = degree ** (-1)
+        d[np.diag_indices(d.shape[0])] = deg ** (-1)
         return lapl @ d
     else:
         raise NotImplementedError(f'Normalisation type "{norm}" is not supported.')

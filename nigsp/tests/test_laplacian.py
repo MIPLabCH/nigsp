@@ -12,41 +12,41 @@ from nigsp.operations import laplacian
 def test_compute_laplacian():
     def glap(mtx):
         deg = mtx.sum(axis=1)
-        adj = dc(mtx)
-        adj[np.diag_indices(mtx.shape[0])] = 0
 
-        L = np.diag(deg) - adj
+        L = np.diag(deg) - mtx
         return L, deg
 
     mtx = np.random.rand(4, 4)
     mtx = (mtx + mtx.T) / 2
 
-    L, deg = glap(mtx)
+    adj = dc(mtx)
+    adj[np.diag_indices(mtx.shape[0])] = 0
+    L, deg = glap(adj)
     lapl, degree = laplacian.compute_laplacian(mtx)
 
-    assert (lapl == L).all()
-    assert (degree == deg).all()
+    assert np.allclose(lapl, L)
+    assert np.allclose(degree, deg)
 
     lapl, degree = laplacian.compute_laplacian(mtx, selfloops=True)
-    Lsl = np.diag(mtx.sum(axis=1)) - mtx
-    assert (lapl == Lsl).all()
-    assert (degree == deg).all()
+    L, deg = glap(mtx)
+    assert np.allclose(lapl, L)
+    assert np.allclose(degree, deg)
 
     rn_deg = np.random.rand(4)
     lapl, degree = laplacian.compute_laplacian(mtx, selfloops=rn_deg)
-    updeg = deg + rn_deg
     adj = dc(mtx)
     adj[np.diag_indices(mtx.shape[0])] = rn_deg
-    Lsl = np.diag(updeg) - adj
-    assert (lapl == Lsl).all()
-    assert (degree == updeg).all()
+    L, deg = glap(adj)
+    assert np.allclose(lapl, L)
+    assert np.allclose(degree, deg)
 
     lapl, degree = laplacian.compute_laplacian(mtx, selfloops="degree")
-    updeg = deg + deg
+    adj[np.diag_indices(mtx.shape[0])] = 0
+    _, deg = glap(adj)
     adj[np.diag_indices(mtx.shape[0])] = deg
-    Lsl = np.diag(updeg) - adj
-    assert (lapl == Lsl).all()
-    assert (degree == updeg).all()
+    L, deg = glap(adj)
+    assert np.allclose(lapl, L)
+    assert np.allclose(degree, deg)
 
     mtx = mtx - mtx.mean()
 
@@ -56,22 +56,21 @@ def test_compute_laplacian():
     mtx_res = (mtx - mtx.min()) / mtx.max()
 
     L, deg = glap(mtx_abs)
-    lapl, degree = laplacian.compute_laplacian(mtx, negval="absolute")
-    assert (lapl == L).all()
-    assert (degree == deg).all()
+    lapl, degree = laplacian.compute_laplacian(mtx, negval="absolute", selfloops=True)
+    assert np.allclose(lapl, L)
+    assert np.allclose(degree, deg)
 
     L, deg = glap(mtx_rem)
-    lapl, degree = laplacian.compute_laplacian(mtx, negval="remove")
-    assert (lapl == L).all()
-    assert (degree == deg).all()
+    lapl, degree = laplacian.compute_laplacian(mtx, negval="remove", selfloops=True)
+    assert np.allclose(lapl, L)
+    assert np.allclose(degree, deg)
 
     L, deg = glap(mtx_res)
-    lapl, degree = laplacian.compute_laplacian(mtx, negval="rescale")
-    assert (lapl == L).all()
-    assert (degree == deg).all()
+    lapl, degree = laplacian.compute_laplacian(mtx, negval="rescale", selfloops=True)
+    assert np.allclose(lapl, L)
+    assert np.allclose(degree, deg)
 
 
-@mark.xfail
 def test_normalisation():
     L = np.random.rand(4, 4)
     L = (L + L.T) / 2
@@ -80,10 +79,10 @@ def test_normalisation():
 
     lapl_symm = laplacian.normalisation(L, d, norm="symmetric")
 
-    d = np.diag(d)
-    lapl_rwi = laplacian.normalisation(L, d, norm="random walk")
+    deg = np.diag(d)
+    lapl_rwi = laplacian.normalisation(L, deg, norm="random walk")
 
-    lapl_rwo = laplacian.normalisation(L, d, norm="rwo")
+    lapl_rwo = laplacian.normalisation(L, deg, norm="rwo")
 
     d[2] = 1
     d_symm = np.diag(d ** (-1 / 2))
