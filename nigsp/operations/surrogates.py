@@ -289,7 +289,7 @@ def test_significance(
     ------
     ValueError
         If data is not None and the surrogate shape (except last axis) is
-        different from the data shape
+        different from the data shape.
     NotImplementedError
         If any other method rather than those listed above is selected.
 

@@ -3,6 +3,8 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root ``toctree`` directive.
 
+:hide-toc:
+
 NiGSP (NeuroImaging Graph Signal Processing)
 ============================================
 
@@ -32,7 +34,7 @@ Cite
 ----
 
 If you use ``nigsp`` in your work, please cite either the all-time
-Zenodo DOI |general Zenodo DOI| or the Zenodo DOI related to the version
+Zenodo DOI |general Zenodo :hide-toc:DOI| or the Zenodo DOI related to the version
 you are using. Please cite the following paper(s) too:
 
    Preti, M.G., Van De Ville, D. *Decoupling of brain function from
@@ -77,16 +79,10 @@ cite also:
 .. |general Zenodo DOI| image:: https://zenodo.org/badge/DOI/10.5281/zenodo.6373436.svg
    :target: https://zenodo.org/badge/latestdoi/446805866
 
-
-.. toctree::
-   :titlesonly:
-   :maxdepth: 0
-
-   NiGSP <self>
-
 .. toctree::
    :caption: Usage
-   :maxdepth: 5
+   :hidden:
+   :maxdepth: 2
 
    Installation <usage/installation>
    User Guide <usage/user_guide>
@@ -96,20 +92,23 @@ cite also:
 
 .. toctree::
    :caption: API
-   :maxdepth: 5
+   :hidden:
+   :maxdepth: 1
    :glob:
 
    api/*
 
 .. toctree::
    :caption: Graph Signal Processing
-   :maxdepth: 5
+   :hidden:
+   :maxdepth: 1
 
    About GSP <about_gsp>
 
 .. toctree::
    :caption: Developers
-   :maxdepth: 5
+   :hidden:
+   :maxdepth: 1
 
    How to Contribute <developers/how_to_contribute>
    Contributor Guide <developers/contributor_guide>
