@@ -120,7 +120,7 @@ def prepare_ndim_iteration(data, idx):
 
     Returns
     -------
-    array
+    array, array
         The reshaped data and an empty array like it.
     """
     if data.ndim > idx + 1:
