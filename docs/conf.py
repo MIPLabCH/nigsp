@@ -141,8 +141,9 @@ htmlhelp_basename = "nigsp"
 
 # -- intersphinx -------------------------------------------------------------
 intersphinx_mapping = {
-    "python": ("https://docs.python.org/3", None),
+    "nibabel": ("https://nipy.org/nibabel/", None),
     "numpy": ("https://numpy.org/doc/stable", None),
+    "python": ("https://docs.python.org/3", None),
 }
 intersphinx_timeout = 5
 
@@ -165,6 +166,10 @@ numpydoc_xref_aliases = {
     # Matplotlib
     "Axes": "matplotlib.axes.Axes",
     "Figure": "matplotlib.figure.Figure",
+    # Nibabel
+    "Nifti1Image": "nibabel.nifti1.Nifti1Image",
+    # Numpy
+    "array": "numpy.ndarray",
     # Python
     "bool": ":class:`python:bool`",
     "Path": "pathlib.Path",

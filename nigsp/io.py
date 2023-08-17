@@ -47,7 +47,7 @@ def check_ext(all_ext, fname, scan=False, remove=False):
     ----------
     all_ext : list
         All possible extensions to check within
-    fname : str or os.PathLikeLike
+    fname : str or os.PathLike
         The filename to check
     scan : bool, optional
         Scan the given path to see if there is a file with that extension
