@@ -221,6 +221,7 @@ sphinx_gallery_conf = {
     "within_subsection_order": FileNameSortKey,
 }
 
+
 # -- Generate API automagically -----------------------------------------------
 def run_apidoc(_):
     from sphinx.ext.apidoc import main
@@ -236,6 +237,7 @@ def run_apidoc(_):
 
 
 # -- Final Setup -------------------------------------------------------------
+
 
 # https://github.com/rtfd/sphinx_rtd_theme/issues/117
 # launch setup
