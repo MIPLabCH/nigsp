@@ -89,6 +89,7 @@ cite also:
    Command Line Interface (CLI) <usage/cli>
    Output <usage/output>
    Licence <usage/licence>
+   Changelog <https://github.com/MIPLabCH/nigsp/releases>
 
 .. toctree::
    :caption: API
