@@ -13,7 +13,9 @@
 import os
 import sys
 
-import nigsp  # noqa
+from sphinx_gallery.sorting import FileNameSortKey
+
+import nigsp
 
 sys.path.insert(0, os.path.abspath(".."))
 
@@ -49,13 +51,14 @@ extensions = [
     "sphinx.ext.doctest",
     "sphinx.ext.intersphinx",
     "sphinx.ext.mathjax",
-    "sphinx.ext.napoleon",
     "sphinx.ext.viewcode",
-    "sphinxarg.ext",
     "myst_parser",
+    "numpydoc",
+    "sphinxarg.ext",
     "sphinxcontrib.bibtex",
     "sphinx_copybutton",
     "sphinx_design",
+    "sphinx_gallery.gen_gallery",
     "sphinx_issues",
 ]
 
@@ -87,6 +90,10 @@ language = "en"
 # This pattern also affects html_static_path and html_extra_path.
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store", "**.ipynb_checkpoints"]
 
+# Sphinx will warn about all references where the target cannot be found.
+nitpicky = True
+nitpick_ignore = []
+
 # -- Options for HTML output -------------------------------------------------
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
@@ -100,13 +107,16 @@ html_show_sphinx = False
 # relative to this directory. They are copied after the builtin static files,
 # so a file named 'default.css' will overwrite the builtin 'default.css'.
 html_static_path = ["_static"]
+html_css_files = [
+    "css/style.css",
+]
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
 html_theme_options = {
-    "light_logo": "logos/nigsp_picto_circle_light_background.svg",
-    "dark_logo": "logos/nigsp_picto_circle_dark_background.svg",
+    "light_logo": "logos/nigsp_picto_circle_coral_background.svg",
+    "dark_logo": "logos/nigsp_picto_circle_coral_background.svg",
     "footer_icons": [
         {
             "name": "GitHub",
@@ -123,13 +133,11 @@ html_theme_options = {
 }
 
 # html_favicon = '_static/logo.png'
-# html_logo = '_static/logo.png'
 
 # -- Options for HTMLHelp output ---------------------------------------------
 
 # Output file base name for HTML help builder.
 htmlhelp_basename = "nigsp"
-
 
 # -- intersphinx -------------------------------------------------------------
 intersphinx_mapping = {
@@ -147,6 +155,66 @@ autosectionlabel_prefix_document = True
 # -- sphinxcontrib-bibtex ----------------------------------------------------
 bibtex_bibfiles = []
 
+# -- numpydoc ----------------------------------------------------------------
+numpydoc_class_members_toctree = False
+numpydoc_attributes_as_param_list = False
+
+# x-ref
+numpydoc_xref_param_type = True
+numpydoc_xref_aliases = {
+    # Matplotlib
+    "Axes": "matplotlib.axes.Axes",
+    "Figure": "matplotlib.figure.Figure",
+    # Python
+    "bool": ":class:`python:bool`",
+    "Path": "pathlib.Path",
+    "TextIO": "io.TextIOBase",
+}
+numpydoc_xref_ignore = {
+    "of",
+    "optional",
+    "or",
+    "shape",
+}
+
+# validation
+# https://numpydoc.readthedocs.io/en/latest/validation.html#validation-checks
+error_ignores = {
+    "GL01",  # docstring should start in the line immediately after the quotes
+    "EX01",  # section 'Examples' not found
+    "ES01",  # no extended summary found
+    "SA01",  # section 'See Also' not found
+    "RT02",  # The first line of the Returns section should contain only the type, unless multiple values are being returned  # noqa
+}
+numpydoc_validate = True
+numpydoc_validation_checks = {"all"} | set(error_ignores)
+numpydoc_validation_exclude = {  # regex to ignore during docstring check
+    r"\.__getitem__",
+    r"\.__contains__",
+    r"\.__hash__",
+    r"\.__mul__",
+    r"\.__sub__",
+    r"\.__add__",
+    r"\.__iter__",
+    r"\.__div__",
+    r"\.__neg__",
+}
+
+# -- sphinx-gallery ----------------------------------------------------------
+sphinx_gallery_conf = {
+    "backreferences_dir": "generated/backreferences",
+    "doc_module": (f"{package}",),
+    "examples_dirs": ["../tutorials"],
+    "exclude_implicit_doc": {},  # set
+    "filename_pattern": r"\d{2}_",
+    "gallery_dirs": ["generated/tutorials"],
+    "line_numbers": False,
+    "plot_gallery": True,
+    "reference_url": {f"{package}": None},
+    "remove_config_comments": True,
+    "show_memory": True,
+    "within_subsection_order": FileNameSortKey,
+}
 
 # -- Generate API automagically -----------------------------------------------
 def run_apidoc(_):
@@ -163,7 +231,6 @@ def run_apidoc(_):
 
 
 # -- Final Setup -------------------------------------------------------------
-
 
 # https://github.com/rtfd/sphinx_rtd_theme/issues/117
 # launch setup
