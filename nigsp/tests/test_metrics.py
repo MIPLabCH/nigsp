@@ -72,6 +72,16 @@ def test_gsdi():
     assert (gsdi_out["beta_over_alpha"] == gsdi_in).all()
 
 
+def test_smoothness():
+    signal = rand(10, 1)
+    laplacian = rand(10, 10)
+
+    expected_smoothness = np.dot(signal.T, np.dot(laplacian, signal))
+    computed_smoothness = metrics.smoothness(laplacian, signal)
+
+    assert np.isclose(expected_smoothness, computed_smoothness, rtol=1e-10)
+
+
 # ### Break tests
 def test_break_sdi():
     ts1 = np.arange(1, 3)[..., np.newaxis]
@@ -124,13 +134,3 @@ def test_functional_connectivity():
 
     for k in fcd.keys():
         assert (fcd[k] == np.corrcoef(tsd[k])).all()
-
-
-def test_smoothness():
-    signal = rand(10, 1)
-    laplacian = rand(10, 10)
-
-    expected_smoothness = np.dot(signal.T, np.dot(laplacian, signal))
-    computed_smoothness = metrics.smoothness(laplacian, signal)
-
-    assert np.isclose(expected_smoothness, computed_smoothness, rtol=1e-10)
