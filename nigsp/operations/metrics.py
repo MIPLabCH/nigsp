@@ -246,6 +246,25 @@ def functional_connectivity(timeseries, mean=False):
     return fc
 
 
+def smoothness(laplacian, signal):
+    """Compute the smoothness of a signal over the graph corresponding to given laplacian.
+
+    Parameters
+    ----------
+    node_signal : numpy.ndarray
+        any signal defined with one value per node.
+    laplacian : numpy.ndarray
+        graph laplacian to use.
+
+    Returns
+    -------
+    smoothness : float
+        the smoothness of the signal.
+    """
+    LGR.info("Compute signal smoothness.")
+    return np.dot(signal.T, np.dot(laplacian, signal))
+
+
 """
 Copyright 2022, Stefano Moia.
 
