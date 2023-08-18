@@ -126,7 +126,7 @@ def test_functional_connectivity():
         assert (fcd[k] == np.corrcoef(tsd[k])).all()
 
 
-def test_smoothness_calculation():
+def test_smoothness():
     signal = rand(10, 1)
     laplacian = rand(10, 10)
 
