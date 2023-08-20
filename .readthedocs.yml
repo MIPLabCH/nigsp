@@ -20,4 +20,5 @@ python:
       path: .
       extra_requirements:
         - doc
+        - stats
   system_packages: true

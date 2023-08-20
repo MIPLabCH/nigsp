@@ -1,5 +1,6 @@
 # %%
 import numpy as np
+from numpy.random import rand
 from pytest import raises
 
 from nigsp.operations.statistics import stats
@@ -47,7 +48,6 @@ def test_stats():
 
 ### Break tests
 def break_test_stats():
-    # Break
     with raises(NotImplementedError) as errorinfo:
-        ops.statistics.stats(rand(2), rand(2, 3, 4, 5), n_perms=200)
+        stats(rand(2), rand(2, 3, 4, 5), n_perms=200)
     assert "check the shape of both the input" in str(errorinfo.value)

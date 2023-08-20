@@ -7,7 +7,7 @@ LGR = logging.getLogger(__name__)
 
 
 def ranktest(a, axis=None):
-    # Code adapted from `scipy`; ref: https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.rankdata.html
+    # Code adapted from `scipy`; ref: https://github.com/scipy/scipy/blob/v1.11.2/scipy/stats/_stats_py.py#L10123
 
     """Assign ranks to data, dealing with ties appropriately.
 
@@ -16,7 +16,7 @@ def ranktest(a, axis=None):
     shape of the data array if desired (see Examples).
 
     Ranks begin at 1.  The `method` argument controls how ranks are assigned
-    to equal values.  See [1]_ for further discussion of ranking methods.
+    to equal values.
 
     Parameters
     ----------
@@ -60,7 +60,7 @@ def ttest_1samp_no_p(X, axis=0, sigma=0):
 
     This is a modified version of :func:`scipy.stats.ttest_1samp` that avoids
     a (relatively) time-consuming p-value calculation, and can adjust
-    for implausibly small variance values: https://doi.org/10.1016/j.neuroimage.2011.10.027.
+    for implausibly small variance values: RidgwayEtAl2012 - https://doi.org/10.1016/j.neuroimage.2011.10.027.
 
     Parameters
     ----------
@@ -72,9 +72,6 @@ def ttest_1samp_no_p(X, axis=0, sigma=0):
         The variance estimate will be given by ``var + sigma * max(var)`` or
         ``var + sigma``, depending on "method". By default this is 0 (no
         adjustment). See Notes for details.
-    method : str
-        If 'relative', the minimum variance estimate will be sigma * max(var),
-        if 'absolute' the minimum variance estimate will be sigma.
 
     Returns
     -------
@@ -158,8 +155,7 @@ def stats(
     diff = empirical_SDI - np.moveaxis(surrogate_SDI, [0, 1, 2, 3], [1, 0, 2, 3])
 
     # b) Signed Wilcoxon Test - A non-parametric test
-    # c) Sum the ranks
-    # d) Normalize it by the number of surrogates to avoid inflating the test statistics by the number of surrogates
+    # c) Normalize it by the number of surrogates to avoid inflating the test statistics by the number of surrogates
     LGR.info("Calculating test statistics using Wilcoxon signed rank test")
     test_stats_signed_rank_test = (
         np.sum(ranktest(np.abs(diff), axis=0) * np.sign(diff), axis=0) / n_surrogate
