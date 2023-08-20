@@ -7,7 +7,7 @@ from nigsp.operations.statistics import two_level_statistical_model
 
 
 # ### Unit tests
-def test_stats():
+def test_two_level_statistical_model():
     # Set up zero everywhere except specific roi, aka = signal on the other rois are equivalent to noise
     # Tests specifically at the rois having signal
     n_events = 30
@@ -43,13 +43,13 @@ def test_stats():
 
     # Stability test
     second_level_stats_repeat = two_level_statistical_model(
-        empi_data, surr_data, n_perms=200
+        empi_data, surr_data, n_perms=n_perms
     )
     assert np.isclose(second_level_stats[rois], second_level_stats_repeat[rois]).all()
 
 
 ### Break tests
-def break_test_stats():
+def break_test_two_level_statistical_model():
     with raises(NotImplementedError) as errorinfo:
         two_level_statistical_model(rand(2), rand(2, 3, 4, 5), n_perms=200)
     assert "check the shape of both the input" in str(errorinfo.value)
