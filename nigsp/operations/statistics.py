@@ -77,11 +77,6 @@ def ttest_1samp_no_p(X, axis=0):
     -------
     t : array
         T-values, potentially adjusted using the hat method.
-
-    Notes
-    -----
-    To use the "hat" adjustment method :footcite:`RidgwayEtAl2012`, a value
-    of ``sigma=1e-3`` may be a reasonable choice.
     """
     var = np.var(X, axis=axis, ddof=1)
     return np.mean(X, axis=0) / np.sqrt(var / X.shape[0])
@@ -109,12 +104,12 @@ def two_level_statistical_model(
 
     b)
     First level: Checks for the consistency of the effects over trials / epochs / events, extended for all the subjects individually
-    Use the test statistics from the previous step to test for the effect using parametric one-sample t-test.
+    Uses the test statistics from the previous step to test for the effect using parametric one-sample t-test.
     (See mne.stats.ttest_1samp_no_p for more details. https://mne.tools/stable/generated/mne.stats.ttest_1samp_no_p.html)
 
     c)
     Second level: Stat test for the effect over subjects.
-    Use the test statistics from the first level and perform 2nd level modeling using massive univariate tests.
+    Use the test statistics from the first level and perform 2nd level modeling using massive univariate tests
     and permutation-based correction for multiple comparisons.
 
     Parameters
@@ -129,6 +124,8 @@ def two_level_statistical_model(
         Directory to save the test statistics from the second level
     n_perms: int, optional
         Number of permutations for the second level modeling
+    n_jobs: int, optional
+        Number of jobs to run in parallel for the second level modeling
 
     Returns
     -------
@@ -137,7 +134,7 @@ def two_level_statistical_model(
         correction for multiple comparisons. It reveals the ROIs that are significantly consistent across and within subjects.
     """
     if empirical_SDI.ndim != 3 or surrogate_SDI.ndim != 4:
-        raise ValueError(
+        raise NotImplementedError(
             "Please check the shape of both of the input arrays, they should be of shape (n_events, n_subjects, n_roi) and (n_events, n_surrogate, n_subjects, n_roi) respectively"
         )
 
@@ -152,8 +149,8 @@ def two_level_statistical_model(
     # a) Get the difference between the empirical and surrogate SDIs
     diff = empirical_SDI - np.moveaxis(surrogate_SDI, [0, 1, 2, 3], [1, 0, 2, 3])
 
-    # b) Signed Wilcoxon Test - A non-parametric test
-    # c) Normalize it by the number of surrogates to avoid inflating the test statistics by the number of surrogates
+    # b) Wilcoxon Test - A non-parametric test
+    # c) Normalization by the number of surrogates to avoid inflating the test statistics by the number of surrogates
     LGR.info("Calculating test statistics using Wilcoxon signed rank test")
     test_stats_signed_rank_test = (
         np.sum(ranktest(np.abs(diff), axis=0) * np.sign(diff), axis=0) / n_surrogate
@@ -167,15 +164,15 @@ def two_level_statistical_model(
     LGR.info("Performing First-level tests")
     test_stats_first_level = ttest_1samp_no_p(test_stats_signed_rank_test)
 
-    # During testing on the data, it was observed that test statistics occasionally yielded infinite values, occurring at a rate of <0.02%.
+    # During testing on a real data, it was observed that test statistics sporadically yielded infinite values at a rate of <0.02%.
 
     # Occurs at the step above: This issue arises when each value in the differenced population receives a unique rank, leading to a summation
-    # equivalent to n(n+1)/2, where n represents the number of elements (N) in the dataset. If this unique rank assignment is consistent
+    # equivalent to n(n+1)/2, where n represents the number of events. If this unique rank assignment is consistent
     # across multiple events, every event ends up having the same summed rank. Consequently, during first-level statistical calculations,
-    # the population effectively becomes a single value distributed across all observations. This situation results in scipy indicating that
-    # the test statistic is infinitely distant from 0.
+    # the population effectively becomes a single value distributed across all observations. This situation results in
+    # the test statistic being infinitely distant from 0.
 
-    # A simple workaround is to consider them is not significant and set them to 0.
+    # A simple workaround is to consider them as not significant and set them to 0.
     test_stats_first_level[np.where(test_stats_first_level == np.inf)] = 0
     test_stats_first_level[np.where(test_stats_first_level == -np.inf)] = 0
 

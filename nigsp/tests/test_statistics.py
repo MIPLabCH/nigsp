@@ -51,5 +51,5 @@ def test_stats():
 ### Break tests
 def break_test_stats():
     with raises(NotImplementedError) as errorinfo:
-        stats(rand(2), rand(2, 3, 4, 5), n_perms=200)
+        two_level_statistical_model(rand(2), rand(2, 3, 4, 5), n_perms=200)
     assert "check the shape of both the input" in str(errorinfo.value)
