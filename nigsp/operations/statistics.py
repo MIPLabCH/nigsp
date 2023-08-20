@@ -115,7 +115,7 @@ class onesamplettest:
 
         This is a modified version of :func:`scipy.stats.ttest_1samp` that avoids
         a (relatively) time-consuming p-value calculation, and can adjust
-        for implausibly small variance values :footcite:`RidgwayEtAl2012`.
+        for implausibly small variance values: https://doi.org/10.1016/j.neuroimage.2011.10.027.
 
         Parameters
         ----------
@@ -163,7 +163,7 @@ def stats(
     a)
     Takes in the empirical SDI to test against the surrogate SDI. 
     Surrogate SDI typically contains specific amount of realistic null counterpart of the empirical SDI.
-    (See nigsp.surrogate module for more details. https://nigsp.readthedocs.io/en/latest/api/nigsp.operations.surrogates.html)
+    (See surrogate module in NiGSP for more details)
     
     Create a distribution of test statistics out of the empirical and surrogate SDIs using Wilcoxon signed rank test.
     This distribution shows the strength of the observed SDI compared to the surrogate SDIs
@@ -175,7 +175,7 @@ def stats(
     
     c)
     Second level: Stat test for the effect over subjects.
-    Use the test statistics from the first level and perform 2nd level modeling using massive univariate (non-parametric) ttests.
+    Use the test statistics from the first level and perform 2nd level modeling using massive univariate ttests.
     and permutation-based correction for multiple comparisons. 
 
     Parameters
@@ -261,4 +261,3 @@ def stats(
             test_stats_second_level=test_stats_second_level,
         )
     return test_stats_second_level
-
