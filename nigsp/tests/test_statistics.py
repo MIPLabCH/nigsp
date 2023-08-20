@@ -37,18 +37,9 @@ def test_stats():
     )  # do we get nan for the rest of the rois?
 
 
-# ### Break tests
-# def break_test_stats():
-#     # Break
-#     n_events = 30
-#     n_surrogates = 40
-#     n_roi = 360
-#     n_subs = 20
-#     empi_data = np.zeros(( n_subs, n_roi))
-#     surr_data = np.zeros((n_events, n_subs, n_roi))
-
-#     # ops.statistics.stats(empi_data, surr_data, n_perms=200)
-
-#     with raises(NotImplementedError) as errorinfo:
-#         ops.statistics.stats(rand(2, 3, 4, 5), rand(2, 3, 4, 5), n_perms=200)
-#         assert "has 4 dimensions" in str(errorinfo.value)
+### Break tests
+def break_test_stats():
+    # Break
+    with raises(NotImplementedError) as errorinfo:
+        ops.statistics.stats(rand(2, 3, 4, 5), rand(2, 3, 4, 5), n_perms=200)
+    assert "has 1 dimension" in str(errorinfo.value)
