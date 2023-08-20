@@ -3,7 +3,7 @@ import numpy as np
 from numpy.random import rand
 from pytest import raises
 
-from nigsp.operations.statistics import stats
+from nigsp.operations.statistics import two_level_statistical_model
 
 
 # ### Unit tests
@@ -25,7 +25,7 @@ def test_stats():
         empi_data[:, :, roi] = random_empi.reshape(n_events, n_subs)
         surr_data[:, :, :, roi] = random_surr.reshape(n_events, n_surrogates, n_subs)
     n_perms = 50
-    second_level_stats = stats(
+    second_level_stats = two_level_statistical_model(
         empi_data,
         surr_data,
         n_perms=n_perms,
@@ -42,7 +42,9 @@ def test_stats():
     )  # do we get nan for the rest of the rois?
 
     # Stability test
-    second_level_stats_repeat = stats(empi_data, surr_data, n_perms=n_perms)
+    second_level_stats_repeat = two_level_statistical_model(
+        empi_data, surr_data, n_perms=200
+    )
     assert np.isclose(second_level_stats[rois], second_level_stats_repeat[rois]).all()
 
 

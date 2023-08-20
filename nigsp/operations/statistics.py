@@ -55,7 +55,7 @@ def ranktest(a, axis=None):
 
 
 # Code adapted from `mne-python`; ref: https://mne.tools/stable/generated/mne.stats.ttest_1samp_no_p.html
-def ttest_1samp_no_p(X, axis=0, sigma=0):
+def ttest_1samp_no_p(X, axis=0):
     """Perform one-sample t-test.
 
     This is a modified version of :func:`scipy.stats.ttest_1samp` that avoids
@@ -84,12 +84,10 @@ def ttest_1samp_no_p(X, axis=0, sigma=0):
     of ``sigma=1e-3`` may be a reasonable choice.
     """
     var = np.var(X, axis=axis, ddof=1)
-    if sigma > 0:
-        var += sigma
     return np.mean(X, axis=0) / np.sqrt(var / X.shape[0])
 
 
-def stats(
+def two_level_statistical_model(
     empirical_SDI,
     surrogate_SDI,
     output_dir_first_level=None,
