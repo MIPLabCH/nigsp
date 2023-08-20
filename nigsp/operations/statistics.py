@@ -35,12 +35,6 @@ def ranktest(a, axis=None):
 
     if axis is not None:
         a = np.asarray(a)
-        if a.size == 0:
-            # The return values of `normalize_axis_index` are ignored.  The
-            # call validates `axis`, even though we won't use it.
-            # use scipy._lib._util._normalize_axis_index when available
-            np.core.multiarray.normalize_axis_index(axis, a.ndim)
-            return np.empty(a.shape, dtype=np.float64)
         return np.apply_along_axis(ranktest, axis, a)
 
     arr = np.ravel(np.asarray(a))
@@ -60,96 +54,42 @@ def ranktest(a, axis=None):
     return 0.5 * (count[dense] + count[dense - 1] + 1)
 
 
-class onesamplettest:
-    # Code adapted from `mne-python`; ref: https://mne.tools/stable/generated/mne.stats.ttest_1samp_no_p.html
-    def _check_option(parameter, value, allowed_values, extra=""):
-        """Check the value of a parameter against a list of valid options.
+# Code adapted from `mne-python`; ref: https://mne.tools/stable/generated/mne.stats.ttest_1samp_no_p.html
+def ttest_1samp_no_p(X, axis=0, sigma=0):
+    """Perform one-sample t-test.
 
-        Return the value if it is valid, otherwise raise a ValueError with a
-        readable error message.
+    This is a modified version of :func:`scipy.stats.ttest_1samp` that avoids
+    a (relatively) time-consuming p-value calculation, and can adjust
+    for implausibly small variance values: https://doi.org/10.1016/j.neuroimage.2011.10.027.
 
-        Parameters
-        ----------
-        parameter : str
-            The name of the parameter to check. This is used in the error message.
-        value : any type
-            The value of the parameter to check.
-        allowed_values : list
-            The list of allowed values for the parameter.
-        extra : str
-            Extra string to append to the invalid value sentence, e.g.
-            "when using ico mode".
+    Parameters
+    ----------
+    X : array
+        Array to return t-values for.
+    axis: int
+        Axis along which to compute test. Default is 0.
+    sigma : float
+        The variance estimate will be given by ``var + sigma * max(var)`` or
+        ``var + sigma``, depending on "method". By default this is 0 (no
+        adjustment). See Notes for details.
+    method : str
+        If 'relative', the minimum variance estimate will be sigma * max(var),
+        if 'absolute' the minimum variance estimate will be sigma.
 
-        Raises
-        ------
-        ValueError
-            When the value of the parameter is not one of the valid options.
+    Returns
+    -------
+    t : array
+        T-values, potentially adjusted using the hat method.
 
-        Returns
-        -------
-        value : any type
-            The value if it is valid.
-        """
-        if value in allowed_values:
-            return value
-
-        # Prepare a nice error message for the user
-        extra = f" {extra}" if extra else extra
-        msg = (
-            "Invalid value for the '{parameter}' parameter{extra}. "
-            "{options}, but got {value!r} instead."
-        )
-        allowed_values = list(allowed_values)  # e.g., if a dict was given
-        if len(allowed_values) == 1:
-            options = f"The only allowed value is {repr(allowed_values[0])}"
-        else:
-            options = "Allowed values are "
-            if len(allowed_values) == 2:
-                options += " and ".join(repr(v) for v in allowed_values)
-            else:
-                options += ", ".join(repr(v) for v in allowed_values[:-1])
-                options += f", and {repr(allowed_values[-1])}"
-        raise ValueError(
-            msg.format(parameter=parameter, options=options, value=value, extra=extra)
-        )
-
-    def _ttest_1samp_no_p(X, axis=0, sigma=0, method="relative"):
-        """Perform one-sample t-test.
-
-        This is a modified version of :func:`scipy.stats.ttest_1samp` that avoids
-        a (relatively) time-consuming p-value calculation, and can adjust
-        for implausibly small variance values: https://doi.org/10.1016/j.neuroimage.2011.10.027.
-
-        Parameters
-        ----------
-        X : array
-            Array to return t-values for.
-        axis: int
-            Axis along which to compute test. Default is 0.
-        sigma : float
-            The variance estimate will be given by ``var + sigma * max(var)`` or
-            ``var + sigma``, depending on "method". By default this is 0 (no
-            adjustment). See Notes for details.
-        method : str
-            If 'relative', the minimum variance estimate will be sigma * max(var),
-            if 'absolute' the minimum variance estimate will be sigma.
-
-        Returns
-        -------
-        t : array
-            T-values, potentially adjusted using the hat method.
-
-        Notes
-        -----
-        To use the "hat" adjustment method :footcite:`RidgwayEtAl2012`, a value
-        of ``sigma=1e-3`` may be a reasonable choice.
-        """
-        onesamplettest._check_option("method", method, ["absolute", "relative"])
-        var = np.var(X, axis=axis, ddof=1)
-        if sigma > 0:
-            limit = sigma * np.max(var) if method == "relative" else sigma
-            var += limit
-        return np.mean(X, axis=0) / np.sqrt(var / X.shape[0])
+    Notes
+    -----
+    To use the "hat" adjustment method :footcite:`RidgwayEtAl2012`, a value
+    of ``sigma=1e-3`` may be a reasonable choice.
+    """
+    var = np.var(X, axis=axis, ddof=1)
+    if sigma > 0:
+        var += sigma
+    return np.mean(X, axis=0) / np.sqrt(var / X.shape[0])
 
 
 def stats(
@@ -231,9 +171,7 @@ def stats(
     # Two-level modeling begins
     # Step 2: First level Model
     LGR.info("Performing First-level tests")
-    test_stats_first_level = onesamplettest._ttest_1samp_no_p(
-        test_stats_signed_rank_test
-    )
+    test_stats_first_level = ttest_1samp_no_p(test_stats_signed_rank_test)
 
     # During testing on the data, it was observed that test statistics occasionally yielded infinite values, occurring at a rate of <0.02%.
 
