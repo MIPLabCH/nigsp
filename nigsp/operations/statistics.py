@@ -217,8 +217,9 @@ def stats(
     # a) Get the difference between the empirical and surrogate SDIs
     diff = empirical_SDI - np.moveaxis(surrogate_SDI, [0, 1, 2, 3], [1, 0, 2, 3])
 
-    # b) Wilcoxon Test - A non-parametric test
-    # c) Normalize it by the number of surrogates to avoid inflating the test statistics by the number of surrogates
+    # b) Signed Wilcoxon Test - A non-parametric test
+    # c) Sum the ranks
+    # d) Normalize it by the number of surrogates to avoid inflating the test statistics by the number of surrogates
     LGR.info("Calculating test statistics using Wilcoxon signed rank test")
     test_stats_signed_rank_test = (
         np.sum(ranktest(np.abs(diff), axis=0) * np.sign(diff), axis=0) / n_surrogate
@@ -237,12 +238,12 @@ def stats(
     # During testing on the data, it was observed that test statistics occasionally yielded infinite values, occurring at a rate of <0.02%.
 
     # Occurs at the step above: This issue arises when each value in the differenced population receives a unique rank, leading to a summation
-    # equivalent to n(n+1)/2, where n represents the number of events n_events. If this unique rank assignment is consistent
+    # equivalent to n(n+1)/2, where n represents the number of elements (N) in the dataset. If this unique rank assignment is consistent
     # across multiple events, every event ends up having the same summed rank. Consequently, during first-level statistical calculations,
-    # the population effectively becomes a single value distributed across all observations. This situation results in indicating that
-    # the test statistic is infinitely distant from null.
+    # the population effectively becomes a single value distributed across all observations. This situation results in scipy indicating that
+    # the test statistic is infinitely distant from 0.
 
-    # A simple workaround is to consider the observations (events) are not significant and set them to 0.
+    # A simple workaround is to consider them is not significant and set them to 0.
     test_stats_first_level[np.where(test_stats_first_level == np.inf)] = 0
     test_stats_first_level[np.where(test_stats_first_level == -np.inf)] = 0
 
