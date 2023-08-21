@@ -167,7 +167,7 @@ def two_level_statistical_model(
     # During testing on a real data, it was observed that test statistics sporadically yielded infinite values at a rate of <0.02%.
 
     # Occurs at the step above: This issue arises when each value in the differenced population receives a unique rank, leading to a summation
-    # equivalent to n(n+1)/2, where n represents the number of events. If this unique rank assignment is consistent
+    # equivalent to n(n+1)/2, where n represents the number of surrogates. If this unique rank assignment is consistent
     # across multiple events, every event ends up having the same summed rank. Consequently, during first-level statistical calculations,
     # the population effectively becomes a single value distributed across all observations. This situation results in
     # the test statistic being infinitely distant from 0.
