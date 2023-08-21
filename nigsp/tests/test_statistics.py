@@ -1,4 +1,3 @@
-# %%
 import numpy as np
 from numpy.random import rand
 from pytest import raises
@@ -17,7 +16,7 @@ def test_two_level_statistical_model():
     empi_data = np.zeros((n_events, n_subs, n_roi))
     surr_data = np.zeros((n_events, n_surrogates, n_subs, n_roi))
 
-    rois = np.random.randint(0, n_roi, 10)
+    rois = np.random.choice(360, size=10, replace=False)  # no replacement
 
     for roi in rois:
         random_empi = np.random.rand(n_events * n_subs)
@@ -52,4 +51,4 @@ def test_two_level_statistical_model():
 def break_test_two_level_statistical_model():
     with raises(NotImplementedError) as errorinfo:
         two_level_statistical_model(rand(2), rand(2, 3, 4, 5), n_perms=200)
-    assert "check the shape of both the input" in str(errorinfo.value)
+    assert "Please check the shape" in str(errorinfo.value)
