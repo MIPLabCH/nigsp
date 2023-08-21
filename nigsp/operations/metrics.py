@@ -19,7 +19,7 @@ from nigsp.utils import prepare_ndim_iteration
 
 LGR = logging.getLogger(__name__)
 
-SUPPORTED_METRICS = ["sdi", "dfc", "fc"]
+SUPPORTED_METRICS = ["sdi", "dfc", "fc", "smoothness"]
 
 
 @due.dcite(references.PRETI_2019)
