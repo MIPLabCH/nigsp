@@ -1,7 +1,6 @@
 import logging
 
 import numpy as np
-from mne.stats import permutation_t_test
 
 LGR = logging.getLogger(__name__)
 
@@ -31,6 +30,26 @@ def ranktest(a, axis=None):
     ranks : ndarray
          An array of size equal to the size of `a`, containing rank
          scores.
+
+    See Also
+    --------
+    scipy.stats.rankdata
+
+
+    Notes
+    ----------
+    Borrowed from [scipy](https://github.com/scipy/scipy/blob/v1.11.2/scipy/stats/_stats_py.py#L10123)
+    Copyright (c) 2001-2002 Enthought, Inc. 2003-2023, SciPy Developers.
+
+    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS “AS IS” AND ANY EXPRESS OR IMPLIED WARRANTIES,
+    INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+    DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+    SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+    SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+    WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
+    USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+    Re-distributing the source code with the BSD 3-Clause License
     """
 
     if axis is not None:
@@ -58,9 +77,8 @@ def ranktest(a, axis=None):
 def ttest_1samp_no_p(X, axis=0):
     """Perform one-sample t-test.
 
-    This is a modified version of :func:`scipy.stats.ttest_1samp` that avoids
-    a (relatively) time-consuming p-value calculation, and can adjust
-    for implausibly small variance values: RidgwayEtAl2012 - https://doi.org/10.1016/j.neuroimage.2011.10.027.
+    This function avoids a (relatively) time-consuming p-value calculation,
+    and can adjust for implausibly small variance values: Ridgway et al. 2012 [1]
 
     Parameters
     ----------
@@ -77,6 +95,44 @@ def ttest_1samp_no_p(X, axis=0):
     -------
     t : array
         T-values, potentially adjusted using the hat method.
+
+    References
+    ----------
+    .. [1] Ridgway G et al 2012 https://doi.org/10.1016/j.neuroimage.2011.10.027.
+
+    See Also
+    --------
+    mne.stats.ttest_1samp_no_p
+    scipy.stats.ttest_1samp
+
+    Notes
+    -----
+    Borrowed from [mne-python](https://mne.tools/stable/generated/mne.stats.ttest_1samp_no_p.html)
+    Copyright (c) 2011-2022, authors of MNE-Python
+
+    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS “AS IS” AND ANY EXPRESS OR IMPLIED WARRANTIES,
+    INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+    DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+    SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+    SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+    WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
+    USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+    Re-distributing the source code with the BSD 3-Clause License
+
+
+    `mne.stats.ttest_1samp_no_p` was originally borrowed from [Scipy](https://github.com/scipy/scipy/blob/v1.11.1/scipy/stats/_stats_py.py#L6763-L6943)
+    Copyright (c) 2001-2002 Enthought, Inc. 2003-2023, SciPy Developers.
+
+    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS “AS IS” AND ANY EXPRESS OR IMPLIED WARRANTIES,
+    INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+    DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+    SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+    SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+    WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
+    USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+    Re-distributing the source code with the BSD 3-Clause License
     """
     var = np.var(X, axis=axis, ddof=1)
     return np.mean(X, axis=0) / np.sqrt(var / X.shape[0])
@@ -110,7 +166,7 @@ def two_level_statistical_model(
     c)
     Second level: Stat test for the effect over subjects.
     Use the test statistics from the first level and perform 2nd level modeling using massive univariate tests
-    and permutation-based correction for multiple comparisons.
+    and permutation-based correction for multiple comparisons. Ref: https://doi.org/10.1002/hbm.1058 /
 
     Parameters
     ----------
@@ -133,6 +189,14 @@ def two_level_statistical_model(
         Final test statistics tested for consistency across and within subjects with subsequent permutation-based
         correction for multiple comparisons. It reveals the ROIs that are significantly consistent across and within subjects.
     """
+    try:
+        from mne.stats import permutation_t_test
+    except ImportError:
+        raise ImportError(
+            "MNE-python is required to run this function",
+            "Please see installation instructions",
+        )
+
     if empirical_SDI.ndim != 3 or surrogate_SDI.ndim != 4:
         raise NotImplementedError(
             "Please check the shape of both of the input arrays, they should be of shape (n_events, n_subjects, n_roi) and (n_events, n_surrogate, n_subjects, n_roi) respectively"

@@ -1,3 +1,6 @@
+import sys
+
+import mne.stats
 import numpy as np
 from numpy.random import rand
 from pytest import raises
@@ -48,7 +51,13 @@ def test_two_level_statistical_model():
 
 
 ### Break tests
-def break_test_two_level_statistical_model():
+def test_break_two_level_statistical_model():
     with raises(NotImplementedError) as errorinfo:
         two_level_statistical_model(rand(2), rand(2, 3, 4, 5), n_perms=200)
     assert "Please check the shape" in str(errorinfo.value)
+
+    sys.modules["mne.stats"] = None
+    with raises(ImportError) as errorinfo:
+        two_level_statistical_model(rand(2), rand(2, 3, 4, 5), n_perms=200)
+    assert "required" in str(errorinfo.value)
+    sys.modules["mne"] = mne.stats
