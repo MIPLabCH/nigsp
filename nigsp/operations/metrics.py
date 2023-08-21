@@ -246,6 +246,7 @@ def functional_connectivity(timeseries, mean=False):
     return fc
 
 
+@due.dcite(references.SHUMAN_2013)
 def smoothness(laplacian, signal):
     """Compute the smoothness of a signal over the graph corresponding to given laplacian.
 
@@ -260,6 +261,13 @@ def smoothness(laplacian, signal):
     -------
     smoothness : float
         the smoothness of the signal.
+
+    References
+    ----------
+    .. [1] D. I. Shuman, S. K. Narang, P. Frossard, A. Ortega and P. Vandergheynst,
+       "The emerging field of signal processing on graphs: Extending high-dimensional
+        data analysis to networks and other irregular domains," in IEEE Signal
+        Processing Magazine, vol. 30, no. 3, pp. 83-98, May 2013
     """
     LGR.info("Compute signal smoothness.")
     return np.dot(signal.T, np.dot(laplacian, signal))
