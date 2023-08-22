@@ -73,13 +73,13 @@ def test_gsdi():
 
 
 def test_smoothness():
-    signal = rand(10, 1)
+    signal = rand(10, 2)
     laplacian = rand(10, 10)
 
     expected_smoothness = np.dot(signal.T, np.dot(laplacian, signal))
     computed_smoothness = metrics.smoothness(laplacian, signal)
 
-    assert np.isclose(expected_smoothness, computed_smoothness, rtol=1e-10)
+    assert (expected_smoothness == computed_smoothness).all()
 
 
 # ### Break tests
@@ -134,3 +134,29 @@ def test_functional_connectivity():
 
     for k in fcd.keys():
         assert (fcd[k] == np.corrcoef(tsd[k])).all()
+
+
+def test_break_smoothness():
+    # shape of signal
+    signal = rand(3, 3, 3)
+    laplacian = rand(3, 3)
+
+    with raises(ValueError) as errorinfo:
+        metrics.smoothness(laplacian, signal)
+    assert "should be a 2D" in str(errorinfo.value)
+
+    # shape of laplacian
+    signal = rand(10, 2)
+    laplacian = rand(10, 9)
+
+    with raises(ValueError) as errorinfo:
+        metrics.smoothness(laplacian, signal)
+    assert "a square matrix" in str(errorinfo.value)
+
+    # shape mismatch
+    signal = rand(10, 2)
+    laplacian = rand(9, 9)
+
+    with raises(ValueError) as errorinfo:
+        metrics.smoothness(laplacian, signal)
+    assert "don't match" in str(errorinfo.value)
