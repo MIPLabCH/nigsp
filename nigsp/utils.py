@@ -23,18 +23,19 @@ def pairwise(iterable):
     Parameters
     ----------
     iterable : any iterable object
-        The object to iterate through
+        The object to iterate through.
 
     Returns
     -------
     tuple
-        The couple of adjacent elements
+        The couple of adjacent elements.
 
     Notes
     -----
     The original function is: https://docs.python.org/3/library/itertools.html#itertools.pairwise
     Credit to the Python Software Foundation, this function is under BSD licence.
-    To be replaced by itertools' pairwise import once support for python < 3.10 is dropped
+    To be replaced by itertools' pairwise import once support for python < 3.10 is
+    dropped.
     """
     a, b = tee(iterable, 2)
     next(b, None)
@@ -48,27 +49,27 @@ def change_var_type(var, dtype, varname="an input variable", stop=True, silent=F
     Parameters
     ----------
     var : str, int, or float
-        Variable to change type of
+        Variable to change type of.
     dtype : type
-        Type to change `var` to
+        Type to change ``var`` to.
     varname : str, optional
-        The name of the variable
+        The name of the variable.
     stop : bool, optional
-        If True, raises TypeError if `var` is not of `dtype`
+        If True, raises TypeError if ``var`` is not of ``dtype``.
     silent : bool, optional
-        If True, don't return any message
+        If True, don't return any message.
 
     Returns
     -------
     int, float, str, list, or var
-        The given `var` in the given `dtype`, or `var` if '' or None
+        The given `var` in the given ``dtype``, or ``var`` if ``''`` or None
 
     Raises
     ------
     NotImplementedError
-        If dtype is not int, float, str, or list
+        If dtype is not int, float, str, or list.
     TypeError
-        If variable var is not of type and stop is True
+        If variable var is not of type and stop is True.
     """
     if type(var) is not dtype and stop:
         if varname != "an input variable":
@@ -105,22 +106,21 @@ def change_var_type(var, dtype, varname="an input variable", stop=True, silent=F
 
 
 def prepare_ndim_iteration(data, idx):
-    """
-    Reshape data to have idx+1 dimensions.
+    """Reshape data to have ``idx+1`` dimensions.
 
     This should allow iterations over unknown numbers of dimensions above idx
     when needed.
 
     Parameters
     ----------
-    data : np.ndarray
-        The data to reiterate over
+    data : array
+        The data to reiterate over.
     idx : int
-        The number of dimensions that should be fixed
+        The number of dimensions that should be fixed.
 
     Returns
     -------
-    np.ndarray, np.ndarray
+    array, array
         The reshaped data and an empty array like it.
     """
     if data.ndim > idx + 1:

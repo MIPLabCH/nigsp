@@ -23,25 +23,24 @@ STAT_METHOD = ["Bernoulli", "frequentist"]
 
 
 def random_sign(eigenvec, n_surr=1000, seed=42, stack=False):
-    """
-    Create surrogates by randomly switching signs of eigenvectors.
+    """Create surrogates by randomly switching signs of eigenvectors.
 
     Parameters
     ----------
     eigenvec : numpy.ndarray
-        A matrix of eigenvectors
+        A matrix of eigenvectors.
     n_surr : int, optional
-        Number of surrogates to create
+        Number of surrogates to create.
     seed : int or None, optional
-        Random seed (for repeatability)
+        Random seed (for repeatability).
     stack : bool, optional
         If True, add original eigenvec as last entry of the last dimension
-        of the created surrogate matrix
+        of the created surrogate matrix.
 
     Returns
     -------
     numpy.ndarray
-        The matrix of surrogates, of shape eigenvec * n_surr(+1)
+        The matrix of surrogates, of shape ``(eigenvec * n_surr(+1),)``.
 
     Raises
     ------
@@ -92,7 +91,7 @@ def _create_surr(timeseries, eigenvec, n_surr, seed, stack):
     eigenvec : numpy.ndarray
         The eigenvector matrix from a previous Laplacian decomposition.
     n_surr : int
-        The number of surrogates to create
+        The number of surrogates to create.
     seed : int or None
         The seed to reinitialise the RNG - used for replicability.
     stack : bool
@@ -101,7 +100,7 @@ def _create_surr(timeseries, eigenvec, n_surr, seed, stack):
     Returns
     -------
     numpy.ndarray
-        The surrogate matrix, of shape timeseries.shape, n_surr
+        The surrogate matrix, of shape ``(timeseries.shape, n_surr)``.
 
     Raises
     ------
@@ -152,7 +151,7 @@ def sc_informed(timeseries, eigenvec, n_surr=1000, seed=124, stack=False):
     eigenvec : numpy.ndarray
         The eigenvector matrix from a previous Laplacian decomposition.
     n_surr : int, optional
-        The number of surrogates to create
+        The number of surrogates to create.
     seed : int or None, optional
         The seed to reinitialise the RNG - used for replicability.
     stack : bool, optional
@@ -161,7 +160,7 @@ def sc_informed(timeseries, eigenvec, n_surr=1000, seed=124, stack=False):
     Returns
     -------
     numpy.ndarray
-        The surrogate matrix, of shape timeseries.shape, n_surr
+        The surrogate matrix, of shape ``(timeseries.shape, n_surr)``.
 
     Raises
     ------
@@ -189,7 +188,7 @@ def sc_uninformed(timeseries, lapl_mtx, n_surr=1000, seed=98, stack=False):
     lapl_mtx : numpy.ndarray
         A symmetrically normalised laplacian matrix.
     n_surr : int, optional
-        The number of surrogates to create
+        The number of surrogates to create.
     seed : int or None, optional
         The seed to reinitialise the RNG - used for replicability.
     stack : bool, optional
@@ -198,7 +197,7 @@ def sc_uninformed(timeseries, lapl_mtx, n_surr=1000, seed=98, stack=False):
     Returns
     -------
     numpy.ndarray
-        The surrogate matrix, of shape timeseries.shape, n_surr
+        The surrogate matrix, of shape ``(timeseries.shape, n_surr)``.
 
     Raises
     ------
@@ -233,14 +232,14 @@ def test_significance(
     return_masked=False,
     mean=False,
 ):
-    """
-    Test the significance of the empirical data against surrogates.
+    """Test the significance of the empirical data against surrogates.
 
     Two methods are implemented, 'Bernoulli' and 'frequentist'.
-    - 'frequentist' is a group or single subject test. It tests that the
+
+    * 'frequentist' is a group or single subject test. It tests that the
       empirical data are in the highest (or lowest) percentile (where the
       percentile is defined by p/2).
-    - 'Bernoulli' is a group test. It tests that the number of subjects for
+    * 'Bernoulli' is a group test. It tests that the number of subjects for
       which the empirical data is higher (or lower) than a set of surrogates
       (frequentist approach) is at the tail of a binomial cumulative
       distribution (where 'tail' is defined by p).
@@ -289,10 +288,9 @@ def test_significance(
     ------
     ValueError
         If data is not None and the surrogate shape (except last axis) is
-        different from the data shape
+        different from the data shape.
     NotImplementedError
         If any other method rather than those listed above is selected.
-
     """
     # #!# Check that the surrogate shape has parcels in the first axis!
     # If provided, append data to surr

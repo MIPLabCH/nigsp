@@ -31,7 +31,7 @@ def normalise_ts(timeseries, globally=False):
     timeseries : numpy.ndarray
         The input timeseries. It is assumed that the second dimension is time.
     globally : bool, optional
-        If True, normalise timeseries across the first two axes
+        If True, normalise timeseries across the first two axes.
 
     Returns
     -------
@@ -71,7 +71,8 @@ def spc_ts(timeseries, globally=False):
     timeseries : numpy.ndarray
         The input timeseries. It is assumed that the second dimension is time.
     globally : bool, optional
-        If True, SPC timeseries across the first two axes (mainly for similarity with other functions.)
+        If True, SPC timeseries across the first two axes (mainly for similarity with
+        other functions.)
 
     Returns
     -------
@@ -143,11 +144,11 @@ def rescale_ts(timeseries, vmin=0, vmax=1, globally=False):
     timeseries : numpy.ndarray
         The input timeseries. It is assumed that the second dimension is time.
     vmin : float, optional
-        The minimum value to scale between
+        The minimum value to scale between.
     vmax : float, optional
-        The maximum value to scale between
+        The maximum value to scale between.
     globally : bool, optional
-        If True, rescale timeseries across the first two axes
+        If True, rescale timeseries across the first two axes.
 
     Returns
     -------
@@ -185,14 +186,14 @@ def resize_ts(timeseries, resize=None, globally=False):
         The input timeseries. It is assumed that the second dimension is time.
     resize : 'spc', 'norm', 'gnorm', 'demean', 'gdemean' tuple, list, or None, optional
         Whether to resize the signal or not before plotting.
-        If 'spc', compute signal percentage change
-        If 'norm', normalise signals (z-score)
-        If 'demean', remove signal average
-        If 'gsr', remove global signal (average across points)
-        If tuple or list, rescale signals between those two values
-        If None, don't do anything (default)
+        If 'spc', compute signal percentage change.
+        If 'norm', normalise signals (z-score).
+        If 'demean', remove signal average.
+        If 'gsr', remove global signal (average across points).
+        If tuple or list, rescale signals between those two values.
+        If None, don't do anything (default).
     globally : bool, optional
-        If True, rescale timeseries across the first two axes
+        If True, rescale timeseries across the first two axes.
 
     Returns
     -------
@@ -359,12 +360,12 @@ def graph_filter(timeseries, eigenvec, freq_idx, keys=["low", "high"]):
         (more or less) equal parts - i.e. the index of the first frequency in
         the "high" component.
     keys : list, optional
-        The keys to call the split parts with
+        The keys to call the split parts with.
 
     Returns
     -------
     dict of numpy.ndarray
-        Return first the split eigenvectors
+        Return first the split eigenvectors.
     dict of numpy.ndarray
         Return second the projected split eigenvectors onto the timeseries.
 
