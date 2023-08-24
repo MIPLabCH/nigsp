@@ -16,6 +16,11 @@ import sys
 
 import numpy as np
 
+import typing as ty
+import pydra
+
+from nigsp import operations
+
 from nigsp import _version, blocks, io, references
 from nigsp import surrogates as surr
 from nigsp import timeseries as ts
@@ -66,6 +71,127 @@ def save_bash_call(fname, outdir, outname):
     f = open(os.path.join(log_path, f"nigsp_call_{isotime}.sh"), "a")
     f.write(f"#!bin/bash \n{call_str}")
     f.close()
+
+
+@pydra.mark.task
+def timeSeriesExtraction(bold, atlas):
+    # Perform time series extraction using bold data and atlas
+    # Return the extracted time series
+    pass
+
+@pydra.mark.task
+@pydra.mark.annotate(
+    {
+        'struct_mtx': ty.Any,
+        'return': {'eigenval': ty.Any, 'eigenvec': ty.Any, 'lapl_mtx': ty.Any},
+    }
+)
+def laplacian(struct_mtx):
+    # Perform Laplacian on the structural connectivity matrix
+    # Return the Laplacian matrix
+    # operation done by : scgraph.structural_decomposition()
+    LGR.info("Run laplacian decomposition of structural graph.")
+    
+    lapl_mtx = operations.symmetric_normalised_laplacian(struct_mtx)
+    eigenval, eigenvec = operations.decomposition(lapl_mtx)
+
+    return eigenval, eigenvec, lapl_mtx
+
+@pydra.mark.task
+@pydra.mark.annotate(
+    {
+        'timeseries': ty.Any,
+        'eigenvec': ty.Any,
+        'return': {'energy': ty.Any},
+    }
+)
+def timeseries_proj(timeseries, eigenvec, mean=False):
+    # Perform timeseries projection on the graph
+    # Return the energy
+    LGR.info("Compute the energy of the graph.")
+
+    energy = operations.graph_fourier_transform(
+        timeseries, eigenvec, energy=True, mean=mean
+    )
+    return energy
+
+@pydra.mark.task
+@pydra.mark.annotate(
+    {
+        'energy': ty.Any,
+        'return': {'index': ty.Any},
+    }
+)
+def cutoffDetection(energy, index = "median"):
+    # Perform frequency cutoff detection
+    # Return the detected cutoff frequency
+    # if index is None:
+    #     return index
+    LGR.info("Compute Cutoff Frequency.")
+    index = operations.median_cutoff_frequency_idx(energy)
+    return index
+
+@pydra.mark.task
+@pydra.mark.annotate(
+    {
+        'timeseries': ty.Any,
+        'eigenvec': ty.Any,
+        'index': ty.Any,
+        'return': {'evec_split': ty.Any, 'ts_split': ty.Any},
+    }
+)
+def filteringGSP(timeseries, eigenvec, index, keys=["low", "high"]):
+    # Perform filtering using GSP
+    # Return the filtered result
+    evec_split, ts_split = operations.graph_filter(
+        timeseries, eigenvec, index, keys
+    )
+    return evec_split, ts_split
+
+@pydra.mark.task
+def timeSeries():
+    # Perform time series analysis
+    # Return the result
+    pass
+
+@pydra.mark.task
+def decomposition():
+    # Perform decomposition
+    # Return the result
+    pass
+
+
+def functionalConnectivity(filteredTimeseries):
+    # Perform functional connectivity analysis
+    # Return the result
+    pass
+
+def structuralDecouplingIndex(filteredTimeseries):
+    # Perform structural decoupling index analysis
+    # Return the result
+    pass
+
+def filteredTimeseries():
+    # Perform filtering on the timeseries
+    # Return the filtered timeseries
+    pass
+
+def statisticalThreshold(functionalConnectivity, structuralDecouplingIndex, filteredTimeseries):
+    # Perform statistical thresholding using the three inputs
+    # Return the resul
+    pass
+
+# @pydra.mark.task
+# def glsBased():
+#     # Perform GLS-based analysis
+#     # Return the result
+#     pass
+
+# @pydra.mark.task
+# def diffusionModel():
+#     # Perform diffusion model analysis
+#     # Return the result
+#     pass
 
 
 @due.dcite(references.PRETI_2019)
@@ -350,13 +476,58 @@ def nigsp(
     # #### Assign SCGraph object #### #
     scgraph = SCGraph(mtx, timeseries, atlas=atlas, img=img)
 
+    wf2 = pydra.Workflow(name='wf2', input_spec=['struct_mtx','timeseries'], struct_mtx=scgraph.mtx, timeseries=timeseries)
+    wf2.add(laplacian(name='laplacian', struct_mtx=wf2.lzin.struct_mtx))
+    wf2.add(timeseries_proj(name='timeseries_proj', timeseries=wf2.lzin.timeseries, eigenvec=wf2.laplacian.lzout.eigenvec))
+    wf2.add(cutoffDetection(name='cutoffDetection', energy=wf2.timeseries_proj.lzout.energy))
+    wf2.add(filteringGSP(name='filteringGSP', timeseries=wf2.lzin.timeseries, eigenvec=wf2.laplacian.lzout.eigenvec, index=wf2.cutoffDetection.lzout.index))
+
+    # setting multiple workflow output
+    wf2.set_output([
+        # ('out_laplacian', wf2.laplacian.lzout.out),
+        ('eigenval', wf2.laplacian.lzout.eigenval),
+        ('eigenvec', wf2.laplacian.lzout.eigenvec),
+        ('lapl_mtx', wf2.laplacian.lzout.lapl_mtx),
+
+        ('energy', wf2.timeseries_proj.lzout.energy),
+        ('index', wf2.cutoffDetection.lzout.index),
+
+        ('evec_split', wf2.filteringGSP.lzout.evec_split),
+        ('ts_split', wf2.filteringGSP.lzout.ts_split),
+    ])
+
+    with pydra.Submitter(plugin='cf') as sub:
+        sub(wf2)
+
+    print(wf2.result())
+    
+    # print(out.struct_mtx)
+    out = wf2.result().output
+    scgraph.eigenval = out.eigenval 
+    scgraph.eigenvec = out.eigenvec 
+    scgraph.lapl_mtx = out.lapl_mtx 
+     
+    scgraph.energy = out.energy 
+    scgraph.index = out.index 
+
+    scgraph.evec_split = out.evec_split 
+    scgraph.ts_split = out.ts_split 
+    
+    # scgraph.eigenval = out.struct_mtx
+
     # #### Compute SDI (split low vs high timeseries) and FC and output them #### #
 
     # Run laplacian decomposition and actually filter timeseries.
-    LGR.info("Run laplacian decomposition of structural graph.")
-    scgraph.structural_decomposition()
-    LGR.info("Compute the energy of the graph and split it in parts.")
-    scgraph.compute_graph_energy(mean=True).split_graph()
+    # LGR.info("Run laplacian decomposition of structural graph.")
+    # scgraph.structural_decomposition()
+
+    # scgraph.lapl_mtx = operations.symmetric_normalised_laplacian(scgraph.mtx)
+    # scgraph.eigenval, scgraph.eigenvec = operations.decomposition(scgraph.lapl_mtx)
+    
+    # LGR.info("Compute the energy of the graph and split it in parts.")
+    # # scgraph.compute_graph_energy(mean=True).split_graph()
+    # scgraph.compute_graph_energy(mean=True)
+    # scgraph.split_graph()
 
     if "sdi" in comp_metric or "gsdi" in comp_metric:
         # If there are more than two splits in the timeseries, compute Generalised SDI
