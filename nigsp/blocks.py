@@ -9,13 +9,18 @@ LGR
 """
 
 import logging
+import typing as ty
 
-from nigsp import io, viz
+import pydra
+
+# TODO: clean import
+from nigsp import io, operations, viz
 from nigsp.operations import nifti
 
 LGR = logging.getLogger(__name__)
 
 
+# @pydra.mark.task
 def nifti_to_timeseries(fname, atlasname):
     """
     Read a nifti file and returns a normalised timeseries from an atlas.
@@ -48,6 +53,7 @@ def nifti_to_timeseries(fname, atlasname):
     return timeseries, atlas, img
 
 
+# @pydra.mark.task
 def export_metric(scgraph, outext, outprefix):
     """
     Export the metrics computed within the library.
@@ -99,6 +105,7 @@ def export_metric(scgraph, outext, outprefix):
     return 0
 
 
+# @pydra.mark.task
 def plot_metric(scgraph, outprefix, atlas=None, thr=None):
     """
     If possible, plot metrics as markerplot.
@@ -149,6 +156,135 @@ def plot_metric(scgraph, outprefix, atlas=None, thr=None):
     return 0
 
 
+@pydra.mark.task
+def timeSeriesExtraction(bold, atlas):
+    # Perform time series extraction using bold data and atlas
+    # Return the extracted time series
+    pass
+
+
+@pydra.mark.task
+@pydra.mark.annotate(
+    {
+        "struct_mtx": ty.Any,
+        "return": {"eigenval": ty.Any, "eigenvec": ty.Any, "lapl_mtx": ty.Any},
+    }
+)
+def laplacian(struct_mtx):
+    # Perform Laplacian on the structural connectivity matrix
+    # Return the Laplacian matrix
+    # operation done by : scgraph.structural_decomposition()
+    LGR.info("Run laplacian decomposition of structural graph.")
+
+    lapl_mtx = operations.symmetric_normalised_laplacian(struct_mtx)
+    eigenval, eigenvec = operations.decomposition(lapl_mtx)
+
+    return eigenval, eigenvec, lapl_mtx
+
+
+@pydra.mark.task
+@pydra.mark.annotate(
+    {
+        "timeseries": ty.Any,
+        "eigenvec": ty.Any,
+        "return": {"energy": ty.Any},
+    }
+)
+def timeseries_proj(timeseries, eigenvec, mean=False):
+    # Perform timeseries projection on the graph
+    # Return the energy
+    LGR.info("Compute the energy of the graph.")
+
+    energy = operations.graph_fourier_transform(
+        timeseries, eigenvec, energy=False, mean=mean
+    )
+    return energy
+
+
+@pydra.mark.task
+@pydra.mark.annotate(
+    {
+        "energy": ty.Any,
+        "return": {"index": ty.Any},
+    }
+)
+def cutoffDetection(energy, index="median"):
+    # Perform frequency cutoff detection
+    # Return the detected cutoff frequency
+    # if index is None:
+    #     return index
+    LGR.info("Compute Cutoff Frequency.")
+    index = operations.median_cutoff_frequency_idx(energy)
+    return index
+
+
+@pydra.mark.task
+@pydra.mark.annotate(
+    {
+        "timeseries": ty.Any,
+        "eigenvec": ty.Any,
+        "index": ty.Any,
+        "return": {"evec_split": ty.Any, "ts_split": ty.Any},
+    }
+)
+def filteringGSP(timeseries, eigenvec, index, keys=["low", "high"]):
+    # Perform filtering using GSP
+    # Return the filtered result
+    evec_split, ts_split = operations.graph_filter(timeseries, eigenvec, index, keys)
+    return evec_split, ts_split
+
+
+@pydra.mark.task
+def timeSeries():
+    # Perform time series analysis
+    # Return the result
+    pass
+
+
+@pydra.mark.task
+def decomposition():
+    # Perform decomposition
+    # Return the result
+    pass
+
+
+def functionalConnectivity(filteredTimeseries):
+    # Perform functional connectivity analysis
+    # Return the result
+    pass
+
+
+def structuralDecouplingIndex(filteredTimeseries):
+    # Perform structural decoupling index analysis
+    # Return the result
+    pass
+
+
+def filteredTimeseries():
+    # Perform filtering on the timeseries
+    # Return the filtered timeseries
+    pass
+
+
+def statisticalThreshold(
+    functionalConnectivity, structuralDecouplingIndex, filteredTimeseries
+):
+    # Perform statistical thresholding using the three inputs
+    # Return the result
+    pass
+
+
+# @pydra.mark.task
+# def glsBased():
+#     # Perform GLS-based analysis
+#     # Return the result
+#     pass
+
+# @pydra.mark.task
+# def diffusionModel():
+#     # Perform diffusion model analysis
+#     # Return the result
+#     pass
 """
 Copyright 2022, Stefano Moia.
 
