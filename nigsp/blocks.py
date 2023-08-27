@@ -190,14 +190,12 @@ def laplacian(struct_mtx):
         "return": {"energy": ty.Any},
     }
 )
-def timeseries_proj(timeseries, eigenvec):
+def timeseries_proj(timeseries, eigenvec, energy=True, mean=True):
     # Perform timeseries projection on the graph
     # Return the energy
     LGR.info("Compute the energy of the graph.")
 
-    energy = operations.graph_fourier_transform(
-        timeseries, eigenvec, energy=True, mean=True
-    )
+    energy = operations.graph_fourier_transform(timeseries, eigenvec, energy, mean)
     return energy
 
 
