@@ -248,10 +248,38 @@ def decomposition():
     pass
 
 
-def functionalConnectivity(filteredTimeseries):
+@pydra.mark.task
+@pydra.mark.annotate(
+    {
+        "timeseries": ty.Any,
+        "ts_split": ty.Any,
+        "outprefix": ty.String,
+        "outext": ty.String,
+        "return": {"fc": ty.Any, "fc_split": ty.Any},
+    }
+)
+def functionalConnectivity(timeseries, ts_split, outprefix, outext, mean=True):
+    """Implement functional_connectivity as task."""
     # Perform functional connectivity analysis
-    # Return the result
-    pass
+    if timeseries is not None:
+        LGR.info("Compute FC of original timeseries.")
+        fc = operations.functional_connectivity(timeseries, mean)
+    if ts_split is not None:
+        fc_split = dict.fromkeys(ts_split.keys())
+        LGR.info("Compute FC of split timeseries.")
+        for k in ts_split.keys():
+            LGR.info(f"Compute FC of {k} timeseries.")
+            fc_split[k] = operations.functional_connectivity(ts_split[k], mean)
+
+    # IO: Save to file
+    for k in ts_split.keys():
+        LGR.info(f"Export {k} FC (data).")
+        io.export_mtx(fc_split[k], f"{outprefix}fc_{k}", ext=outext)
+    # Export fc
+    LGR.info("Export original FC (data).")
+    io.export_mtx(fc, f"{outprefix}fc", ext=outext)
+
+    return fc, fc_split
 
 
 def structuralDecouplingIndex(filteredTimeseries):

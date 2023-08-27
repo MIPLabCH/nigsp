@@ -355,10 +355,13 @@ def nigsp(
     # scgraph.compute_graph_energy(mean=True).split_graph()
 
     wf2 = pydra.Workflow(
-        name="wf2",
+        name="GSP+SDI Workflow",
         input_spec=["struct_mtx", "timeseries"],
         struct_mtx=scgraph.mtx,
         timeseries=timeseries,
+        # IO File Export
+        outprefix=outprefix,
+        outext=outext,
     )
     wf2.add(blocks.laplacian(name="laplacian", struct_mtx=wf2.lzin.struct_mtx))
     wf2.add(
@@ -381,45 +384,77 @@ def nigsp(
             index=wf2.cutoffDetection.lzout.index,
         )
     )
+    wf2.add(
+        blocks.filteringGSP(
+            name="filteringGSP",
+            timeseries=wf2.lzin.timeseries,
+            eigenvec=wf2.laplacian.lzout.eigenvec,
+            index=wf2.cutoffDetection.lzout.index,
+        )
+    )
+    # TODO: make it optional
+    # if "dfc" in comp_metric or "fc" in comp_metric:
+    wf2.add(
+        blocks.functionalConnectivity(
+            name="functionalConnectivity",
+            timeseries=wf2.lzin.timeseries,
+            ts_split=wf2.filteringGSP.lzout.ts_split,
+            outprefix=wf2.lzin.outprefix,
+            outext=wf2.lzin.outext,
+        )
+    )
 
     # setting multiple workflow output
     wf2.set_output(
         [
-            # ('out_laplacian', wf2.laplacian.lzout.out),
+            # laplacian output
+            ("lapl_mtx", wf2.laplacian.lzout.lapl_mtx),
             ("eigenval", wf2.laplacian.lzout.eigenval),
             ("eigenvec", wf2.laplacian.lzout.eigenvec),
-            ("lapl_mtx", wf2.laplacian.lzout.lapl_mtx),
+            # timeseries projection output
             ("energy", wf2.timeseries_proj.lzout.energy),
+            # cutoff output
             ("index", wf2.cutoffDetection.lzout.index),
+            # filtering GSP output
             ("evec_split", wf2.filteringGSP.lzout.evec_split),
             ("ts_split", wf2.filteringGSP.lzout.ts_split),
+            # fc : functional connectity
+            ("tc", wf2.functionalConnectivity.lzout.tc),
+            ("tc_split", wf2.functionalConnectivity.lzout.ts_split),
         ]
     )
 
     with pydra.Submitter(plugin="cf") as sub:
         sub(wf2)
 
-    print(wf2.result())
+    # print(wf2.result())
 
     # print(out.struct_mtx)
     out = wf2.result().output
+    scgraph.lapl_mtx = out.lapl_mtx
     scgraph.eigenval = out.eigenval
     scgraph.eigenvec = out.eigenvec
-    scgraph.lapl_mtx = out.lapl_mtx
 
     scgraph.energy = out.energy
-    scgraph.index = out.index
-    scgraph.eigenval = out.eigenval
-    scgraph.eigenvec = out.eigenvec
-    scgraph.lapl_mtx = out.lapl_mtx
 
-    scgraph.energy = out.energy
     scgraph.index = out.index
 
     scgraph.evec_split = out.evec_split
     scgraph.ts_split = out.ts_split
 
     # scgraph.value = out.value
+
+    scgraph_test = SCGraph(mtx, timeseries, atlas=atlas, img=img)
+    scgraph_test.structural_decomposition()
+    scgraph_test.compute_graph_energy(mean=True)
+    print("scgraph.energy.shape:", scgraph.energy.shape)
+    print("scgraph_test.energy.shape:", scgraph_test.energy.shape)
+    print("diff energy.shape:", ((scgraph.energy - scgraph_test.energy) ** 2).mean())
+    # scgraph_test.split_graph()
+
+    # scgraph.structural_decomposition()
+    # scgraph.compute_graph_energy(mean=True)
+    # scgraph.split_graph()
 
     if "sdi" in comp_metric or "gsdi" in comp_metric:
         # If there are more than two splits in the timeseries, compute Generalised SDI
@@ -434,14 +469,14 @@ def nigsp(
         LGR.info(f"Export non-thresholded version of {metric_name}.")
         blocks.export_metric(scgraph, outext, outprefix)
 
-    if "dfc" in comp_metric or "fc" in comp_metric:
-        scgraph.compute_fc(mean=True)
-        for k in scgraph.split_keys:
-            LGR.info(f"Export {k} FC (data).")
-            io.export_mtx(scgraph.fc_split[k], f"{outprefix}fc_{k}", ext=outext)
-        # Export fc
-        LGR.info("Export original FC (data).")
-        io.export_mtx(scgraph.fc, f"{outprefix}fc", ext=outext)
+    # if "dfc" in comp_metric or "fc" in comp_metric:
+    #     scgraph.compute_fc(mean=True)
+    #     for k in scgraph.split_keys:
+    #         LGR.info(f"Export {k} FC (data).")
+    #         io.export_mtx(scgraph.fc_split[k], f"{outprefix}fc_{k}", ext=outext)
+    #     # Export fc
+    #     LGR.info("Export original FC (data).")
+    #     io.export_mtx(scgraph.fc, f"{outprefix}fc", ext=outext)
 
     # #### Output more results (pt. 1) #### #
 
