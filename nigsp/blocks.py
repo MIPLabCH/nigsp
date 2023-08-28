@@ -251,8 +251,8 @@ def decomposition():
     {
         "timeseries": ty.Any,
         "ts_split": ty.Any,
-        "outprefix": ty.String,
-        "outext": ty.String,
+        "outprefix": ty.AnyStr,
+        "outext": ty.AnyStr,
         "return": {"fc": ty.Any, "fc_split": ty.Any},
     }
 )
@@ -280,10 +280,34 @@ def functionalConnectivity(timeseries, ts_split, outprefix, outext, mean=True):
     return fc, fc_split
 
 
-def structuralDecouplingIndex(filteredTimeseries):
-    # Perform structural decoupling index analysis
-    # Return the result
-    pass
+@pydra.mark.task
+@pydra.mark.annotate(
+    {
+        "ts_split": ty.Any,
+        "outprefix": ty.AnyStr,
+        "outext": ty.AnyStr,
+        "return": {"sdi": ty.Any, "gsdi": ty.Any},
+    }
+)
+def structuralDecouplingIndex(
+    ts_split, outprefix, outext, mean=False, keys=None
+):  # # pragma: no cover
+    """Implement metrics.gsdi as class method."""
+
+    sdi, gsdi = None, None
+
+    # This should not happen in this moment.
+    if len(ts_split.keys()) == 2:
+        metric_name = "sdi"
+        sdi = operations.sdi(ts_split, mean, keys)
+    elif len(ts_split.keys()) > 2:
+        metric_name = "gsdi"
+        gsdi = operations.gsdi(ts_split, mean, keys)
+    # # Export non-thresholded metrics
+    LGR.info(f"Export non-thresholded version of {metric_name}.")
+    # export_metric(scgraph, outext, outprefix)
+
+    return sdi, gsdi
 
 
 def filteredTimeseries():

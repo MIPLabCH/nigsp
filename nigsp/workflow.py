@@ -356,7 +356,7 @@ def nigsp(
 
     wf2 = pydra.Workflow(
         name="GSP+SDI Workflow",
-        input_spec=["struct_mtx", "timeseries"],
+        input_spec=["struct_mtx", "timeseries", "outprefix", "outext"],
         struct_mtx=scgraph.mtx,
         timeseries=timeseries,
         # IO File Export
@@ -384,20 +384,21 @@ def nigsp(
             index=wf2.cutoffDetection.lzout.index,
         )
     )
-    wf2.add(
-        blocks.filteringGSP(
-            name="filteringGSP",
-            timeseries=wf2.lzin.timeseries,
-            eigenvec=wf2.laplacian.lzout.eigenvec,
-            index=wf2.cutoffDetection.lzout.index,
-        )
-    )
     # TODO: make it optional
     # if "dfc" in comp_metric or "fc" in comp_metric:
     wf2.add(
         blocks.functionalConnectivity(
-            name="functionalConnectivity",
+            name="FunctionalConnectivity",
             timeseries=wf2.lzin.timeseries,
+            ts_split=wf2.filteringGSP.lzout.ts_split,
+            outprefix=wf2.lzin.outprefix,
+            outext=wf2.lzin.outext,
+        )
+    )
+
+    wf2.add(
+        blocks.structuralDecouplingIndex(
+            name="SDI",
             ts_split=wf2.filteringGSP.lzout.ts_split,
             outprefix=wf2.lzin.outprefix,
             outext=wf2.lzin.outext,
@@ -419,8 +420,12 @@ def nigsp(
             ("evec_split", wf2.filteringGSP.lzout.evec_split),
             ("ts_split", wf2.filteringGSP.lzout.ts_split),
             # fc : functional connectity
-            ("tc", wf2.functionalConnectivity.lzout.tc),
-            ("tc_split", wf2.functionalConnectivity.lzout.ts_split),
+            ("tc", wf2.FunctionalConnectivity.lzout.fc),
+            ("fc_split", wf2.FunctionalConnectivity.lzout.fc_split),
+            # sdi : Structural Decoupling Index
+            ("sdi", wf2.SDI.lzout.sdi),
+            # gsdi : Generalized Structural Decoupling Index
+            ("gsdi", wf2.SDI.lzout.gsdi),
         ]
     )
 
@@ -441,6 +446,11 @@ def nigsp(
 
     scgraph.evec_split = out.evec_split
     scgraph.ts_split = out.ts_split
+
+    scgraph.tc = out.tc
+    scgraph.fc_split = out.fc_split
+    scgraph.sdi = out.sdi
+    scgraph.gsdi = out.gsdi
 
     # scgraph.value = out.value
 
