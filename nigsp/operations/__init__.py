@@ -17,6 +17,7 @@ from .graph import nodestrength, zerocross
 from .laplacian import decomposition, symmetric_normalised_laplacian
 from .metrics import functional_connectivity, gsdi, sdi
 from .nifti import apply_atlas, apply_mask, mat_to_vol, unfold_atlas, unmask, vol_to_mat
+from .statistics import two_level_statistical_model
 from .surrogates import random_sign, sc_informed, sc_uninformed, test_significance
 from .timeseries import (
     graph_filter,
