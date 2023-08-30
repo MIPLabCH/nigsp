@@ -19,7 +19,7 @@ from nigsp.utils import prepare_ndim_iteration
 
 LGR = logging.getLogger(__name__)
 
-SUPPORTED_METRICS = ["sdi", "dfc", "fc"]
+SUPPORTED_METRICS = ["sdi", "dfc", "fc", "smoothness"]
 
 
 @due.dcite(references.PRETI_2019)
@@ -244,6 +244,57 @@ def functional_connectivity(timeseries, mean=False):
         fc = _fc(timeseries, mean)
 
     return fc
+
+
+@due.dcite(references.SHUMAN_2013)
+def smoothness(laplacian, signal):
+    """Compute the smoothness of a signal (as defined in [1]) over the graph corresponding to given Laplacian.
+
+    Parameters
+    ----------
+    node_signal : numpy.ndarray
+        any signal defined with one value per node.
+    laplacian : numpy.ndarray
+        graph laplacian to use.
+
+    Returns
+    -------
+    smoothness : float
+        the smoothness of the signal.
+
+    References
+    ----------
+    .. [1] D. I. Shuman, S. K. Narang, P. Frossard, A. Ortega and P. Vandergheynst,
+       "The emerging field of signal processing on graphs: Extending high-dimensional
+        data analysis to networks and other irregular domains," in IEEE Signal
+        Processing Magazine, vol. 30, no. 3, pp. 83-98, May 2013
+    """
+    LGR.info("Compute signal smoothness.")
+
+    # Checking shape of signal
+    if signal.ndim == 1:
+        LGR.warning(
+            "2D array required, but signal is a vector. Adding empty dimension."
+        )
+        signal = np.expand_dims(signal, -1)
+    elif signal.ndim > 2:
+        raise ValueError("Signal should be a 2D array.")
+
+    # Checking if laplacian is square
+    if laplacian.shape[0] != laplacian.shape[1]:
+        raise ValueError("Laplacian should be a square matrix.")
+
+    # Checking that the dimensions of signal and laplacian are compatible
+    if signal.shape[0] != laplacian.shape[0]:
+        if signal.shape[1] == laplacian.shape[0]:
+            LGR.warning(
+                "It seems that the signal needs to be transposed to the correct shape."
+            )
+            signal = np.swapaxes(signal, 0, 1)
+        else:
+            raise ValueError("The dimensions of the signal and Laplacian don't match.")
+
+    return np.matmul(signal.T, np.matmul(laplacian, signal))
 
 
 """

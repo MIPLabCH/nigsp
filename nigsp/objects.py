@@ -43,6 +43,7 @@ class SCGraph:
         surr_split=None,
         sdi=None,
         gsdi=None,
+        smoothness=None,
         fc=None,
         fc_split=None,
     ):
@@ -82,6 +83,7 @@ class SCGraph:
         self.surr_split = deepcopy(surr_split)
         self.sdi = deepcopy(sdi)
         self.gsdi = deepcopy(gsdi)
+        self.smoothness = deepcopy(smoothness)
         self.fc = deepcopy(fc)
         self.fc_split = deepcopy(fc_split)
 
@@ -166,6 +168,11 @@ class SCGraph:
     def compute_gsdi(self, mean=False, keys=None):  # pragma: no cover
         """Implement metrics.gsdi as class method."""
         self.gsdi = operations.gsdi(self.ts_split, mean, keys)
+        return self
+
+    def compute_smoothness(self, signal):  # pragma: no cover
+        """Implement metrics.smoothness as class method."""
+        self.smoothness = operations.smoothness(self.lapl_mtx, signal)
         return self
 
     def create_surrogates(self, sc_type="informed", n_surr=1000, seed=None):

@@ -3,7 +3,7 @@
 
 import numpy as np
 from numpy.random import rand
-from pytest import raises
+from pytest import raises, warns
 
 from nigsp.operations import metrics
 from nigsp.utils import prepare_ndim_iteration
@@ -72,6 +72,25 @@ def test_gsdi():
     assert (gsdi_out["beta_over_alpha"] == gsdi_in).all()
 
 
+def test_smoothness():
+    s1 = rand(10)
+    s2 = rand(10, 2)
+    s3 = rand(2, 10)
+    laplacian = rand(10, 10)
+
+    expected_smoothness1 = np.dot(s1.T, np.dot(laplacian, s1))
+    expected_smoothness2 = np.dot(s2.T, np.dot(laplacian, s2))
+    expected_smoothness3 = np.dot(s3, np.dot(laplacian, s3.T))
+
+    computed_smoothness1 = metrics.smoothness(laplacian, s1)
+    computed_smoothness2 = metrics.smoothness(laplacian, s2)
+    computed_smoothness3 = metrics.smoothness(laplacian, s3)
+
+    assert (expected_smoothness1 == computed_smoothness1).all()
+    assert (expected_smoothness2 == computed_smoothness2).all()
+    assert (expected_smoothness3 == computed_smoothness3).all()
+
+
 # ### Break tests
 def test_break_sdi():
     ts1 = np.arange(1, 3)[..., np.newaxis]
@@ -124,3 +143,29 @@ def test_functional_connectivity():
 
     for k in fcd.keys():
         assert (fcd[k] == np.corrcoef(tsd[k])).all()
+
+
+def test_break_smoothness():
+    # shape of signal
+    signal = rand(3, 3, 3)
+    laplacian = rand(3, 3)
+
+    with raises(ValueError) as errorinfo:
+        metrics.smoothness(laplacian, signal)
+    assert "should be a 2D" in str(errorinfo.value)
+
+    # shape of laplacian
+    signal = rand(10, 2)
+    laplacian = rand(10, 9)
+
+    with raises(ValueError) as errorinfo:
+        metrics.smoothness(laplacian, signal)
+    assert "a square matrix" in str(errorinfo.value)
+
+    # shape mismatch
+    signal = rand(10, 2)
+    laplacian = rand(9, 9)
+
+    with raises(ValueError) as errorinfo:
+        metrics.smoothness(laplacian, signal)
+    assert "don't match" in str(errorinfo.value)

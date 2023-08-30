@@ -91,6 +91,18 @@ def _get_parser():
         ),
         default=None,
     )
+    opt_metrics.add_argument(
+        "-smooth",
+        "--smoothness",
+        dest="comp_metric",
+        action="append_const",
+        const="smoothness",
+        help=(
+            "Compute the signal smoothness "
+            "(see Shuman et al, 2013, IEEE Signal Proc. Mag.)"
+        ),
+        default=None,
+    )
 
     opt_proc = parser.add_argument_group("Optional Arguments for data processing")
     opt_proc.add_argument(
