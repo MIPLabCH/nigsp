@@ -356,12 +356,15 @@ def nigsp(
 
     wf2 = pydra.Workflow(
         name="GSP+SDI Workflow",
-        input_spec=["struct_mtx", "timeseries", "outprefix", "outext"],
+        input_spec=["struct_mtx", "timeseries", "outprefix", "outext", "img", "atlas"],
         struct_mtx=scgraph.mtx,
         timeseries=timeseries,
         # IO File Export
         outprefix=outprefix,
         outext=outext,
+        # Visualize
+        img=img,
+        atlas=atlas,
     )
     wf2.add(blocks.laplacian(name="laplacian", struct_mtx=wf2.lzin.struct_mtx))
     wf2.add(
@@ -388,7 +391,7 @@ def nigsp(
     # if "dfc" in comp_metric or "fc" in comp_metric:
     wf2.add(
         blocks.functionalConnectivity(
-            name="FunctionalConnectivity",
+            name="functionalConnectivity",
             timeseries=wf2.lzin.timeseries,
             ts_split=wf2.filteringGSP.lzout.ts_split,
             outprefix=wf2.lzin.outprefix,
@@ -400,6 +403,37 @@ def nigsp(
         blocks.structuralDecouplingIndex(
             name="SDI",
             ts_split=wf2.filteringGSP.lzout.ts_split,
+            outprefix=wf2.lzin.outprefix,
+            outext=wf2.lzin.outext,
+        )
+    )
+
+    wf2.add(
+        blocks.export(
+            name="export",
+            ts_split=wf2.filteringGSP.lzout.ts_split,
+            evec_split=wf2.filteringGSP.lzout.evec_split,
+            eigenvec=wf2.laplacian.lzout.eigenvec,
+            eigenval=wf2.laplacian.lzout.eigenval,
+            outprefix=wf2.lzin.outprefix,
+            outext=wf2.lzin.outext,
+        )
+    )
+
+    wf2.add(
+        blocks.visualize(
+            name="visualize",
+            img=wf2.lzin.img,
+            atlas=wf2.lzin.atlas,
+            timeseries=wf2.lzin.timeseries,
+            mtx=wf2.lzin.struct_mtx,
+            lapl_mtx=wf2.laplacian.lzout.lapl_mtx,
+            ts_split=wf2.filteringGSP.lzout.ts_split,
+            fc=wf2.functionalConnectivity.lzout.fc,
+            fc_split=wf2.functionalConnectivity.lzout.fc_split,
+            # evec_split=wf2.filteringGSP.lzout.evec_split,
+            eigenvec=wf2.laplacian.lzout.eigenvec,
+            eigenval=wf2.laplacian.lzout.eigenval,
             outprefix=wf2.lzin.outprefix,
             outext=wf2.lzin.outext,
         )
@@ -420,8 +454,8 @@ def nigsp(
             ("evec_split", wf2.filteringGSP.lzout.evec_split),
             ("ts_split", wf2.filteringGSP.lzout.ts_split),
             # fc : functional connectity
-            ("tc", wf2.FunctionalConnectivity.lzout.fc),
-            ("fc_split", wf2.FunctionalConnectivity.lzout.fc_split),
+            ("fc", wf2.functionalConnectivity.lzout.fc),
+            ("fc_split", wf2.functionalConnectivity.lzout.fc_split),
             # sdi : Structural Decoupling Index
             ("sdi", wf2.SDI.lzout.sdi),
             # gsdi : Generalized Structural Decoupling Index
@@ -447,37 +481,37 @@ def nigsp(
     scgraph.evec_split = out.evec_split
     scgraph.ts_split = out.ts_split
 
-    scgraph.tc = out.tc
+    scgraph.fc = out.fc
     scgraph.fc_split = out.fc_split
     scgraph.sdi = out.sdi
     scgraph.gsdi = out.gsdi
 
     # scgraph.value = out.value
 
-    scgraph_test = SCGraph(mtx, timeseries, atlas=atlas, img=img)
-    scgraph_test.structural_decomposition()
-    scgraph_test.compute_graph_energy(mean=True)
-    print("scgraph.energy.shape:", scgraph.energy.shape)
-    print("scgraph_test.energy.shape:", scgraph_test.energy.shape)
-    print("diff energy.shape:", ((scgraph.energy - scgraph_test.energy) ** 2).mean())
+    # scgraph_test = SCGraph(mtx, timeseries, atlas=atlas, img=img)
+    # scgraph_test.structural_decomposition()
+    # scgraph_test.compute_graph_energy(mean=True)
+    # print("scgraph.energy.shape:", scgraph.energy.shape)
+    # print("scgraph_test.energy.shape:", scgraph_test.energy.shape)
+    # print("diff energy.shape:", ((scgraph.energy - scgraph_test.energy) ** 2).mean())
     # scgraph_test.split_graph()
 
     # scgraph.structural_decomposition()
     # scgraph.compute_graph_energy(mean=True)
     # scgraph.split_graph()
 
-    if "sdi" in comp_metric or "gsdi" in comp_metric:
-        # If there are more than two splits in the timeseries, compute Generalised SDI
-        # This should not happen in this moment.
-        if len(scgraph.split_keys) == 2:
-            metric_name = "sdi"
-            scgraph.compute_sdi()
-        elif len(scgraph.split_keys) > 2:
-            metric_name = "gsdi"
-            scgraph.compute_gsdi()
-        # Export non-thresholded metrics
-        LGR.info(f"Export non-thresholded version of {metric_name}.")
-        blocks.export_metric(scgraph, outext, outprefix)
+    # if "sdi" in comp_metric or "gsdi" in comp_metric:
+    #     # If there are more than two splits in the timeseries, compute Generalised SDI
+    #     # This should not happen in this moment.
+    #     if len(scgraph.split_keys) == 2:
+    #         metric_name = "sdi"
+    #         scgraph.compute_sdi()
+    #     elif len(scgraph.split_keys) > 2:
+    #         metric_name = "gsdi"
+    #         scgraph.compute_gsdi()
+    #     # Export non-thresholded metrics
+    #     LGR.info(f"Export non-thresholded version of {metric_name}.")
+    #     blocks.export_metric(scgraph, outext, outprefix)
 
     # if "dfc" in comp_metric or "fc" in comp_metric:
     #     scgraph.compute_fc(mean=True)
@@ -490,61 +524,62 @@ def nigsp(
 
     # #### Output more results (pt. 1) #### #
 
-    # Export eigenvalues, eigenvectors, and split timeseries and eigenvectors
-    for k in scgraph.split_keys:
-        LGR.info(f"Export {k} timeseries.")
-        io.export_mtx(scgraph.ts_split[k], f"{outprefix}timeseries_{k}", ext=outext)
-        LGR.info(f"Export {k} eigenvectors.")
-        io.export_mtx(scgraph.evec_split[k], f"{outprefix}eigenvec_{k}", ext=outext)
-    LGR.info("Export original eigenvectors.")
-    io.export_mtx(scgraph.eigenvec, f"{outprefix}eigenvec", ext=outext)
-    LGR.info("Export original eigenvalues.")
-    io.export_mtx(scgraph.eigenval, f"{outprefix}eigenval", ext=outext)
+    # # Export eigenvalues, eigenvectors, and split timeseries and eigenvectors
+    # for k in scgraph.split_keys:
+    #     LGR.info(f"Export {k} timeseries.")
+    #     io.export_mtx(scgraph.ts_split[k], f"{outprefix}timeseries_{k}", ext=outext)
+    #     LGR.info(f"Export {k} eigenvectors.")
+    #     io.export_mtx(scgraph.evec_split[k], f"{outprefix}eigenvec_{k}", ext=outext)
+    # LGR.info("Export original eigenvectors.")
+    # io.export_mtx(scgraph.eigenvec, f"{outprefix}eigenvec", ext=outext)
+    # LGR.info("Export original eigenvalues.")
+    # io.export_mtx(scgraph.eigenval, f"{outprefix}eigenval", ext=outext)
 
     # #### Additional steps #### #
 
-    # If possible, create plots!
-    try:
-        import matplotlib as _
-        import nilearn as _
+    # # If possible, create plots!
+    # try:
+    #     import matplotlib as _
+    #     import nilearn as _
 
-        # Plot original SC and Laplacian
-        LGR.info("Plot laplacian matrix.")
-        viz.plot_connectivity(scgraph.lapl_mtx, f"{outprefix}laplacian.png")
-        LGR.info("Plot structural connectivity matrix.")
-        viz.plot_connectivity(scgraph.mtx, f"{outprefix}sc.png")
+    #     # Plot original SC and Laplacian
+    #     LGR.info("Plot laplacian matrix.")
+    #     viz.plot_connectivity(scgraph.lapl_mtx, f"{outprefix}laplacian.png")
+    #     LGR.info("Plot structural connectivity matrix.")
+    #     viz.plot_connectivity(scgraph.mtx, f"{outprefix}sc.png")
 
-        # Plot timeseries
-        LGR.info("Plot original timeseries.")
-        viz.plot_greyplot(scgraph.timeseries, f"{outprefix}greyplot.png")
-        for k in scgraph.split_keys:
-            LGR.info(f"Plot {k} timeseries.")
-            viz.plot_greyplot(scgraph.ts_split[k], f"{outprefix}greyplot_{k}.png")
+    #     # Plot timeseries
+    #     LGR.info("Plot original timeseries.")
+    #     viz.plot_greyplot(scgraph.timeseries, f"{outprefix}greyplot.png")
+    #     for k in scgraph.split_keys:
+    #         LGR.info(f"Plot {k} timeseries.")
+    #         viz.plot_greyplot(scgraph.ts_split[k], f"{outprefix}greyplot_{k}.png")
 
-        if "dfc" in comp_metric or "fc" in comp_metric:
-            # Plot FC
-            LGR.info("Plot original functional connectivity matrix.")
-            viz.plot_connectivity(scgraph.fc, f"{outprefix}fc.png")
-            for k in scgraph.split_keys:
-                LGR.info(f"Plot {k} functional connectivity matrix.")
-                viz.plot_connectivity(scgraph.fc_split[k], f"{outprefix}fc_{k}.png")
-        if "sdi" in comp_metric or "gsdi" in comp_metric:
-            if atlasname is not None:
-                LGR.info(f"Plot {metric_name} markerplot.")
-                if img is not None:
-                    blocks.plot_metric(scgraph, outprefix, img)
-                elif atlas is not None:
-                    blocks.plot_metric(scgraph, outprefix, atlas)
+    #     if "dfc" in comp_metric or "fc" in comp_metric:
+    #         # Plot FC
+    #         LGR.info("Plot original functional connectivity matrix.")
+    #         viz.plot_connectivity(scgraph.fc, f"{outprefix}fc.png")
+    #         for k in scgraph.split_keys:
+    #             LGR.info(f"Plot {k} functional connectivity matrix.")
+    #             viz.plot_connectivity(scgraph.fc_split[k], f"{outprefix}fc_{k}.png")
+    #     if "sdi" in comp_metric or "gsdi" in comp_metric:
+    #         if atlasname is not None:
+    #             LGR.info(f"Plot {metric_name} markerplot.")
+    #             if img is not None:
+    #                 blocks.plot_metric(scgraph, outprefix, img)
+    #             elif atlas is not None:
+    #                 blocks.plot_metric(scgraph, outprefix, atlas)
 
-    except ImportError:
-        LGR.warning(
-            "The necessary libraries for graphics (nilearn, matplotlib) "
-            "were not found. Skipping graphics."
-        )
+    # except ImportError:
+    #     LGR.warning(
+    #         "The necessary libraries for graphics (nilearn, matplotlib) "
+    #         "were not found. Skipping graphics."
+    #     )
 
     # If required, create surrogates, test, and export masked metrics
     if surr_type is not None:
         outprefix += "mkd_"
+        metric_name = "sdi" if len(scgraph.ts_split.keys()) == 2 else "gsdi"
         LGR.info(
             f"Test significant {metric_name} against {n_surr} structurally "
             f"{surr_type} surrogates."

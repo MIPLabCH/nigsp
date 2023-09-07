@@ -105,15 +105,29 @@ def export_metric(scgraph, outext, outprefix):
     return 0
 
 
-# @pydra.mark.task
-def plot_metric(scgraph, outprefix, atlas=None, thr=None):
+# TODO: might be deleted for no usage at the moment
+def plot_metric(scgraph, **kwargs):
     """
-    If possible, plot metrics as markerplot.
+    Call plot_metric_base with scgraph object
 
     Parameters
     ----------
     scgraph : SCGraph object
         The internal object containing all data.
+    """
+    return plot_metric_base(scgraph.sdi, scgraph.gsdi, **kwargs)
+
+
+def plot_metric_base(sdi, gsdi, outprefix, atlas=None, thr=None):
+    """
+    If possible, plot metrics as markerplot.
+
+    Parameters
+    ----------
+    sdi :
+        Structural Decoupling Index.
+    gsdi:
+        Generalised SDI
     outprefix : str
         The prefix of the png file to export
     img : 3DNiftiImage or None, optional
@@ -140,14 +154,12 @@ def plot_metric(scgraph, outprefix, atlas=None, thr=None):
 
     # If it is, plot.
     if atlas_plot is not None:
-        if scgraph.sdi is not None:
-            viz.plot_nodes(
-                scgraph.sdi, atlas_plot, filename=f"{outprefix}sdi.png", thr=thr
-            )
-        elif scgraph.gsdi is not None:
-            for k in scgraph.gsdi.keys():
+        if sdi is not None:
+            viz.plot_nodes(sdi, atlas_plot, filename=f"{outprefix}sdi.png", thr=thr)
+        elif gsdi is not None:
+            for k in gsdi.keys():
                 viz.plot_nodes(
-                    scgraph.gsdi[k],
+                    gsdi[k],
                     atlas_plot,
                     filename=f"{outprefix}gsdi_{k}.png",
                     thr=thr,
@@ -296,6 +308,7 @@ def structuralDecouplingIndex(
 
     sdi, gsdi = None, None
 
+    # TODO: make it conditional
     # This should not happen in this moment.
     if len(ts_split.keys()) == 2:
         metric_name = "sdi"
@@ -308,6 +321,98 @@ def structuralDecouplingIndex(
     # export_metric(scgraph, outext, outprefix)
 
     return sdi, gsdi
+
+
+@pydra.mark.task
+@pydra.mark.annotate(
+    {
+        "ts_split": ty.Any,
+        "evec_split": ty.Any,
+        "eigenvec": ty.Any,
+        "eigenval": ty.Any,
+        "outprefix": ty.AnyStr,
+        "outext": ty.AnyStr,
+    }
+)
+def export(ts_split, evec_split, eigenvec, eigenval, outprefix, outext):
+    # Export eigenvalues, eigenvectors, and split timeseries and eigenvectors
+    for k in ts_split.keys():
+        LGR.info(f"Export {k} timeseries.")
+        io.export_mtx(ts_split[k], f"{outprefix}timeseries_{k}", ext=outext)
+        LGR.info(f"Export {k} eigenvectors.")
+        io.export_mtx(evec_split[k], f"{outprefix}eigenvec_{k}", ext=outext)
+    LGR.info("Export original eigenvectors.")
+    io.export_mtx(eigenvec, f"{outprefix}eigenvec", ext=outext)
+    LGR.info("Export original eigenvalues.")
+    io.export_mtx(eigenval, f"{outprefix}eigenval", ext=outext)
+
+
+@pydra.mark.task
+@pydra.mark.annotate(
+    {
+        # "ts_split": ty.Any,
+        # "evec_split": ty.Any,
+        # "eigenvec": ty.Any,
+        # "eigenval": ty.Any,
+        "lapl_mtx": ty.Any,
+        "mtx": ty.Any,
+        "timeseries": ty.Any,
+        "ts_split": ty.Any,
+        "fc": ty.Any,
+        "fc_split": ty.Any,
+        "img": ty.Any,
+        "atlas": ty.Any,
+        "sdi": ty.Any,
+        "gsdi": ty.Any,
+        "outprefix": ty.AnyStr,
+        # "outext": ty.AnyStr,
+    }
+)
+def visualize(
+    lapl_mtx, mtx, timeseries, ts_split, fc, fc_split, img, atlas, sdi, gsdi, outprefix
+):
+    # If possible, create plots!
+    try:
+        import matplotlib as _
+        import nilearn as _
+
+    except ImportError:
+        LGR.warning(
+            "The necessary libraries for graphics (nilearn, matplotlib) "
+            "were not found. Skipping graphics."
+        )
+
+    # Plot original SC and Laplacian
+    LGR.info("Plot laplacian matrix.")
+    viz.plot_connectivity(lapl_mtx, f"{outprefix}laplacian.png")
+    LGR.info("Plot structural connectivity matrix.")
+    viz.plot_connectivity(mtx, f"{outprefix}sc.png")
+
+    # Plot timeseries
+    LGR.info("Plot original timeseries.")
+    viz.plot_greyplot(timeseries, f"{outprefix}greyplot.png")
+    for k in ts_split.keys():
+        LGR.info(f"Plot {k} timeseries.")
+        viz.plot_greyplot(ts_split[k], f"{outprefix}greyplot_{k}.png")
+
+    # TODO: make it conditional
+    # if "dfc" in comp_metric or "fc" in comp_metric:
+    # Plot FC
+    LGR.info("Plot original functional connectivity matrix.")
+    viz.plot_connectivity(fc, f"{outprefix}fc.png")
+    for k in ts_split.keys():
+        LGR.info(f"Plot {k} functional connectivity matrix.")
+        viz.plot_connectivity(fc_split[k], f"{outprefix}fc_{k}.png")
+
+    # TODO: make it conditional
+    # if "sdi" in comp_metric or "gsdi" in comp_metric:
+    #     if atlasname is not None:
+    metric_name = "sdi" if len(ts_split.keys()) == 2 else "gsdi"
+    LGR.info(f"Plot {metric_name} markerplot.")
+    if img is not None:
+        plot_metric_base(sdi, gsdi, outprefix, img)
+    elif atlas is not None:
+        plot_metric_base(sdi, gsdi, outprefix, atlas)
 
 
 def filteredTimeseries():
