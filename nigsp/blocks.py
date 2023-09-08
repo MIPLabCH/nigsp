@@ -9,13 +9,20 @@ LGR
 """
 
 import logging
+import os
 import typing as ty
 
+import numpy as np
 import pydra
 
 # TODO: clean import
-from nigsp import io, operations, viz
+from nigsp import io, operations
+from nigsp import surrogates as surr
+from nigsp import timeseries as ts
+from nigsp import viz
+from nigsp.objects import SCGraph
 from nigsp.operations import nifti
+from nigsp.operations.metrics import SUPPORTED_METRICS
 
 LGR = logging.getLogger(__name__)
 
@@ -105,6 +112,175 @@ def export_metric(scgraph, outext, outprefix):
     return 0
 
 
+@pydra.mark.task
+@pydra.mark.annotate(
+    {
+        "scname": ty.Any,
+        "fname": ty.Any,
+        "atlasname": ty.Any,
+        "index": ty.Any,
+        "method": ty.Any,
+        "surr_type": ty.Any,
+        "p": ty.Any,
+        "comp_metric": ty.Any,
+        "return": {
+            "sc_is": ty.Any,
+            "func_is": ty.Any,
+            "atlas_is": ty.Any,
+            "comp_metric": ty.Any,
+        },
+    }
+)
+def check_input(scname, fname, atlasname, index, method, surr_type, p, comp_metric):
+    # Check data files
+    LGR.info(f"Input structural connectivity file: {scname}")
+    sc_is = dict.fromkeys(io.EXT_DICT.keys(), False)
+    LGR.info(f"Input functional file(s): {fname}")
+    func_is = dict.fromkeys(io.EXT_DICT.keys(), "")
+    atlas_is = dict.fromkeys(io.EXT_DICT.keys(), False)
+    if atlasname:
+        LGR.info(f"Input atlas file: {atlasname}")
+
+    # Check inputs type
+    for k in io.EXT_DICT.keys():
+        func_is[k] = []
+        for f in fname:
+            func_is[k] += [io.check_ext(io.EXT_DICT[k], f)[0]]
+        # Check that func files are all of the same kind
+        func_is[k] = all(func_is[k])
+
+        sc_is[k], _ = io.check_ext(io.EXT_DICT[k], scname)
+
+        if atlasname is not None:
+            atlas_is[k], _ = io.check_ext(io.EXT_DICT[k], atlasname)
+
+    # Check that other inputs are supported
+    if index != "median" and type(index) is not int:
+        raise ValueError(f"Index {index} of type {type(index)} is not valid.")
+    if method not in surr.STAT_METHOD and method is not None:
+        raise NotImplementedError(
+            f"Method {method} is not supported. Supported "
+            f"methods are: {surr.STAT_METHOD}"
+        )
+    if surr_type not in surr.SURR_TYPE and surr_type is not None:
+        raise NotImplementedError(
+            f"Surrogate type {surr_type} is not supported. "
+            f"Supported types are: {surr.SURR_TYPE}"
+        )
+    if p < 0 or p > 1:
+        raise ValueError(
+            "P value must be between 0 and 1, but {p} was provided instead."
+        )
+
+    # Check what metric to compute
+    if comp_metric not in [[], None]:
+        for item in comp_metric:
+            if item not in SUPPORTED_METRICS:
+                raise NotImplementedError(
+                    f"Metric {item} is not supported. "
+                    f"Supported metrics are: {SUPPORTED_METRICS}"
+                )
+    else:
+        comp_metric = SUPPORTED_METRICS
+
+    return sc_is, func_is, atlas_is, comp_metric
+
+
+@pydra.mark.task
+@pydra.mark.annotate(
+    {
+        "fname": ty.Any,
+        "scname": ty.Any,
+        "atlasname": ty.Any,
+        "sc_is": ty.Any,
+        "func_is": ty.Any,
+        "atlas_is": ty.Any,
+        "return": {"mtx": ty.Any, "timeseries": ty.Any, "atlas": ty.Any, "img": ty.Any},
+    }
+)
+def read_data(fname, scname, atlasname, sc_is, func_is, atlas_is, cwd=None):
+    # TODO: review this dirty quick code
+    if cwd:
+        scname = os.path.normpath(os.path.join(cwd, scname))
+        atlasname = os.path.normpath(os.path.join(cwd, atlasname))
+
+    # Read in structural connectivity matrix
+
+    if sc_is["1D"]:
+        mtx = io.load_txt(scname, shape="square")
+    elif sc_is["mat"]:
+        mtx = io.load_mat(scname, shape="square")
+    elif sc_is["xls"]:
+        mtx = io.load_xls(scname, shape="square")
+    else:
+        raise NotImplementedError(f"Input file {scname} is not of a supported type.")
+
+    # Read in atlas, if defined
+    if atlasname is not None:
+        if (
+            atlas_is["1D"] or atlas_is["mat"] or atlas_is["xls"] or atlas_is["nifti"]
+        ) is False:
+            raise NotImplementedError(
+                f"Input file {atlasname} is not of a supported type."
+            )
+        elif atlas_is["1D"]:
+            atlas = io.load_txt(atlasname)
+        elif atlas_is["nifti"]:
+            atlas, _, img = io.load_nifti_get_mask(atlasname, ndim=3)
+        elif atlas_is["mat"]:
+            atlas = io.load_mat(atlasname)
+        elif atlas_is["xls"]:
+            atlas = io.load_xls(atlasname)
+    else:
+        LGR.warning("Atlas not provided. Some functionalities might not work.")
+        atlas, img = None, None
+
+    # Read in functional timeseries, join them, and normalise them
+    timeseries = []
+    for f in fname:
+        # TODO: review this dirty quick line of code
+        f = os.path.normpath(os.path.join(cwd, f))
+        if func_is["nifti"] and atlas_is["nifti"]:
+            t, atlas, img = nifti_to_timeseries(f, atlasname)
+        elif func_is["nifti"] and atlas_is["nifti"] is False:
+            raise NotImplementedError(
+                "To work with functional file(s) of nifti format, "
+                "specify an atlas file in nifti format."
+            )
+        elif func_is["1D"]:
+            t = io.load_txt(f)
+        elif func_is["mat"]:
+            t = io.load_mat(f)
+        elif func_is["xls"]:
+            t = io.load_xls(f)
+        else:
+            raise NotImplementedError(f"Input file {f} is not of a supported type.")
+
+        timeseries += [t[..., np.newaxis]]
+
+    timeseries = np.concatenate(timeseries, axis=-1).squeeze()
+    timeseries = ts.normalise_ts(timeseries)
+    return mtx, timeseries, atlas, img
+
+
+@pydra.mark.task
+@pydra.mark.annotate(
+    {
+        "outdir": ty.AnyStr,
+        "outname": ty.AnyStr,
+        "return": {"outprefix": ty.Any, "outext": ty.Any},
+    }
+)
+def prepare_output(outdir, outname=None):
+    if outname is not None:
+        _, outprefix, outext = io.check_ext(io.EXT_ALL, outname, remove=True)
+        outprefix = os.path.join(outdir, f"{os.path.split(outprefix)[1]}_")
+    else:
+        outprefix = f"{outdir}{os.sep}"
+
+    return outprefix, outext
+
+
 # TODO: might be deleted for no usage at the moment
 def plot_metric(scgraph, **kwargs):
     """
@@ -178,17 +354,17 @@ def timeSeriesExtraction(bold, atlas):
 @pydra.mark.task
 @pydra.mark.annotate(
     {
-        "struct_mtx": ty.Any,
+        "mtx": ty.Any,
         "return": {"eigenval": ty.Any, "eigenvec": ty.Any, "lapl_mtx": ty.Any},
     }
 )
-def laplacian(struct_mtx):
+def laplacian(mtx):
     # Perform Laplacian on the structural connectivity matrix
     # Return the Laplacian matrix
     # operation done by : scgraph.structural_decomposition()
     LGR.info("Run laplacian decomposition of structural graph.")
 
-    lapl_mtx = operations.symmetric_normalised_laplacian(struct_mtx)
+    lapl_mtx = operations.symmetric_normalised_laplacian(mtx)
     eigenval, eigenvec = operations.decomposition(lapl_mtx)
 
     return eigenval, eigenvec, lapl_mtx
@@ -350,10 +526,6 @@ def export(ts_split, evec_split, eigenvec, eigenval, outprefix, outext):
 @pydra.mark.task
 @pydra.mark.annotate(
     {
-        # "ts_split": ty.Any,
-        # "evec_split": ty.Any,
-        # "eigenvec": ty.Any,
-        # "eigenval": ty.Any,
         "lapl_mtx": ty.Any,
         "mtx": ty.Any,
         "timeseries": ty.Any,
@@ -365,7 +537,6 @@ def export(ts_split, evec_split, eigenvec, eigenval, outprefix, outext):
         "sdi": ty.Any,
         "gsdi": ty.Any,
         "outprefix": ty.AnyStr,
-        # "outext": ty.AnyStr,
     }
 )
 def visualize(

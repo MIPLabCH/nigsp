@@ -234,119 +234,210 @@ def nigsp(
 
     # #### Check input #### #
 
-    # Check data files
-    LGR.info(f"Input structural connectivity file: {scname}")
-    sc_is = dict.fromkeys(io.EXT_DICT.keys(), False)
-    LGR.info(f"Input functional file(s): {fname}")
-    func_is = dict.fromkeys(io.EXT_DICT.keys(), "")
-    atlas_is = dict.fromkeys(io.EXT_DICT.keys(), False)
-    if atlasname:
-        LGR.info(f"Input atlas file: {atlasname}")
+    # # Check data files
+    # LGR.info(f"Input structural connectivity file: {scname}")
+    # sc_is = dict.fromkeys(io.EXT_DICT.keys(), False)
+    # LGR.info(f"Input functional file(s): {fname}")
+    # func_is = dict.fromkeys(io.EXT_DICT.keys(), "")
+    # atlas_is = dict.fromkeys(io.EXT_DICT.keys(), False)
+    # if atlasname:
+    #     LGR.info(f"Input atlas file: {atlasname}")
 
-    # Check inputs type
-    for k in io.EXT_DICT.keys():
-        func_is[k] = []
-        for f in fname:
-            func_is[k] += [io.check_ext(io.EXT_DICT[k], f)[0]]
-        # Check that func files are all of the same kind
-        func_is[k] = all(func_is[k])
+    # # Check inputs type
+    # for k in io.EXT_DICT.keys():
+    #     func_is[k] = []
+    #     for f in fname:
+    #         func_is[k] += [io.check_ext(io.EXT_DICT[k], f)[0]]
+    #     # Check that func files are all of the same kind
+    #     func_is[k] = all(func_is[k])
 
-        sc_is[k], _ = io.check_ext(io.EXT_DICT[k], scname)
+    #     sc_is[k], _ = io.check_ext(io.EXT_DICT[k], scname)
 
-        if atlasname is not None:
-            atlas_is[k], _ = io.check_ext(io.EXT_DICT[k], atlasname)
+    #     if atlasname is not None:
+    #         atlas_is[k], _ = io.check_ext(io.EXT_DICT[k], atlasname)
 
-    # Check that other inputs are supported
-    if index != "median" and type(index) is not int:
-        raise ValueError(f"Index {index} of type {type(index)} is not valid.")
-    if method not in surr.STAT_METHOD and method is not None:
-        raise NotImplementedError(
-            f"Method {method} is not supported. Supported "
-            f"methods are: {surr.STAT_METHOD}"
-        )
-    if surr_type not in surr.SURR_TYPE and surr_type is not None:
-        raise NotImplementedError(
-            f"Surrogate type {surr_type} is not supported. "
-            f"Supported types are: {surr.SURR_TYPE}"
-        )
-    if p < 0 or p > 1:
-        raise ValueError(
-            "P value must be between 0 and 1, but {p} was provided instead."
-        )
+    # # Check that other inputs are supportedimg
+    # if index != "median" and type(index) is not int:
+    #     raise ValueError(f"Index {index} of type {type(index)} is not valid.")
+    # if method not in surr.STAT_METHOD and method is not None:
+    #     raise NotImplementedError(
+    #         f"Method {method} is not supported. Supported "
+    #         f"methods are: {surr.STAT_METHOD}"
+    #     )
+    # if surr_type not in surr.SURR_TYPE and surr_type is not None:
+    #     raise NotImplementedError(
+    #         f"Surrogate type {surr_type} is not supported. "
+    #         f"Supported types are: {surr.SURR_TYPE}"
+    #     )
+    # if p < 0 or p > 1:
+    #     raise ValueError(
+    #         "P value must be between 0 and 1, but {p} was provided instead."
+    #     )
 
-    # Check what metric to compute
-    if comp_metric not in [[], None]:
-        for item in comp_metric:
-            if item not in SUPPORTED_METRICS:
-                raise NotImplementedError(
-                    f"Metric {item} is not supported. "
-                    f"Supported metrics are: {SUPPORTED_METRICS}"
-                )
-    else:
-        comp_metric = SUPPORTED_METRICS
+    # # Check what metric to compute
+    # if comp_metric not in [[], None]:
+    #     for item in comp_metric:
+    #         if item not in SUPPORTED_METRICS:
+    #             raise NotImplementedError(
+    #                 f"Metric {item} is not supported. "
+    #                 f"Supported metrics are: {SUPPORTED_METRICS}"
+    #             )
+    # else:
+    #     comp_metric = SUPPORTED_METRICS
 
     # #### Prepare Outputs #### #
-    if outname is not None:
-        _, outprefix, outext = io.check_ext(io.EXT_ALL, outname, remove=True)
-        outprefix = os.path.join(outdir, f"{os.path.split(outprefix)[1]}_")
-    else:
-        outprefix = f"{outdir}{os.sep}"
+    # if outname is not None:
+    #     _, outprefix, outext = io.check_ext(io.EXT_ALL, outname, remove=True)
+    #     outprefix = os.path.join(outdir, f"{os.path.split(outprefix)[1]}_")
+    # else:
+    #     outprefix = f"{outdir}{os.sep}"
 
-    # #### Read in data #### #
+    # # #### Read in data #### #
 
-    # Read in structural connectivity matrix
-    if sc_is["1D"]:
-        mtx = io.load_txt(scname, shape="square")
-    elif sc_is["mat"]:
-        mtx = io.load_mat(scname, shape="square")
-    elif sc_is["xls"]:
-        mtx = io.load_xls(scname, shape="square")
-    else:
-        raise NotImplementedError(f"Input file {scname} is not of a supported type.")
+    # # Read in structural connectivity matrix
+    # if sc_is["1D"]:
+    #     mtx = io.load_txt(scname, shape="square")
+    # elif sc_is["mat"]:
+    #     mtx = io.load_mat(scname, shape="square")
+    # elif sc_is["xls"]:
+    #     mtx = io.load_xls(scname, shape="square")
+    # else:
+    #     raise NotImplementedError(f"Input file {scname} is not of a supported type.")
 
-    # Read in atlas, if defined
-    if atlasname is not None:
-        if (
-            atlas_is["1D"] or atlas_is["mat"] or atlas_is["xls"] or atlas_is["nifti"]
-        ) is False:
-            raise NotImplementedError(
-                f"Input file {atlasname} is not of a supported type."
-            )
-        elif atlas_is["1D"]:
-            atlas = io.load_txt(atlasname)
-        elif atlas_is["nifti"]:
-            atlas, _, img = io.load_nifti_get_mask(atlasname, ndim=3)
-        elif atlas_is["mat"]:
-            atlas = io.load_mat(atlasname)
-        elif atlas_is["xls"]:
-            atlas = io.load_xls(atlasname)
-    else:
-        LGR.warning("Atlas not provided. Some functionalities might not work.")
-        atlas, img = None, None
+    # # Read in atlas, if defined
+    # if atlasname is not None:
+    #     if (
+    #         atlas_is["1D"] or atlas_is["mat"] or atlas_is["xls"] or atlas_is["nifti"]
+    #     ) is False:
+    #         raise NotImplementedError(
+    #             f"Input file {atlasname} is not of a supported type."
+    #         )
+    #     elif atlas_is["1D"]:
+    #         atlas = io.load_txt(atlasname)
+    #     elif atlas_is["nifti"]:
+    #         atlas, _, img = io.load_nifti_get_mask(atlasname, ndim=3)
+    #     elif atlas_is["mat"]:
+    #         atlas = io.load_mat(atlasname)
+    #     elif atlas_is["xls"]:
+    #         atlas = io.load_xls(atlasname)
+    # else:
+    #     LGR.warning("Atlas not provided. Some functionalities might not work.")
+    #     atlas, img = None, None
 
-    # Read in functional timeseries, join them, and normalise them
-    timeseries = []
-    for f in fname:
-        if func_is["nifti"] and atlas_is["nifti"]:
-            t, atlas, img = blocks.nifti_to_timeseries(f, atlasname)
-        elif func_is["nifti"] and atlas_is["nifti"] is False:
-            raise NotImplementedError(
-                "To work with functional file(s) of nifti format, "
-                "specify an atlas file in nifti format."
-            )
-        elif func_is["1D"]:
-            t = io.load_txt(f)
-        elif func_is["mat"]:
-            t = io.load_mat(f)
-        elif func_is["xls"]:
-            t = io.load_xls(f)
-        else:
-            raise NotImplementedError(f"Input file {f} is not of a supported type.")
+    # # Read in functional timeseries, join them, and normalise them
+    # timeseries = []
+    # for f in fname:
+    #     if func_is["nifti"] and atlas_is["nifti"]:
+    #         t, atlas, img = blocks.nifti_to_timeseries(f, atlasname)
+    #     elif func_is["nifti"] and atlas_is["nifti"] is False:
+    #         raise NotImplementedError(
+    #             "To work with functional file(s) of nifti format, "
+    #             "specify an atlas file in nifti format."
+    #         )
+    #     elif func_is["1D"]:
+    #         t = io.load_txt(f)
+    #     elif func_is["mat"]:
+    #         t = io.load_mat(f)
+    #     elif func_is["xls"]:
+    #         t = io.load_xls(f)
+    #     else:
+    #         raise NotImplementedError(f"Input file {f} is not of a supported type.")
 
-        timeseries += [t[..., np.newaxis]]
+    #     timeseries += [t[..., np.newaxis]]
 
-    timeseries = np.concatenate(timeseries, axis=-1).squeeze()
-    timeseries = ts.normalise_ts(timeseries)
+    # timeseries = np.concatenate(timeseries, axis=-1).squeeze()
+    # timeseries = ts.normalise_ts(timeseries)
+
+    wf1 = pydra.Workflow(
+        name="Input Workflow",
+        input_spec=[
+            "scname",
+            "fname",
+            "atlasname",
+            "index",
+            "method",
+            "surr_type",
+            "p",
+            "comp_metric",
+            "outdir",
+            "outname",
+            "cwd",
+        ],
+        scname=scname,
+        fname=fname,
+        atlasname=atlasname,
+        index=index,
+        method=method,
+        surr_type=surr_type,
+        p=p,
+        comp_metric=comp_metric,
+        outdir=outdir,
+        outname=outname,
+        cwd=os.getcwd(),
+    )
+
+    wf1.add(
+        blocks.check_input(
+            name="check_input",
+            scname=wf1.lzin.scname,
+            fname=wf1.lzin.fname,
+            atlasname=wf1.lzin.atlasname,
+            index=wf1.lzin.index,
+            method=wf1.lzin.method,
+            surr_type=wf1.lzin.surr_type,
+            p=wf1.lzin.p,
+            comp_metric=wf1.lzin.comp_metric,
+        )
+    )
+
+    wf1.add(
+        blocks.read_data(
+            name="read_data",
+            fname=wf1.lzin.fname,
+            scname=wf1.lzin.scname,
+            atlasname=wf1.lzin.atlasname,
+            sc_is=wf1.check_input.lzout.sc_is,
+            func_is=wf1.check_input.lzout.func_is,
+            atlas_is=wf1.check_input.lzout.atlas_is,
+            cwd=wf1.lzin.cwd,
+        )
+    )
+
+    wf1.add(
+        blocks.prepare_output(
+            name="prepare_output", outdir=wf1.lzin.outdir, outname=wf1.lzin.outname
+        )
+    )
+
+    wf1.set_output(
+        [
+            # check_input
+            ("sc_is", wf1.check_input.lzout.sc_is),
+            ("func_is", wf1.check_input.lzout.func_is),
+            ("atlas_is", wf1.check_input.lzout.atlas_is),
+            ("comp_metric", wf1.check_input.lzout.comp_metric),
+            # read_data
+            ("mtx", wf1.read_data.lzout.mtx),
+            ("timeseries", wf1.read_data.lzout.timeseries),
+            ("atlas", wf1.read_data.lzout.atlas),
+            ("img", wf1.read_data.lzout.img),
+            # prepare_output
+            ("outprefix", wf1.prepare_output.lzout.outprefix),
+            ("outext", wf1.prepare_output.lzout.outext),
+        ]
+    )
+
+    with pydra.Submitter(plugin="cf") as sub:
+        sub(wf1)
+
+    out = wf1.result().output
+
+    mtx = out.mtx
+    timeseries = out.timeseries
+    outprefix = out.outprefix
+    outext = out.outext
+    img = out.img
+    atlas = out.atlas
 
     # #### Assign SCGraph object #### #
     scgraph = SCGraph(mtx, timeseries, atlas=atlas, img=img)
@@ -356,8 +447,8 @@ def nigsp(
 
     wf2 = pydra.Workflow(
         name="GSP+SDI Workflow",
-        input_spec=["struct_mtx", "timeseries", "outprefix", "outext", "img", "atlas"],
-        struct_mtx=scgraph.mtx,
+        input_spec=["mtx", "timeseries", "outprefix", "outext", "img", "atlas"],
+        mtx=mtx,
         timeseries=timeseries,
         # IO File Export
         outprefix=outprefix,
@@ -366,7 +457,7 @@ def nigsp(
         img=img,
         atlas=atlas,
     )
-    wf2.add(blocks.laplacian(name="laplacian", struct_mtx=wf2.lzin.struct_mtx))
+    wf2.add(blocks.laplacian(name="laplacian", mtx=wf2.lzin.mtx))
     wf2.add(
         blocks.timeseries_proj(
             name="timeseries_proj",
@@ -426,7 +517,7 @@ def nigsp(
             img=wf2.lzin.img,
             atlas=wf2.lzin.atlas,
             timeseries=wf2.lzin.timeseries,
-            mtx=wf2.lzin.struct_mtx,
+            mtx=wf2.lzin.mtx,
             lapl_mtx=wf2.laplacian.lzout.lapl_mtx,
             ts_split=wf2.filteringGSP.lzout.ts_split,
             fc=wf2.functionalConnectivity.lzout.fc,
@@ -467,7 +558,7 @@ def nigsp(
 
     # print(wf2.result())
 
-    # print(out.struct_mtx)
+    # print(out.mtx)
     out = wf2.result().output
     scgraph.lapl_mtx = out.lapl_mtx
     scgraph.eigenval = out.eigenval
