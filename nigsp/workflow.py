@@ -431,9 +431,8 @@ def nigsp(
             ts_split=wf2.filteringGSP.lzout.ts_split,
             fc=wf2.functionalConnectivity.lzout.fc,
             fc_split=wf2.functionalConnectivity.lzout.fc_split,
-            # evec_split=wf2.filteringGSP.lzout.evec_split,
-            eigenvec=wf2.laplacian.lzout.eigenvec,
-            eigenval=wf2.laplacian.lzout.eigenval,
+            sdi=wf2.SDI.lzout.sdi,
+            gsdi=wf2.SDI.lzout.gsdi,
             outprefix=wf2.lzin.outprefix,
             outext=wf2.lzin.outext,
         )
