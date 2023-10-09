@@ -287,7 +287,7 @@ def load_mat(fname, shape=None):
     Read files in matlab format.
 
     Assumes the existence of a matrix/vector in the mat file, rendered as
-    a numpy.ndarray. If there is more than a marix, the one with the largest
+    a numpy.ndarray. If there is more than a matrix, the one with the largest
     size will be selected.
 
     Parameters
