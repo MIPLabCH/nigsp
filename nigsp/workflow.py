@@ -86,7 +86,7 @@ def nigsp(
     lgr_degree="info",
 ):
     """
-    Main workflow for nigsp, following the methods described in [1].
+    Main workflow for nigsp, following the methods described in [1]_.
 
     Parameters
     ----------
@@ -163,13 +163,18 @@ def nigsp(
         If `p` is not in the range [0 1].
         If the projected timeseries are not split to compute SDI or gSDI.
 
-    See also
-    --------
-    [1] Preti, M.G., Van De Ville, D. Decoupling of brain function from structure
-    reveals regional behavioral specialization in humans. Nat Commun 10, 4747 (2019).
-    https://doi.org/10.1038/s41467-019-12765-7
+    Notes
+    -----
+    See the original paper on SDI [1]_ for more details.
 
-    Configuration model: https://en.wikipedia.org/wiki/Configuration_model
+    A configuration model [2]_ is used to create uninformed surrogates.
+
+    References
+    ----------
+    .. [1] Preti, M.G., Van De Ville, D. Decoupling of brain function from structure
+       reveals regional behavioral specialization in humans. Nat Commun 10, 4747 (2019).
+       https://doi.org/10.1038/s41467-019-12765-7
+    .. [2] https://en.wikipedia.org/wiki/Configuration_model
     """
     # #### Logger preparation #### #
     fname = utils.change_var_type(fname, list, stop=False, silent=True)

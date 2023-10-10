@@ -97,7 +97,7 @@ cite also:
    :maxdepth: 1
    :glob:
 
-   api/*
+   API <api>
 
 .. toctree::
    :caption: Graph Signal Processing

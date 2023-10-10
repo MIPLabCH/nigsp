@@ -45,6 +45,7 @@ needs_sphinx = "2.0"  # based on setup.cfg requirements
 # ones.import sphinx_rtd_theme  # noqa
 
 extensions = [
+    "sphinx.ext.apidoc",
     "sphinx.ext.autodoc",
     "sphinx.ext.autosectionlabel",
     "sphinx.ext.autosummary",
@@ -56,19 +57,13 @@ extensions = [
     "numpydoc",
     "sphinxarg.ext",
     "sphinxcontrib.bibtex",
+    "sphinxcontrib.apidoc",
     "sphinx_copybutton",
     "sphinx_design",
     "sphinx_gallery.gen_gallery",
     "sphinx_issues",
 ]
 
-# Generate the API documentation when building
-autosummary_generate = True
-autodoc_default_options = {
-    "members": True,
-    "inherited-members": False,
-    "exclude-members": "LGR",
-}
 
 numpydoc_show_class_members = False
 autoclass_content = "class"
@@ -221,27 +216,11 @@ sphinx_gallery_conf = {
     "within_subsection_order": FileNameSortKey,
 }
 
-
-# -- Generate API automagically -----------------------------------------------
-def run_apidoc(_):
-    from sphinx.ext.apidoc import main
-
-    cur_dir = os.path.normpath(os.path.dirname(__file__))
-    output_path = os.path.join(cur_dir, "api")
-    modules = os.path.normpath(os.path.join(cur_dir, "../nigsp"))
-    exclusions = [
-        "../nigsp/tests/*",
-        "../nigsp/cli/*",
-    ]
-    main(["-e", "-f", "-T", "-o", output_path, modules] + exclusions)
-
-
 # -- Final Setup -------------------------------------------------------------
 
 
 # https://github.com/rtfd/sphinx_rtd_theme/issues/117
 # launch setup
 def setup(app):  # noqa
-    app.connect("builder-inited", run_apidoc)
     app.add_css_file("theme_overrides.css")
     app.add_js_file("https://cdn.rawgit.com/chrisfilo/zenodo.js/v0.1/zenodo.js")
