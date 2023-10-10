@@ -47,15 +47,15 @@ def compute_laplacian(mtx, negval="absolute", selfloops=False):
     numpy.ndarray
         The degree matrix of mtx as a (mtx.ndim-1)D array, updated with selfloops in case.
 
-    See Also
-    --------
-    https://en.wikipedia.org/wiki/Laplacian_matrix
-
     Raises
     ------
     NotImplementedError
         If negval is not "absolute", "remove", or "rescale"
         If selfloop
+
+    Notes
+    -----
+    https://en.wikipedia.org/wiki/Laplacian_matrix
     """
     mtx = deepcopy(mtx)
     if mtx.min() < 0:
@@ -142,8 +142,8 @@ def normalisation(lapl, degree, norm="symmetric", fix_zeros=True):
         If `d` in not a diagonal matrix or an array
         If `d` and `mtx` have different shapes.
 
-    See Also
-    --------
+    Notes
+    -----
     https://en.wikipedia.org/wiki/Laplacian_matrix
     """
     deg = deepcopy(degree)
@@ -217,12 +217,10 @@ def symmetric_normalised_laplacian(mtx, d=None, fix_zeros=True):
             If `d` in not a diagonal matrix or an array
             If `d` and `mtx` have different shapes.
 
-    Note
-    ----
+    Notes
+    -----
     This is here mainly for tests and legacy code, but it would be better not to use it!
 
-    See Also
-    --------
     https://en.wikipedia.org/wiki/Laplacian_matrix#Symmetrically_normalized_Laplacian_2
     """
     if d is not None:

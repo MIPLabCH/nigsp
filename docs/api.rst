@@ -105,7 +105,7 @@ nigsp package
    spc_ts
    demean_ts
    rescale_ts
-   reize_ts
+   resize_ts
    graph_fourier_transform
    median_cutoff_frequency_idx
    graph_filter
