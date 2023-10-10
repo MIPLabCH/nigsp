@@ -6,11 +6,6 @@
 nigsp package
 =============
 
-.. contents:: **List of modules**
-   :local:
-
-.. _ref_network:
-
 :mod:`nigsp.workflow` - Primary workflows
 -----------------------------------------
 

@@ -64,14 +64,6 @@ extensions = [
     "sphinx_issues",
 ]
 
-# Generate the API documentation when building
-autosummary_generate = True
-autodoc_default_options = {
-    "members": True,
-    "member-order": "bysource",
-    "inherited-members": False,
-    "exclude-members": "LGR",
-}
 
 numpydoc_show_class_members = False
 autoclass_content = "class"
