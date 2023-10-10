@@ -75,7 +75,6 @@ instance/
 # Sphinx documentation
 docs/_build/
 docs/generated
-docs/api/
 docs/api/generated
 
 # PyBuilder
