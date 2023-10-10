@@ -79,6 +79,45 @@ def export_metric(scgraph, outext, outprefix):
     0
         If everything goes well
     """
+    return export_metric_base(
+        scgraph.atlas, scgraph.img, scgraph.sdi, scgraph.gsdi, outext, outprefix
+    )
+
+
+# @pydra.mark.task
+# @pydra.mark.annotate(
+#     {
+#         "atlas": ty.Any,
+#         "img": ty.Any,
+#         "sdi": ty.Any,
+#         "gsdi": ty.Any,
+#         "outext": ty.Any
+#     }
+# )
+def export_metric_base(atlas, img, sdi, gsdi, outext, outprefix):
+    """
+    Export the metrics computed within the library.
+
+    Parameters
+    ----------
+    atlas : np.array
+        ATLAS
+    img : np.array
+        IMG
+    sdi : np.array
+        SDI
+    gsdi : np.array
+        GSDI
+    outext : str
+        The desired extension for export - it will force the type of file created.
+    outprefix : str
+        The desired prefix for the export.
+
+    Returns
+    -------
+    0
+        If everything goes well
+    """
     if outext in io.EXT_NIFTI:
         try:
             import nibabel as _
@@ -88,26 +127,26 @@ def export_metric(scgraph, outext, outprefix):
                 "was not found. Exporting metrics in TSV format instead."
             )
             outext = ".tsv.gz"
-        if scgraph.img is None:
+        if img is None:
             LGR.warning(
                 "A necessary atlas nifti image was not found. "
                 "Exporting metrics in TSV format instead."
             )
             outext = ".tsv.gz"
 
-    if scgraph.sdi is not None:
+    if sdi is not None:
         if outext in io.EXT_NIFTI:
-            data = nifti.unfold_atlas(scgraph.sdi, scgraph.atlas)
-            io.export_nifti(data, scgraph.img, f"{outprefix}sdi{outext}")
+            data = nifti.unfold_atlas(sdi, atlas)
+            io.export_nifti(data, img, f"{outprefix}sdi{outext}")
         else:
-            io.export_mtx(scgraph.sdi, f"{outprefix}sdi{outext}")
-    elif scgraph.gsdi is not None:
-        for k in scgraph.gsdi.keys():
+            io.export_mtx(sdi, f"{outprefix}sdi{outext}")
+    elif gsdi is not None:
+        for k in gsdi.keys():
             if outext in io.EXT_NIFTI:
-                data = nifti.unfold_atlas(scgraph.gsdi[k], scgraph.atlas)
-                io.export_nifti(data, scgraph.img, f"{outprefix}gsdi_{k}{outext}")
+                data = nifti.unfold_atlas(gsdi[k], atlas)
+                io.export_nifti(data, img, f"{outprefix}gsdi_{k}{outext}")
             else:
-                io.export_mtx(scgraph.gsdi[k], f"{outprefix}gsdi_{k}{outext}")
+                io.export_mtx(gsdi[k], f"{outprefix}gsdi_{k}{outext}")
 
     return 0
 
@@ -345,13 +384,6 @@ def plot_metric_base(sdi, gsdi, outprefix, atlas=None, thr=None):
 
 
 @pydra.mark.task
-def timeSeriesExtraction(bold, atlas):
-    # Perform time series extraction using bold data and atlas
-    # Return the extracted time series
-    pass
-
-
-@pydra.mark.task
 @pydra.mark.annotate(
     {
         "mtx": ty.Any,
@@ -421,20 +453,6 @@ def filteringGSP(timeseries, eigenvec, index, keys=["low", "high"]):
 
 
 @pydra.mark.task
-def timeSeries():
-    # Perform time series analysis
-    # Return the result
-    pass
-
-
-@pydra.mark.task
-def decomposition():
-    # Perform decomposition
-    # Return the result
-    pass
-
-
-@pydra.mark.task
 @pydra.mark.annotate(
     {
         "timeseries": ty.Any,
@@ -494,6 +512,7 @@ def structuralDecouplingIndex(
         gsdi = operations.gsdi(ts_split, mean, keys)
     # # Export non-thresholded metrics
     LGR.info(f"Export non-thresholded version of {metric_name}.")
+    # TODO: check if it useful to run export_metric() here and in surrogate
     # export_metric(scgraph, outext, outprefix)
 
     return sdi, gsdi
@@ -586,31 +605,100 @@ def visualize(
         plot_metric_base(sdi, gsdi, outprefix, atlas)
 
 
-def filteredTimeseries():
-    # Perform filtering on the timeseries
-    # Return the filtered timeseries
-    pass
-
-
-def statisticalThreshold(
-    functionalConnectivity, structuralDecouplingIndex, filteredTimeseries
+@pydra.mark.task
+@pydra.mark.annotate(
+    {
+        "timeseries": ty.Any,
+        "eigenvec": ty.Any,
+        "lapl_mtx": ty.Any,
+        "index": ty.Any,
+        "sdi": ty.Any,
+        "gsdi": ty.Any,
+        "img": ty.Any,
+        "atlas": ty.Any,
+        "ts_split": ty.Any,
+        "p": ty.Any,
+        "method": ty.Any,
+        "n_surr": ty.Any,
+        "surr_type": ty.Any,
+    }
+)
+def surrogate(
+    timeseries,
+    eigenvec,
+    lapl_mtx,
+    index,
+    sdi,
+    gsdi,
+    img,
+    atlas,
+    ts_split,
+    p,
+    method,
+    n_surr,
+    surr_type=None,
+    seed=None,
 ):
-    # Perform statistical thresholding using the three inputs
-    # Return the result
-    pass
+    # TODO: make surrogate optional
+    # if surr_type is not None:
+    outprefix = "mkd_"
+    # Todo: should be comperate with the version without Pydra, it was `outprefix += "mkd_"` before update
+    metric_name = "sdi" if len(ts_split.keys()) == 2 else "gsdi"
+    LGR.info(
+        f"Test significant {metric_name} against {n_surr} structurally "
+        f"{surr_type} surrogates."
+    )
+    # scgraph.create_surrogates(sc_type=surr_type, n_surr=n_surr, seed=seed)
+    surr = SCGraph.create_surrogates_base(
+        timeseries, eigenvec, lapl_mtx, sc_type=surr_type, n_surr=n_surr, seed=seed
+    )
+
+    _, surr_split = operations.graph_filter(surr, eigenvec, index)
+    # TODO: make it conditional
+    # if "sdi" in comp_metric or "gsdi" in comp_metric:
+    # scgraph.test_significance(method=method, p=p, return_masked=True)
+
+    mean = False  # TODO: should be check wasn't there before update
+    if sdi is not None:
+        surr_sdi = operations.sdi(surr_split, mean, keys=None)
+        sdi = operations.test_significance(
+            surr=surr_sdi,
+            data=sdi,
+            method=method,
+            p=p,
+            return_masked=True,
+            mean=False,
+        )
+    if gsdi is not None:
+        surr_sdi = operations.gsdi(surr_split, mean, keys=None)
+        gsdi = operations.test_significance(
+            surr=surr_sdi,
+            data=gsdi,
+            method=method,
+            p=p,
+            return_masked=True,
+            mean=False,
+        )
+
+    # Export thresholded metrics
+    # blocks.export_metric(scgraph, outext, outprefix)
+    # export_metric_base(atlas, img, sdi, gsdi, outext, outprefix)
+
+    try:
+        import matplotlib as _
+        import nilearn as _
+
+        if atlas is not None:
+            LGR.info(f"Plot {metric_name} markerplot.")
+            if img is not None:
+                plot_metric_base(sdi, gsdi, outprefix, atlas=img, thr=0)
+            elif atlas is not None:
+                plot_metric_base(sdi, gsdi, outprefix, atlas=atlas, thr=0)
+
+    except ImportError:
+        pass
 
 
-# @pydra.mark.task
-# def glsBased():
-#     # Perform GLS-based analysis
-#     # Return the result
-#     pass
-
-# @pydra.mark.task
-# def diffusionModel():
-#     # Perform diffusion model analysis
-#     # Return the result
-#     pass
 """
 Copyright 2022, Stefano Moia.
 

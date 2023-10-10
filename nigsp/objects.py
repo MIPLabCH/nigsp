@@ -175,7 +175,7 @@ class SCGraph:
         )
         return self
 
-    @classmethod
+    @staticmethod
     def create_surrogates_base(
         timeseries, eigenvec, lapl_mtx, sc_type="informed", n_surr=1000, seed=None
     ):
@@ -191,11 +191,12 @@ class SCGraph:
             sc_args["lapl_mtx"] = lapl_mtx
             surr = operations.sc_uninformed(**sc_args)
         else:
-            raise ValueError(
+            LGR.warning(
                 f"Unknown option {sc_type} for surrogate creation. "
                 "Declared type must be either 'informed' or "
                 "'uninformed'"
             )
+            return None
         return surr
 
     def test_significance(
