@@ -56,6 +56,7 @@ extensions = [
     "numpydoc",
     "sphinxarg.ext",
     "sphinxcontrib.bibtex",
+    "sphinxcontrib.apidoc",
     "sphinx_copybutton",
     "sphinx_design",
     "sphinx_gallery.gen_gallery",
