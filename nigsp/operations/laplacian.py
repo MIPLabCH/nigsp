@@ -117,7 +117,7 @@ def normalisation(lapl, degree, norm="symmetric", fix_zeros=True):
         It's assumed that degree.ndim == lapl.ndim or degree.ndim == lapl.ndim-1.
     norm : ["symmetric", "symm", "random walk", "rw", random walk inflow", "rwi", "random walk outflow", "rwo"], str, optional
         The type of normalisation to perform. Default to symmetric.
-        - "symmetric": D^(-1/2) @ L @ ^(-1/2), a.k.a. symmetric laplacian noramlisation
+        - "symmetric": D^(-1/2) @ L @ ^(-1/2), a.k.a. symmetric laplacian normalisation
         - "random walk", "random walk inflow": D^(-1) @ L, a.k.a. random walk
           It normalises the inflow, i.e. it is row-optimised (each row = 0).
           Normally used in e.g. consensus networks.
