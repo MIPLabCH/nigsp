@@ -170,23 +170,34 @@ class SCGraph:
 
     def create_surrogates(self, sc_type="informed", n_surr=1000, seed=None):
         """Implement surrogates.sc_informed and sc_uninformed as class method."""
-        sc_args = {"timeseries": self.timeseries, "n_surr": n_surr}
+        self.surr = SCGraph.create_surrogates_base(
+            self.timeseries, self.eigenvec, self.lapl_mtx, sc_type, n_surr, seed
+        )
+        return self
+
+    @staticmethod
+    def create_surrogates_base(
+        timeseries, eigenvec, lapl_mtx, sc_type="informed", n_surr=1000, seed=None
+    ):
+        """Implement surrogates sc_informed and sc_uninformed as static method."""
+        sc_args = {"timeseries": timeseries, "n_surr": n_surr}
         if seed is not None:
             sc_args["seed"] = seed
 
         if sc_type == "informed":
-            sc_args["eigenvec"] = self.eigenvec
-            self.surr = operations.sc_informed(**sc_args)
+            sc_args["eigenvec"] = eigenvec
+            surr = operations.sc_informed(**sc_args)
         elif sc_type == "uninformed":
-            sc_args["lapl_mtx"] = self.lapl_mtx
-            self.surr = operations.sc_uninformed(**sc_args)
+            sc_args["lapl_mtx"] = lapl_mtx
+            surr = operations.sc_uninformed(**sc_args)
         else:
-            raise ValueError(
+            LGR.warning(
                 f"Unknown option {sc_type} for surrogate creation. "
                 "Declared type must be either 'informed' or "
                 "'uninformed'"
             )
-        return self
+            return None
+        return surr
 
     def test_significance(
         self, method="Bernoulli", p=0.05, return_masked=False, mean=False

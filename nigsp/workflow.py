@@ -15,8 +15,9 @@ import os
 import sys
 
 import numpy as np
+import pydra
 
-from nigsp import _version, blocks, io, references
+from nigsp import _version, blocks, io, operations, references
 from nigsp import surrogates as surr
 from nigsp import timeseries as ts
 from nigsp import utils, viz
@@ -236,236 +237,226 @@ def nigsp(
     version_number = _version.get_versions()["version"]
     LGR.info(f"Currently running nigsp version {version_number}")
 
-    # #### Check input #### #
+    wf1 = pydra.Workflow(
+        name="Input Workflow",
+        input_spec=[
+            "scname",
+            "fname",
+            "atlasname",
+            "index",
+            "method",
+            "surr_type",
+            "p",
+            "comp_metric",
+            "outdir",
+            "outname",
+            "cwd",
+        ],
+        scname=scname,
+        fname=fname,
+        atlasname=atlasname,
+        index=index,
+        method=method,
+        surr_type=surr_type,
+        p=p,
+        comp_metric=comp_metric,
+        outdir=outdir,
+        outname=outname,
+        cwd=os.getcwd(),
+    )
 
-    # Check data files
-    LGR.info(f"Input structural connectivity file: {scname}")
-    sc_is = dict.fromkeys(io.EXT_DICT.keys(), False)
-    LGR.info(f"Input functional file(s): {fname}")
-    func_is = dict.fromkeys(io.EXT_DICT.keys(), "")
-    atlas_is = dict.fromkeys(io.EXT_DICT.keys(), False)
-    if atlasname:
-        LGR.info(f"Input atlas file: {atlasname}")
-
-    # Check inputs type
-    for k in io.EXT_DICT.keys():
-        func_is[k] = []
-        for f in fname:
-            func_is[k] += [io.check_ext(io.EXT_DICT[k], f)[0]]
-        # Check that func files are all of the same kind
-        func_is[k] = all(func_is[k])
-
-        sc_is[k], _ = io.check_ext(io.EXT_DICT[k], scname)
-
-        if atlasname is not None:
-            atlas_is[k], _ = io.check_ext(io.EXT_DICT[k], atlasname)
-
-    # Check that other inputs are supported
-    if index != "median" and type(index) is not int:
-        raise ValueError(f"Index {index} of type {type(index)} is not valid.")
-    if method not in surr.STAT_METHOD and method is not None:
-        raise NotImplementedError(
-            f"Method {method} is not supported. Supported "
-            f"methods are: {surr.STAT_METHOD}"
+    wf1.add(
+        blocks.check_input(
+            name="check_input",
+            scname=wf1.lzin.scname,
+            fname=wf1.lzin.fname,
+            atlasname=wf1.lzin.atlasname,
+            index=wf1.lzin.index,
+            method=wf1.lzin.method,
+            surr_type=wf1.lzin.surr_type,
+            p=wf1.lzin.p,
+            comp_metric=wf1.lzin.comp_metric,
         )
-    if surr_type not in surr.SURR_TYPE and surr_type is not None:
-        raise NotImplementedError(
-            f"Surrogate type {surr_type} is not supported. "
-            f"Supported types are: {surr.SURR_TYPE}"
+    )
+
+    wf1.add(
+        blocks.read_data(
+            name="read_data",
+            fname=wf1.lzin.fname,
+            scname=wf1.lzin.scname,
+            atlasname=wf1.lzin.atlasname,
+            sc_is=wf1.check_input.lzout.sc_is,
+            func_is=wf1.check_input.lzout.func_is,
+            atlas_is=wf1.check_input.lzout.atlas_is,
+            cwd=wf1.lzin.cwd,
         )
-    if p < 0 or p > 1:
-        raise ValueError(
-            "P value must be between 0 and 1, but {p} was provided instead."
+    )
+
+    wf1.add(
+        blocks.prepare_output(
+            name="prepare_output", outdir=wf1.lzin.outdir, outname=wf1.lzin.outname
         )
+    )
 
-    # Check what metric to compute
-    if comp_metric not in [[], None]:
-        for item in comp_metric:
-            if item not in SUPPORTED_METRICS:
-                raise NotImplementedError(
-                    f"Metric {item} is not supported. "
-                    f"Supported metrics are: {SUPPORTED_METRICS}"
-                )
-    else:
-        comp_metric = SUPPORTED_METRICS
+    wf1.set_output(
+        [
+            # check_input
+            ("sc_is", wf1.check_input.lzout.sc_is),
+            ("func_is", wf1.check_input.lzout.func_is),
+            ("atlas_is", wf1.check_input.lzout.atlas_is),
+            ("comp_metric", wf1.check_input.lzout.comp_metric),
+            # read_data
+            ("mtx", wf1.read_data.lzout.mtx),
+            ("timeseries", wf1.read_data.lzout.timeseries),
+            ("atlas", wf1.read_data.lzout.atlas),
+            ("img", wf1.read_data.lzout.img),
+            # prepare_output
+            ("outprefix", wf1.prepare_output.lzout.outprefix),
+            ("outext", wf1.prepare_output.lzout.outext),
+        ]
+    )
 
-    # #### Prepare Outputs #### #
-    if outname is not None:
-        _, outprefix, outext = io.check_ext(io.EXT_ALL, outname, remove=True)
-        outprefix = os.path.join(outdir, f"{os.path.split(outprefix)[1]}_")
-    else:
-        outprefix = f"{outdir}{os.sep}"
+    with pydra.Submitter(plugin="cf") as sub:
+        sub(wf1)
 
-    # #### Read in data #### #
+    out = wf1.result().output
 
-    # Read in structural connectivity matrix
-    if sc_is["1D"]:
-        mtx = io.load_txt(scname, shape="square")
-    elif sc_is["mat"]:
-        mtx = io.load_mat(scname, shape="square")
-    elif sc_is["xls"]:
-        mtx = io.load_xls(scname, shape="square")
-    else:
-        raise NotImplementedError(f"Input file {scname} is not of a supported type.")
+    mtx = out.mtx
+    timeseries = out.timeseries
+    outprefix = out.outprefix
+    outext = out.outext
+    img = out.img
+    atlas = out.atlas
 
-    # Read in atlas, if defined
-    if atlasname is not None:
-        if (
-            atlas_is["1D"] or atlas_is["mat"] or atlas_is["xls"] or atlas_is["nifti"]
-        ) is False:
-            raise NotImplementedError(
-                f"Input file {atlasname} is not of a supported type."
-            )
-        elif atlas_is["1D"]:
-            atlas = io.load_txt(atlasname)
-        elif atlas_is["nifti"]:
-            atlas, _, img = io.load_nifti_get_mask(atlasname, ndim=3)
-        elif atlas_is["mat"]:
-            atlas = io.load_mat(atlasname)
-        elif atlas_is["xls"]:
-            atlas = io.load_xls(atlasname)
-    else:
-        LGR.warning("Atlas not provided. Some functionalities might not work.")
-        atlas, img = None, None
-
-    # Read in functional timeseries, join them, and normalise them
-    timeseries = []
-    for f in fname:
-        if func_is["nifti"] and atlas_is["nifti"]:
-            t, atlas, img = blocks.nifti_to_timeseries(f, atlasname)
-        elif func_is["nifti"] and atlas_is["nifti"] is False:
-            raise NotImplementedError(
-                "To work with functional file(s) of nifti format, "
-                "specify an atlas file in nifti format."
-            )
-        elif func_is["1D"]:
-            t = io.load_txt(f)
-        elif func_is["mat"]:
-            t = io.load_mat(f)
-        elif func_is["xls"]:
-            t = io.load_xls(f)
-        else:
-            raise NotImplementedError(f"Input file {f} is not of a supported type.")
-
-        timeseries += [t[..., np.newaxis]]
-
-    timeseries = np.concatenate(timeseries, axis=-1).squeeze()
-    timeseries = ts.normalise_ts(timeseries)
-
-    # #### Assign SCGraph object #### #
-    scgraph = SCGraph(mtx, timeseries, atlas=atlas, img=img)
-
-    # #### Compute SDI (split low vs high timeseries) and FC and output them #### #
-
-    # Run laplacian decomposition and actually filter timeseries.
-    LGR.info("Run laplacian decomposition of structural graph.")
-    scgraph.structural_decomposition()
-    LGR.info("Compute the energy of the graph and split it in parts.")
-    scgraph.compute_graph_energy(mean=True).split_graph()
-
-    if "sdi" in comp_metric or "gsdi" in comp_metric:
-        # If there are more than two splits in the timeseries, compute Generalised SDI
-        # This should not happen in this moment.
-        if len(scgraph.split_keys) == 2:
-            metric_name = "sdi"
-            scgraph.compute_sdi()
-        elif len(scgraph.split_keys) > 2:
-            metric_name = "gsdi"
-            scgraph.compute_gsdi()
-        # Export non-thresholded metrics
-        LGR.info(f"Export non-thresholded version of {metric_name}.")
-        blocks.export_metric(scgraph, outext, outprefix)
-
-    if "dfc" in comp_metric or "fc" in comp_metric:
-        scgraph.compute_fc(mean=True)
-        for k in scgraph.split_keys:
-            LGR.info(f"Export {k} FC (data).")
-            io.export_mtx(scgraph.fc_split[k], f"{outprefix}fc_{k}", ext=outext)
-        # Export fc
-        LGR.info("Export original FC (data).")
-        io.export_mtx(scgraph.fc, f"{outprefix}fc", ext=outext)
-
-    # #### Output more results (pt. 1) #### #
-
-    # Export eigenvalues, eigenvectors, and split timeseries and eigenvectors
-    for k in scgraph.split_keys:
-        LGR.info(f"Export {k} timeseries.")
-        io.export_mtx(scgraph.ts_split[k], f"{outprefix}timeseries_{k}", ext=outext)
-        LGR.info(f"Export {k} eigenvectors.")
-        io.export_mtx(scgraph.evec_split[k], f"{outprefix}eigenvec_{k}", ext=outext)
-    LGR.info("Export original eigenvectors.")
-    io.export_mtx(scgraph.eigenvec, f"{outprefix}eigenvec", ext=outext)
-    LGR.info("Export original eigenvalues.")
-    io.export_mtx(scgraph.eigenval, f"{outprefix}eigenval", ext=outext)
-
-    # #### Additional steps #### #
-
-    # If possible, create plots!
-    try:
-        import matplotlib as _
-        import nilearn as _
-
-        # Plot original SC and Laplacian
-        LGR.info("Plot laplacian matrix.")
-        viz.plot_connectivity(scgraph.lapl_mtx, f"{outprefix}laplacian.png")
-        LGR.info("Plot structural connectivity matrix.")
-        viz.plot_connectivity(scgraph.mtx, f"{outprefix}sc.png")
-
-        # Plot timeseries
-        LGR.info("Plot original timeseries.")
-        viz.plot_greyplot(scgraph.timeseries, f"{outprefix}greyplot.png")
-        for k in scgraph.split_keys:
-            LGR.info(f"Plot {k} timeseries.")
-            viz.plot_greyplot(scgraph.ts_split[k], f"{outprefix}greyplot_{k}.png")
-
-        if "dfc" in comp_metric or "fc" in comp_metric:
-            # Plot FC
-            LGR.info("Plot original functional connectivity matrix.")
-            viz.plot_connectivity(scgraph.fc, f"{outprefix}fc.png")
-            for k in scgraph.split_keys:
-                LGR.info(f"Plot {k} functional connectivity matrix.")
-                viz.plot_connectivity(scgraph.fc_split[k], f"{outprefix}fc_{k}.png")
-        if "sdi" in comp_metric or "gsdi" in comp_metric:
-            if atlasname is not None:
-                LGR.info(f"Plot {metric_name} markerplot.")
-                if img is not None:
-                    blocks.plot_metric(scgraph, outprefix, img)
-                elif atlas is not None:
-                    blocks.plot_metric(scgraph, outprefix, atlas)
-
-    except ImportError:
-        LGR.warning(
-            "The necessary libraries for graphics (nilearn, matplotlib) "
-            "were not found. Skipping graphics."
+    wf2 = pydra.Workflow(
+        name="GSP+SDI Workflow",
+        input_spec=["mtx", "timeseries", "outprefix", "outext", "img", "atlas"],
+        mtx=mtx,
+        timeseries=timeseries,
+        # IO File Export
+        outprefix=outprefix,
+        outext=outext,
+        # Visualize
+        img=img,
+        atlas=atlas,
+    )
+    wf2.add(blocks.laplacian(name="laplacian", mtx=wf2.lzin.mtx))
+    wf2.add(
+        blocks.timeseries_proj(
+            name="timeseries_proj",
+            timeseries=wf2.lzin.timeseries,
+            eigenvec=wf2.laplacian.lzout.eigenvec,
         )
+    )
+    wf2.add(
+        blocks.cutoffDetection(
+            name="cutoffDetection", energy=wf2.timeseries_proj.lzout.energy
+        )
+    )
+    wf2.add(
+        blocks.filteringGSP(
+            name="filteringGSP",
+            timeseries=wf2.lzin.timeseries,
+            eigenvec=wf2.laplacian.lzout.eigenvec,
+            index=wf2.cutoffDetection.lzout.index,
+        )
+    )
+    # TODO: make it optional
+    # if "dfc" in comp_metric or "fc" in comp_metric:
+    wf2.add(
+        blocks.functionalConnectivity(
+            name="functionalConnectivity",
+            timeseries=wf2.lzin.timeseries,
+            ts_split=wf2.filteringGSP.lzout.ts_split,
+            outprefix=wf2.lzin.outprefix,
+            outext=wf2.lzin.outext,
+        )
+    )
 
-    # If required, create surrogates, test, and export masked metrics
+    wf2.add(
+        blocks.structuralDecouplingIndex(
+            name="SDI",
+            ts_split=wf2.filteringGSP.lzout.ts_split,
+            outprefix=wf2.lzin.outprefix,
+            outext=wf2.lzin.outext,
+        )
+    )
+
+    wf2.add(
+        blocks.export(
+            name="export",
+            ts_split=wf2.filteringGSP.lzout.ts_split,
+            evec_split=wf2.filteringGSP.lzout.evec_split,
+            eigenvec=wf2.laplacian.lzout.eigenvec,
+            eigenval=wf2.laplacian.lzout.eigenval,
+            outprefix=wf2.lzin.outprefix,
+            outext=wf2.lzin.outext,
+        )
+    )
+
+    wf2.add(
+        blocks.visualize(
+            name="visualize",
+            img=wf2.lzin.img,
+            atlas=wf2.lzin.atlas,
+            timeseries=wf2.lzin.timeseries,
+            mtx=wf2.lzin.mtx,
+            lapl_mtx=wf2.laplacian.lzout.lapl_mtx,
+            ts_split=wf2.filteringGSP.lzout.ts_split,
+            fc=wf2.functionalConnectivity.lzout.fc,
+            fc_split=wf2.functionalConnectivity.lzout.fc_split,
+            sdi=wf2.SDI.lzout.sdi,
+            gsdi=wf2.SDI.lzout.gsdi,
+            outprefix=wf2.lzin.outprefix,
+            outext=wf2.lzin.outext,
+        )
+    )
+
     if surr_type is not None:
-        outprefix += "mkd_"
-        LGR.info(
-            f"Test significant {metric_name} against {n_surr} structurally "
-            f"{surr_type} surrogates."
+        wf2.add(
+            blocks.surrogate(
+                name="surrogate",
+                img=wf2.lzin.img,
+                atlas=wf2.lzin.atlas,
+                timeseries=wf2.lzin.timeseries,
+                mtx=wf2.lzin.mtx,
+                lapl_mtx=wf2.laplacian.lzout.lapl_mtx,
+                ts_split=wf2.filteringGSP.lzout.ts_split,
+                fc=wf2.functionalConnectivity.lzout.fc,
+                fc_split=wf2.functionalConnectivity.lzout.fc_split,
+                sdi=wf2.SDI.lzout.sdi,
+                gsdi=wf2.SDI.lzout.gsdi,
+                outprefix=wf2.lzin.outprefix,
+                outext=wf2.lzin.outext,
+            )
         )
-        scgraph.create_surrogates(sc_type=surr_type, n_surr=n_surr, seed=seed)
-        # #!# Export surrogates!
-        if "sdi" in comp_metric or "gsdi" in comp_metric:
-            scgraph.test_significance(method=method, p=p, return_masked=True)
-            # Export thresholded metrics
-            blocks.export_metric(scgraph, outext, outprefix)
 
-            try:
-                import matplotlib as _
-                import nilearn as _
+    # setting multiple workflow output
+    wf2.set_output(
+        [
+            # laplacian output
+            ("lapl_mtx", wf2.laplacian.lzout.lapl_mtx),
+            ("eigenval", wf2.laplacian.lzout.eigenval),
+            ("eigenvec", wf2.laplacian.lzout.eigenvec),
+            # timeseries projection output
+            ("energy", wf2.timeseries_proj.lzout.energy),
+            # cutoff output
+            ("index", wf2.cutoffDetection.lzout.index),
+            # filtering GSP output
+            ("evec_split", wf2.filteringGSP.lzout.evec_split),
+            ("ts_split", wf2.filteringGSP.lzout.ts_split),
+            # fc : functional connectity
+            ("fc", wf2.functionalConnectivity.lzout.fc),
+            ("fc_split", wf2.functionalConnectivity.lzout.fc_split),
+            # sdi : Structural Decoupling Index
+            ("sdi", wf2.SDI.lzout.sdi),
+            # gsdi : Generalized Structural Decoupling Index
+            ("gsdi", wf2.SDI.lzout.gsdi),
+        ]
+    )
 
-                if atlasname is not None:
-                    LGR.info(f"Plot {metric_name} markerplot.")
-                    if img is not None:
-                        blocks.plot_metric(scgraph, outprefix, atlas=img, thr=0)
-                    elif atlas is not None:
-                        blocks.plot_metric(scgraph, outprefix, atlas=atlas, thr=0)
-
-            except ImportError:
-                pass
+    with pydra.Submitter(plugin="cf") as sub:
+        sub(wf2)
 
     LGR.info(f"End of workflow, find results in {outdir}.")
 
