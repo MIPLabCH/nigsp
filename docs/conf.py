@@ -45,6 +45,7 @@ needs_sphinx = "2.0"  # based on setup.cfg requirements
 # ones.import sphinx_rtd_theme  # noqa
 
 extensions = [
+    "sphinx.ext.apidoc",
     "sphinx.ext.autodoc",
     "sphinx.ext.autosectionlabel",
     "sphinx.ext.autosummary",
