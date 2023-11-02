@@ -295,6 +295,7 @@ def nigsp(
         outprefix = os.path.join(outdir, f"{os.path.split(outprefix)[1]}_")
     else:
         outprefix = f"{outdir}{os.sep}"
+        outext = None
 
     # #### Read in data #### #
 
