@@ -159,7 +159,7 @@ def normalisation(lapl, degree, norm="symmetric", fix_zeros=True):
             )
         deg = deepcopy(deg.diagonal())
 
-    if deg.shape != lapl.shape[:-1]:
+    if deg.shape != lapl.shape[1:]:
         raise ValueError(
             f"The provided degree matrix has shape {deg.shape} while the "
             f"provided matrix has shape {lapl.shape}."
