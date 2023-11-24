@@ -46,7 +46,7 @@ up to date with the command *git pull upstream master*:
 
 ```shell
 $ cd nigsp
-$ git remote add upstream https://github.com/physiopy/{physiopy-package}.git
+$ git remote add upstream https://github.com/MIPLabCH/nigsp.git
 $ git pull upstream master
 ```
 
