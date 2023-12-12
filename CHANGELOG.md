@@ -1,3 +1,20 @@
+# 0.18.3 (Tue Dec 12 2023)
+
+#### 🐛 Bug Fix
+
+- Fix laplacian and degree shape check in `laplacian.normalisation` [#82](https://github.com/MIPLabCH/nigsp/pull/82) ([@smoia](https://github.com/smoia))
+
+#### 🏠 Internal
+
+- [pre-commit.ci] pre-commit autoupdate [#81](https://github.com/MIPLabCH/nigsp/pull/81) ([@pre-commit-ci[bot]](https://github.com/pre-commit-ci[bot]))
+
+#### Authors: 2
+
+- [@pre-commit-ci[bot]](https://github.com/pre-commit-ci[bot])
+- Stefano Moia ([@smoia](https://github.com/smoia))
+
+---
+
 # 0.18.2 (Tue Dec 12 2023)
 
 :tada: This release contains work from a new contributor! :tada:
