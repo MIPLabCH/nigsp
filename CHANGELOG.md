@@ -1,3 +1,39 @@
+# 0.18.2 (Tue Dec 12 2023)
+
+:tada: This release contains work from a new contributor! :tada:
+
+Thank you, null[@merelvdthiel](https://github.com/merelvdthiel), for all your work!
+
+#### 🐛 Bug Fix
+
+- update upstream path contributors file [#84](https://github.com/MIPLabCH/nigsp/pull/84) ([@merelvdthiel](https://github.com/merelvdthiel))
+
+#### 📝 Documentation
+
+- Fix documentation build and API [#80](https://github.com/MIPLabCH/nigsp/pull/80) ([@smoia](https://github.com/smoia))
+- Add Furo theme to the documentation build [#70](https://github.com/MIPLabCH/nigsp/pull/70) ([@mscheltienne](https://github.com/mscheltienne) [@pre-commit-ci[bot]](https://github.com/pre-commit-ci[bot]))
+
+#### ⚠️ Tests
+
+- Use assert_allclose from numpy.testing instead of np.allclose in matrix comparison tests [#69](https://github.com/MIPLabCH/nigsp/pull/69) ([@mscheltienne](https://github.com/mscheltienne))
+
+#### 🏠 Internal
+
+- Bump actions/setup-python from 4 to 5 [#85](https://github.com/MIPLabCH/nigsp/pull/85) ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- [pre-commit.ci] pre-commit autoupdate [#79](https://github.com/MIPLabCH/nigsp/pull/79) ([@pre-commit-ci[bot]](https://github.com/pre-commit-ci[bot]))
+- Bump actions/checkout from 3 to 4 [#78](https://github.com/MIPLabCH/nigsp/pull/78) ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- int: Update actions versions [#78](https://github.com/MIPLabCH/nigsp/pull/78) ([@smoia](https://github.com/smoia))
+
+#### Authors: 5
+
+- [@dependabot[bot]](https://github.com/dependabot[bot])
+- [@merelvdthiel](https://github.com/merelvdthiel)
+- [@pre-commit-ci[bot]](https://github.com/pre-commit-ci[bot])
+- Mathieu Scheltienne ([@mscheltienne](https://github.com/mscheltienne))
+- Stefano Moia ([@smoia](https://github.com/smoia))
+
+---
+
 # 0.18.1 (Wed Aug 16 2023)
 
 #### 🐛 Bug Fix
