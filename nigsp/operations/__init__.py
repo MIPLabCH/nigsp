@@ -11,7 +11,6 @@ For example, calling `nigsp.operations.metrics.sdi` is equivalent to calling
 `nigsp.operations.sdi` or `nigsp.metrisc.sdi`.
 """
 
-
 # Import all operations.
 from .graph import nodestrength, zerocross
 from .laplacian import (

@@ -1,4 +1,5 @@
 """References to be imported and injected throughout the package."""
+
 from nigsp.due import Doi
 
 PRETI_2019 = Doi("10.1038/s41467-019-12765-7")
