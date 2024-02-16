@@ -206,7 +206,7 @@ def resize_ts(timeseries, resize=None, globally=False):
         if resize == "spc":  # pragma: no cover
             LGR.info("Expressing timeseries in signal percentage change")
             timeseries = spc_ts(timeseries, globally=globally)
-        elif resize == "norm":  # pragma: no cover
+        elif resize in ["norm", "zscore"]:  # pragma: no cover
             LGR.info("Normalise timeseries")
             timeseries = normalise_ts(timeseries, globally=globally)
         elif resize == "demean":  # pragma: no cover
@@ -339,13 +339,13 @@ def median_cutoff_frequency_idx(energy):
     return freq_idx
 
 
-def graph_filter(timeseries, eigenvec, freq_idx, keys=["low", "high"]):
+def graph_filter(timeseries, eigenvec, freq_idx, keys=["low-pass", "high-pass"]):
     """
     Filter a graph decomposition into two parts based on freq_idx.
 
     Return the two eigenvector lists (high freq and low freq) that are equal
-    to the original eigenvector list, but "low" is zero-ed for all frequencies
-    >= of the given index, and "high" is zero-ed for all frequencies < to the
+    to the original eigenvector list, but "low-pass" is zero-ed for all frequencies
+    >= of the given index, and "high-pass" is zero-ed for all frequencies < to the
     given index.
     Also return their projection onto a timeseries.
 
@@ -358,7 +358,7 @@ def graph_filter(timeseries, eigenvec, freq_idx, keys=["low", "high"]):
     freq_idx : int or list
         The index of the frequency that splits the spectral power into two
         (more or less) equal parts - i.e. the index of the first frequency in
-        the "high" component.
+        the "high-pass" component.
     keys : list, optional
         The keys to call the split parts with.
 
@@ -372,8 +372,8 @@ def graph_filter(timeseries, eigenvec, freq_idx, keys=["low", "high"]):
     Raises
     ------
     IndexError
-        If the given index is 0 (all "high"), the last possible index (all "low"),
-        or higher than the last possible index (not applicable).
+        If the given index is 0 (all "high-pass"), the last possible index
+        (all "low-pass"), or higher than the last possible index (not applicable).
     """
     # #!# Find better name
     # #!# Implement an index splitter

@@ -26,12 +26,12 @@ from nigsp.operations.timeseries import resize_ts
 
 LGR = logging.getLogger(__name__)
 SET_DPI = 100
-FIGSIZE = (18, 10)
+FIGSIZE = (12, 7)
 FIGSIZE_SQUARE = (6, 5)
-FIGSIZE_LONG = (10, 5)
+FIGSIZE_LONG = (12, 4)
 
 
-def plot_connectivity(mtx, filename=None, closeplot=False):
+def plot_connectivity(mtx, filename=None, title=None, crange=None, closeplot=False):
     """
     Create a connectivity matrix plot.
 
@@ -43,6 +43,10 @@ def plot_connectivity(mtx, filename=None, closeplot=False):
         A (square) array with connectivity information inside.
     filename : None, str, or os.PathLike, optional
         The path to save the plot on disk.
+    title : None or str, optional
+        Add a title to the graph
+    range : None or list, optional
+        Set vmin and vmax
     closeplot : bool, optional
         Whether to close plots after saving or not. Mainly used for debug
         or use with live python/ipython instances.
@@ -85,11 +89,31 @@ def plot_connectivity(mtx, filename=None, closeplot=False):
         LGR.warning("Given matrix is not a square matrix!")
 
     LGR.info("Creating connectivity plot.")
-    plt.figure(figsize=FIGSIZE_SQUARE)
-    plot_matrix(mtx)
+    fig = plt.figure(figsize=FIGSIZE_SQUARE)
+    ax = fig.subplots()
+
+    pc_args = {"mat": mtx, "axes": ax}
+    if crange is not None:
+        if type(crange) in [list, tuple]:
+            pc_args["vmin"] = crange[0]
+            pc_args["vmax"] = crange[1]
+        else:
+            vmax = np.nanpercentile(mtx, 98)  # mtx.max()
+            vmin = np.abs(np.nanpercentile(mtx, 2))  # mtx.min()
+            if crange == "auto-symm" and mtx.min() < 0 and vmax > 0:
+                pc_args["vmax"] = vmax if vmax > vmin else vmin
+                pc_args["vmin"] = -vmin if vmin > vmax else -vmax
+            elif crange == "auto-zero" or mtx.min() > 0 or vmax < 0:
+                pass
+            else:
+                raise NotImplementedError(f"{crange} option not implemented.")
+
+    plot_matrix(**pc_args)
+    if title is not None:
+        fig.suptitle(title)
 
     if filename is not None:
-        plt.savefig(filename, dpi=SET_DPI)
+        plt.savefig(filename, dpi=SET_DPI, bbox_inches="tight")
         closeplot = True
 
     if closeplot:
@@ -162,17 +186,18 @@ def plot_greyplot(timeseries, filename=None, title=None, resize=None, closeplot=
     timeseries = resize_ts(timeseries, resize)
 
     LGR.info("Creating greyplot.")
-    plt.figure(figsize=FIGSIZE_LONG)
-    if title is not None:
-        plt.title(title)
     vmax = np.percentile(timeseries, 99)
     vmin = np.percentile(timeseries, 1)
-    plt.imshow(timeseries, cmap="gray", vmin=vmin, vmax=vmax)
-    plt.colorbar()
+    fig = plt.figure(figsize=FIGSIZE_LONG)
+    ax = fig.subplots()
+    im = ax.imshow(timeseries, cmap="gray", vmin=vmin, vmax=vmax)
+    plt.colorbar(im, ax=ax)
+    if title is not None:
+        fig.suptitle(title)
     plt.tight_layout()
 
     if filename is not None:
-        plt.savefig(filename, dpi=SET_DPI)
+        plt.savefig(filename, dpi=SET_DPI, bbox_inches="tight")
         closeplot = True
 
     if closeplot:
@@ -183,7 +208,9 @@ def plot_greyplot(timeseries, filename=None, title=None, resize=None, closeplot=
     return 0
 
 
-def plot_nodes(ns, atlas, filename=None, thr=None, closeplot=False):
+def plot_nodes(
+    ns, atlas, filename=None, title=None, thr=None, cmap=None, closeplot=False
+):
     """
     Create a marker plot in the MNI space.
 
@@ -198,8 +225,12 @@ def plot_nodes(ns, atlas, filename=None, thr=None, closeplot=False):
         or a list of coordinates of the center of mass of parcels.
     filename : None, str, or os.PathLike, optional
         The path to save the plot on disk.
+    title : None or str, optional
+        Add a title to the graph
     thr : float or None, optional
         The threshold to use in plotting the nodes.
+    cmap : None or matplotlib.pyplot.cm colormap object, optional.
+        The colormap to adopt in plotting nodes. Defaults to reverse viridis.
     closeplot : bool, optional
         Whether to close plots after saving or not. Mainly used for debug
         or use with live python/ipython instances.
@@ -252,11 +283,17 @@ def plot_nodes(ns, atlas, filename=None, thr=None, closeplot=False):
         raise ValueError("Node array and coordinates array have different length.")
 
     LGR.info("Creating markerplot.")
-    plt.figure(figsize=FIGSIZE)
-    plot_markers(ns, coord, node_threshold=thr)
+    fig = plt.figure(figsize=FIGSIZE)
+    ax = fig.subplots()
 
+    cmap = plt.cm.viridis_r if cmap is None else cmap
+    plot_markers(ns, coord, axes=ax, node_threshold=thr, node_cmap=cmap)
+    if title is not None:
+        fig.suptitle(title)
+
+    plt.tight_layout()
     if filename is not None:
-        plt.savefig(filename, dpi=SET_DPI)
+        plt.savefig(filename, dpi=SET_DPI, bbox_inches="tight")
         closeplot = True
 
     if closeplot:
@@ -265,7 +302,9 @@ def plot_nodes(ns, atlas, filename=None, thr=None, closeplot=False):
     return 0
 
 
-def plot_edges(mtx, atlas, filename=None, thr=None, closeplot=False):
+def plot_edges(
+    mtx, atlas, filename=None, title=None, thr=None, cmap=None, closeplot=False
+):
     """
     Create a connectivity plot in the MNI space.
 
@@ -280,9 +319,13 @@ def plot_edges(mtx, atlas, filename=None, thr=None, closeplot=False):
         or a list of coordinates of the center of mass of parcels.
     filename : None, str, or os.PathLike, optional
         The path to save the plot on disk.
+    title : None or str, optional
+        Add a title to the graph
     thr : float, str or None, optional
         The threshold to use in plotting the nodes.
         If `str`, needs to express a percentage.
+    cmap : None or matplotlib.pyplot.cm colormap object, optional.
+        The colormap to adopt in plotting nodes. Defaults to reverse viridis.
     closeplot : bool, optional
         Whether to close plots after saving or not. Mainly used for debug
         or use with live python/ipython instances.
@@ -335,7 +378,8 @@ def plot_edges(mtx, atlas, filename=None, thr=None, closeplot=False):
         raise ValueError("Matrix axis and coordinates array have different length.")
 
     LGR.info("Creating connectome-like plot.")
-    plt.figure(figsize=FIGSIZE)
+    fig = plt.figure(figsize=FIGSIZE)
+    ax = fig.subplots()
 
     pc_args = {
         "adjacency_matrix": mtx,
@@ -343,7 +387,9 @@ def plot_edges(mtx, atlas, filename=None, thr=None, closeplot=False):
         "node_color": "black",
         "node_size": 5,
         "edge_threshold": thr,
+        "edge_cmap": plt.cm.bwr,
         "colorbar": True,
+        "axes": ax,
     }
 
     if mtx.min() >= 0:
@@ -351,10 +397,15 @@ def plot_edges(mtx, atlas, filename=None, thr=None, closeplot=False):
         pc_args["edge_vmax"] = mtx.max()
         pc_args["edge_cmap"] = cm.red_transparent_full_alpha_range
 
+    pc_args["edge_cmap"] = pc_args["edge_cmap"] if cmap is None else cmap
     plot_connectome(**pc_args)
 
+    if title is not None:
+        fig.suptitle(title)
+
+    plt.tight_layout()
     if filename is not None:
-        plt.savefig(filename, dpi=SET_DPI)
+        plt.savefig(filename, dpi=SET_DPI, bbox_inches="tight")
         closeplot = True
 
     if closeplot:
