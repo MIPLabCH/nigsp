@@ -84,8 +84,8 @@ def test_export_metrics_nifti(sc_mtx, atlas, sdi, testdir):
     remove(sdi)
 
 
-@pytest.importorskip("nilearn")
 def test_plot_metrics(atlas, sc_mtx, sdi, testdir):
+    pytest.importorskip("nilearn")
     from nilearn.plotting import find_parcellation_cut_coords
 
     testdir = join(testdir, "testdir")

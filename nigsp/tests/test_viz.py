@@ -59,8 +59,9 @@ def test_plot_edges(atlas):
 
 
 # ### Break tests
-@pytest.importorskip("nilearn")
 def test_break_plot_connectivity():
+    pytest.importorskip("nilearn")
+
     import nilearn.plotting
 
     sys.modules["matplotlib"] = None
@@ -96,8 +97,9 @@ def test_break_plot_greyplot():
     matplotlib.pyplot.close()
 
 
-@pytest.importorskip("nilearn")
 def test_break_plot_nodes(atlas):
+    pytest.importorskip("nilearn")
+
     import nilearn.plotting
 
     sys.modules["matplotlib"] = None
@@ -131,8 +133,9 @@ def test_break_plot_nodes(atlas):
     remove(atlas)
 
 
-@pytest.importorskip("nilearn")
 def test_break_plot_edges(atlas):
+    pytest.importorskip("nilearn")
+
     import nilearn.plotting
 
     sys.modules["matplotlib"] = None
