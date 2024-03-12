@@ -39,6 +39,8 @@ def test_plot_greyplot(timeseries):
 
 
 def test_plot_nodes(sdi, atlas):
+    pytest.importorskip("nilearn")
+
     ns = genfromtxt(sdi)
     viz.plot_nodes(ns, atlas, "abed.png", closeplot=True)
 
@@ -50,6 +52,8 @@ def test_plot_nodes(sdi, atlas):
 
 
 def test_plot_edges(atlas):
+    pytest.importorskip("nilearn")
+
     mtx = rand(360, 360)
     mtx = mtx - mtx.min() + 0.3
     with pytest.warns(UserWarning, match="'adjacency_matrix' is not symmetric"):
