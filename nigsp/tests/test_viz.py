@@ -50,7 +50,8 @@ def test_plot_nodes(sdi, atlas):
 def test_plot_edges(atlas):
     mtx = rand(360, 360)
     mtx = mtx - mtx.min() + 0.3
-    viz.plot_edges(mtx, atlas, "britta.png", thr="95%", closeplot=True)
+    with pytest.warns(UserWarning, match="'adjacency_matrix' is not symmetric"):
+        viz.plot_edges(mtx, atlas, "britta.png", thr="95%", closeplot=True)
 
     assert isfile("britta.png")
     matplotlib.pyplot.close()
