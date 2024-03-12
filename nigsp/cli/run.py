@@ -3,17 +3,15 @@
 
 import argparse
 
-from nigsp import __version__
+from .. import __version__
 
 
 def _get_parser():
-    """
-    Parse command line inputs for this function.
+    """Parse command line inputs for this function.
 
     Returns
     -------
     parser.parse_args() : argparse dict
-
     """
     parser = argparse.ArgumentParser(
         description=(
@@ -251,8 +249,7 @@ def _get_parser():
 if __name__ == "__main__":
     raise RuntimeError(
         "nigsp/cli/run.py should not be run directly;\n"
-        "Please `pip install` nigsp and use the "
-        "`nigsp` command"
+        "Please `pip install` nigsp and use the `nigsp` command."
     )
 
 

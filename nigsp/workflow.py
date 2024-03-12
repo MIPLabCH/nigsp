@@ -9,6 +9,7 @@ in a shell session:
 $ nigsp --help
 ```
 """
+
 import datetime
 import logging
 import os
@@ -16,14 +17,12 @@ import sys
 
 import numpy as np
 
-from nigsp import _version, blocks, io, references
-from nigsp import surrogates as surr
-from nigsp import timeseries as ts
-from nigsp import utils, viz
-from nigsp.cli.run import _get_parser
-from nigsp.due import due
-from nigsp.objects import SCGraph
-from nigsp.operations.metrics import SUPPORTED_METRICS
+from . import _version, blocks, io, references, utils, viz
+from .due import due
+from .objects import SCGraph
+from .operations import surrogates as surr
+from .operations import timeseries as ts
+from .operations.metrics import SUPPORTED_METRICS
 
 LGR = logging.getLogger(__name__)
 LGR.setLevel(logging.INFO)
@@ -474,6 +473,8 @@ def nigsp(
 
 
 def _main(argv=None):
+    from .cli.run import _get_parser
+
     options = _get_parser().parse_args(argv)
 
     save_bash_call(options.fname, options.outdir, options.outname)
