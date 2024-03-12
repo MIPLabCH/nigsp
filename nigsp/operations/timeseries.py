@@ -435,12 +435,12 @@ def graph_filter(timeseries, eigenvec, freq_idx, keys=["low", "high"]):
     return evec_split, ts_split
 
 
-def trapezoid_compat():
-    """Compatibility for python 3.7 + numpy < 2.0 <-> python 3.12 + numpy 2.0+."""
+def trapezoid_compat(*args, **kwargs):
+    """Compatibility for numpy 1.xx <-> numpy 2.xx."""
     if hasattr(np, "trapezoid"):
-        return np.trapezoid
+        return np.trapezoid(*args, **kwargs)
     else:
-        return np.trapz
+        return np.trapz(*args, **kwargs)
 
 
 """
