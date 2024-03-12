@@ -36,7 +36,7 @@ jobs:
           python -m pip install --progress-bar off .[test]
           python -m pip install --progress-bar off --upgrade --pre --only-binary :all: -i https://pypi.anaconda.org/scientific-python-nightly-wheels/simple --timeout=180 numpy
       - name: Run pytest
-        run: pytest nigsp --cov=nigsp --cov-report=xml --cov-config=pyproject.toml
+        run: pytest nigsp --cov=nigsp --cov-report=xml --cov-config=setup.cfg
       - name: Upload to codecov
         uses: codecov/codecov-action@v4
         with:
