@@ -318,7 +318,7 @@ def median_cutoff_frequency_idx(energy):
 
     if energy.ndim == 2:
         energy = energy.mean(axis=-1)
-    half_tot_auc = np.trapz(energy, axis=0) / 2
+    half_tot_auc = np.trapezoid(energy, axis=0) / 2
     LGR.debug(f"Total AUC = {half_tot_auc*2}, targeting half of total AUC")
 
     # Compute the AUC from first to one to last frequency,
@@ -329,10 +329,10 @@ def median_cutoff_frequency_idx(energy):
     for freq_idx in range(1, energy.size):
         LGR.debug(
             f"Frequency idx {freq_idx}, "
-            f"AUC = {np.trapz(energy[:freq_idx])}, "
+            f"AUC = {np.trapezoid(energy[:freq_idx])}, "
             f"target AUC = {half_tot_auc}"
         )
-        if np.trapz(energy[:freq_idx]) >= half_tot_auc:
+        if np.trapezoid(energy[:freq_idx]) >= half_tot_auc:
             break
 
     LGR.info(f"Found {freq_idx} as splitting index")
