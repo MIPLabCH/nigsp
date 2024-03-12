@@ -18,6 +18,8 @@ from nigsp import viz
 )
 # ### Unit tests
 def test_plot_connectivity(mtx):
+    pytest.importorskip("nilearn")
+
     viz.plot_connectivity(mtx, "annie.png", closeplot=True)
 
     assert isfile("annie.png")
