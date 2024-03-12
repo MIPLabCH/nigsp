@@ -6,15 +6,14 @@ from os import remove
 from os.path import isfile
 
 import matplotlib
-import nilearn.plotting
+import pytest
 from numpy import genfromtxt
 from numpy.random import rand
-from pytest import mark, raises
 
 from nigsp import viz
 
 
-@mark.parametrize(
+@pytest.mark.parametrize(
     "mtx", [(rand(3, 4)), (rand(4, 4)), (rand(4, 4, 3)), (rand(4, 4, 3, 1))]
 )
 # ### Unit tests
@@ -26,7 +25,9 @@ def test_plot_connectivity(mtx):
     remove("annie.png")
 
 
-@mark.parametrize("timeseries", [(rand(3, 50)), (rand(3, 50, 3)), (rand(3, 50, 4, 1))])
+@pytest.mark.parametrize(
+    "timeseries", [(rand(3, 50)), (rand(3, 50, 3)), (rand(3, 50, 4, 1))]
+)
 def test_plot_greyplot(timeseries):
     viz.plot_greyplot(timeseries, "troy.png", closeplot=True)
 
@@ -58,20 +59,23 @@ def test_plot_edges(atlas):
 
 
 # ### Break tests
+@pytest.importorskip("nilearn")
 def test_break_plot_connectivity():
+    import nilearn.plotting
+
     sys.modules["matplotlib"] = None
-    with raises(ImportError) as errorinfo:
+    with pytest.raises(ImportError) as errorinfo:
         viz.plot_connectivity(rand(3, 3), "craig.png")
     assert "are required" in str(errorinfo.value)
     sys.modules["matplotlib"] = matplotlib
 
     sys.modules["nilearn.plotting"] = None
-    with raises(ImportError) as errorinfo:
+    with pytest.raises(ImportError) as errorinfo:
         viz.plot_connectivity(rand(3, 3), "craig.png")
     assert "are required" in str(errorinfo.value)
     sys.modules["nilearn.plotting"] = nilearn.plotting
 
-    with raises(ValueError) as errorinfo:
+    with pytest.raises(ValueError) as errorinfo:
         viz.plot_connectivity(rand(3, 3, 3, 4), "craig.png")
     assert "plot connectivity" in str(errorinfo.value)
 
@@ -80,43 +84,46 @@ def test_break_plot_connectivity():
 
 def test_break_plot_greyplot():
     sys.modules["matplotlib"] = None
-    with raises(ImportError) as errorinfo:
+    with pytest.raises(ImportError) as errorinfo:
         viz.plot_greyplot(rand(3, 3), "dan.png")
     assert "is required" in str(errorinfo.value)
     sys.modules["matplotlib"] = matplotlib
 
-    with raises(ValueError) as errorinfo:
+    with pytest.raises(ValueError) as errorinfo:
         viz.plot_greyplot(rand(3, 3, 3, 4), "dan.png")
     assert "plot greyplots" in str(errorinfo.value)
 
     matplotlib.pyplot.close()
 
 
+@pytest.importorskip("nilearn")
 def test_break_plot_nodes(atlas):
+    import nilearn.plotting
+
     sys.modules["matplotlib"] = None
-    with raises(ImportError) as errorinfo:
+    with pytest.raises(ImportError) as errorinfo:
         viz.plot_nodes(rand(3), rand(3, 3))
     assert "are required" in str(errorinfo.value)
     sys.modules["matplotlib"] = matplotlib
 
     sys.modules["nilearn.plotting"] = None
-    with raises(ImportError) as errorinfo:
+    with pytest.raises(ImportError) as errorinfo:
         viz.plot_nodes(rand(3), rand(3, 3))
     assert "are required" in str(errorinfo.value)
     sys.modules["nilearn.plotting"] = nilearn.plotting
 
-    with raises(ValueError) as errorinfo:
+    with pytest.raises(ValueError) as errorinfo:
         viz.plot_nodes(rand(3, 3, 4), rand(3, 3))
     assert "plot node values" in str(errorinfo.value)
 
-    with raises(NotImplementedError) as errorinfo:
+    with pytest.raises(NotImplementedError) as errorinfo:
         viz.plot_nodes(rand(3), rand(3, 3, 2))
     assert "atlases in nifti" in str(errorinfo.value)
-    with raises(NotImplementedError) as errorinfo:
+    with pytest.raises(NotImplementedError) as errorinfo:
         viz.plot_nodes(rand(3), rand(3, 4))
     assert "atlases in nifti" in str(errorinfo.value)
 
-    with raises(ValueError) as errorinfo:
+    with pytest.raises(ValueError) as errorinfo:
         viz.plot_nodes(rand(3), rand(4, 3))
     assert "different length" in str(errorinfo.value)
 
@@ -124,31 +131,34 @@ def test_break_plot_nodes(atlas):
     remove(atlas)
 
 
+@pytest.importorskip("nilearn")
 def test_break_plot_edges(atlas):
+    import nilearn.plotting
+
     sys.modules["matplotlib"] = None
-    with raises(ImportError) as errorinfo:
+    with pytest.raises(ImportError) as errorinfo:
         viz.plot_edges(rand(3), rand(3, 3))
     assert "are required" in str(errorinfo.value)
     sys.modules["matplotlib"] = matplotlib
 
     sys.modules["nilearn.plotting"] = None
-    with raises(ImportError) as errorinfo:
+    with pytest.raises(ImportError) as errorinfo:
         viz.plot_edges(rand(3), rand(3, 3))
     assert "are required" in str(errorinfo.value)
     sys.modules["nilearn.plotting"] = nilearn.plotting
 
-    with raises(ValueError) as errorinfo:
+    with pytest.raises(ValueError) as errorinfo:
         viz.plot_edges(rand(3, 3, 4, 5), rand(3, 3))
     assert "plot node values" in str(errorinfo.value)
 
-    with raises(NotImplementedError) as errorinfo:
+    with pytest.raises(NotImplementedError) as errorinfo:
         viz.plot_edges(rand(3), rand(3, 3, 2))
     assert "atlases in nifti" in str(errorinfo.value)
-    with raises(NotImplementedError) as errorinfo:
+    with pytest.raises(NotImplementedError) as errorinfo:
         viz.plot_edges(rand(3), rand(3, 4))
     assert "atlases in nifti" in str(errorinfo.value)
 
-    with raises(ValueError) as errorinfo:
+    with pytest.raises(ValueError) as errorinfo:
         viz.plot_edges(rand(3), rand(4, 3))
     assert "different length" in str(errorinfo.value)
 

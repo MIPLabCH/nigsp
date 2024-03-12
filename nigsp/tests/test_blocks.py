@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Tests for blocks."""
+
 import shutil
 import sys
 from os import makedirs, remove
@@ -7,9 +8,8 @@ from os.path import isfile, join
 
 import nibabel
 import numpy as np
-from nilearn.plotting import find_parcellation_cut_coords
+import pytest
 from pymatreader import read_mat
-from pytest import mark
 
 from nigsp import blocks
 from nigsp.io import load_nifti_get_mask
@@ -32,7 +32,7 @@ def test_nifti_to_timeseries(atlastime, atlas):
     remove(atlas)
 
 
-@mark.parametrize("ext", [(".nii.gz"), (".csv")])
+@pytest.mark.parametrize("ext", [(".nii.gz"), (".csv")])
 def test_export_metrics_txt(ext, sc_mtx, atlas, sdi, testdir):
     testdir = join(testdir, "testdir")
     makedirs(testdir, exist_ok=True)
@@ -84,7 +84,10 @@ def test_export_metrics_nifti(sc_mtx, atlas, sdi, testdir):
     remove(sdi)
 
 
+@pytest.importorskip("nilearn")
 def test_plot_metrics(atlas, sc_mtx, sdi, testdir):
+    from nilearn.plotting import find_parcellation_cut_coords
+
     testdir = join(testdir, "testdir")
     makedirs(testdir, exist_ok=True)
     atlas_in, _, img = load_nifti_get_mask(atlas, ndim=3)

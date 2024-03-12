@@ -36,7 +36,8 @@ jobs:
           python -m pip install --progress-bar off .[test]
           python -m pip install matplotlib
           python -m pip install --progress-bar off --upgrade --no-deps --pre --only-binary :all: -i https://pypi.anaconda.org/scientific-python-nightly-wheels/simple --timeout=180 matplotlib
-          python -m pip install --progress-bar off --upgrade --pre --only-binary :all: -i https://pypi.anaconda.org/scientific-python-nightly-wheels/simple --timeout=180 numpy scipy scikit-learn
+          python -m pip install --progress-bar off --upgrade --pre --only-binary :all: -i https://pypi.anaconda.org/scientific-python-nightly-wheels/simple --timeout=180 numpy scipy
+          python -m pip uninstall --progress-bar off nilearn
       - name: Run pytest
         run: pytest nigsp --cov=nigsp --cov-report=xml --cov-config=setup.cfg
       - name: Upload to codecov
