@@ -468,6 +468,8 @@ def nigsp(
                 pass
 
     LGR.info(f"End of workflow, find results in {outdir}.")
+    LGR.removeHandler(log_handler)
+    log_handler.close()
 
     return 0
 
@@ -476,9 +478,7 @@ def _main(argv=None):
     from .cli.run import _get_parser
 
     options = _get_parser().parse_args(argv)
-
     save_bash_call(options.fname, options.outdir, options.outname)
-
     nigsp(**vars(options))
 
 
