@@ -554,6 +554,3 @@ def get_versions():
         "error": "unable to compute version",
         "date": None,
     }
-
-
-__version__ = get_versions()["version"]
