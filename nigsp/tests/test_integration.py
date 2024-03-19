@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 """Integration test."""
+
 import shutil
 from os.path import isdir, isfile, join
 
 import numpy as np
+import pytest
 
 from nigsp.workflow import _main
 
@@ -11,6 +13,8 @@ from nigsp.workflow import _main
 # ### Integration tests
 def test_integration(timeseries, sc_mtx, atlas, mean_fc, sdi, testdir):
     """Integration test for FULL workflow."""
+    pytest.importorskip("nilearn")
+
     testdir = join(testdir, "testdir")
     mean_fc_mat = np.genfromtxt(mean_fc)
     # Compared to original SDI, now we log2 it).

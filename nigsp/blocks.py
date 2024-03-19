@@ -10,8 +10,8 @@ LGR
 
 import logging
 
-from nigsp import io, viz
-from nigsp.operations import nifti
+from . import io, viz
+from .operations import nifti
 
 LGR = logging.getLogger(__name__)
 

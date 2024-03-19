@@ -1,13 +1,31 @@
-"""
-This configuration test module was taken from phys2bids.
-Credit to the original author(s) and to the phys2bids community.
-"""
+from __future__ import annotations  # c.f. PEP 563, PEP 649
 
 import os
 import ssl
+from typing import TYPE_CHECKING
 from urllib.request import urlretrieve
 
-import pytest
+from pytest import fixture
+
+if TYPE_CHECKING:
+    from pytest import Config
+
+
+def pytest_configure(config: Config) -> None:
+    """Configure pytest options."""
+    warnings_lines = r"""
+    error::
+    """
+    for warning_line in warnings_lines.split("\n"):
+        warning_line = warning_line.strip()
+        if warning_line and not warning_line.startswith("#"):
+            config.addinivalue_line("filterwarnings", warning_line)
+
+
+"""
+The following fetch_file and configuration test module was taken from phys2bids.
+Credit to the original author(s) and to the phys2bids community.
+"""
 
 
 def fetch_file(osf_id, path, filename):
@@ -48,37 +66,37 @@ def fetch_file(osf_id, path, filename):
     return full_path
 
 
-@pytest.fixture(scope="session")
+@fixture(scope="session")
 def testdir(tmp_path_factory):
     """Test path that will be used to download all files."""
     return tmp_path_factory.getbasetemp()
 
 
-@pytest.fixture
+@fixture(scope="function")
 def atlas(testdir):
     return fetch_file("h6nj7", testdir, "atlas.nii.gz")
 
 
-@pytest.fixture
+@fixture(scope="function")
 def atlastime(testdir):
     return fetch_file("ts6a8", testdir, "ats.nii.gz")
 
 
-@pytest.fixture
+@fixture(scope="function")
 def mean_fc(testdir):
     return fetch_file("jrg8d", testdir, "mean_fc_matlab.tsv")
 
 
-@pytest.fixture
+@fixture(scope="function")
 def sdi(testdir):
     return fetch_file("rs4dn", testdir, "SDI_matlab.tsv")
 
 
-@pytest.fixture
+@fixture(scope="function")
 def sc_mtx(testdir):
     return fetch_file("vwh75", testdir, "sc.mat")
 
 
-@pytest.fixture
+@fixture(scope="function")
 def timeseries(testdir):
     return fetch_file("ay8df", testdir, "func.mat")

@@ -26,7 +26,7 @@ from os.path import exists, join
 
 import numpy as np
 
-from nigsp.utils import change_var_type
+from .utils import change_var_type
 
 EXT_1D = [".txt", ".csv", ".tsv", ".1d", ".par", ".tsv.gz", ".csv.gz"]
 EXT_MAT = [".mat"]
