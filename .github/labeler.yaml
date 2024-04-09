@@ -1,0 +1,7 @@
+Documentation:
+  - changed-files:
+      - any-glob-to-any-file: ['docs/*', '.readthedocs.yml']
+
+Internal:
+  - changed-files:
+      - any-glob-to-any-file: ['.pre-commit-config.yaml', '.readthedocs.yml', 'codecov.yml', '.gitignore', '.github/*']
