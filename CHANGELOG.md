@@ -1,3 +1,15 @@
+# 0.18.5 (Tue Apr 09 2024)
+
+#### 🐛 Bug Fix
+
+- [pre-commit.ci] pre-commit autoupdate [#92](https://github.com/MIPLabCH/nigsp/pull/92) ([@pre-commit-ci[bot]](https://github.com/pre-commit-ci[bot]))
+
+#### Authors: 1
+
+- [@pre-commit-ci[bot]](https://github.com/pre-commit-ci[bot])
+
+---
+
 # 0.18.4 (Mon Mar 18 2024)
 
 #### 🐛 Bug Fix
