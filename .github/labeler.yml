@@ -4,7 +4,7 @@ Documentation:
 
 Internal:
   - changed-files:
-      - any-glob-to-any-file: ['.pre-commit-config.yaml', '.readthedocs.yml', 'codecov.yml', '.gitignore', '.github/*', 'nigsp/_version.py']
+      - any-glob-to-any-file: ['.*', 'codecov.yml', 'setup.cfg', 'setup.py', 'versioneer.py', '.github/*', '.circleci/*', 'nigsp/_version.py']
 
 Testing:
   - changed-files:
