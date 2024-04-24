@@ -287,6 +287,14 @@ def graph_fourier_transform(timeseries, eigenvec, energy=False, mean=False):
         return proj
 
 
+def _trapezoid_compat(*args, **kwargs):
+    """Compatibility for numpy 1.xx <-> numpy 2.xx."""
+    if hasattr(np, "trapezoid"):
+        return np.trapezoid(*args, **kwargs)
+    else:
+        return np.trapz(*args, **kwargs)
+
+
 def median_cutoff_frequency_idx(energy):
     """
     Find the frequency that splits the energy of a timeseries in two roughly equal parts.
@@ -433,14 +441,6 @@ def graph_filter(timeseries, eigenvec, freq_idx, keys=["low", "high"]):
         ts_split[k] = graph_fourier_transform(fourier_coeff, evec_split[k].T)
 
     return evec_split, ts_split
-
-
-def _trapezoid_compat(*args, **kwargs):
-    """Compatibility for numpy 1.xx <-> numpy 2.xx."""
-    if hasattr(np, "trapezoid"):
-        return np.trapezoid(*args, **kwargs)
-    else:
-        return np.trapz(*args, **kwargs)
 
 
 """
