@@ -1,0 +1,11 @@
+Documentation:
+  - changed-files:
+      - any-glob-to-any-file: ['docs/*', '.readthedocs.yml', 'logos/*', 'README.md']
+
+Internal:
+  - changed-files:
+      - any-glob-to-any-file: ['.*', 'codecov.yml', 'setup.cfg', 'setup.py', 'versioneer.py', '.github/*', '.circleci/*', 'nigsp/_version.py']
+
+Testing:
+  - changed-files:
+      - any-glob-to-any-file: ['nigsp/tests/*', '.circleci/*']

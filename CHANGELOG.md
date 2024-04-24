@@ -1,3 +1,33 @@
+# 0.18.5 (Tue Apr 09 2024)
+
+#### 🐛 Bug Fix
+
+- [pre-commit.ci] pre-commit autoupdate [#92](https://github.com/MIPLabCH/nigsp/pull/92) ([@pre-commit-ci[bot]](https://github.com/pre-commit-ci[bot]))
+
+#### Authors: 1
+
+- [@pre-commit-ci[bot]](https://github.com/pre-commit-ci[bot])
+
+---
+
+# 0.18.4 (Mon Mar 18 2024)
+
+#### 🐛 Bug Fix
+
+- [pre-commit.ci] pre-commit autoupdate [#91](https://github.com/MIPLabCH/nigsp/pull/91) ([@pre-commit-ci[bot]](https://github.com/pre-commit-ci[bot]))
+
+#### 🏠 Internal
+
+- [pre-commit.ci] pre-commit autoupdate [#87](https://github.com/MIPLabCH/nigsp/pull/87) ([@pre-commit-ci[bot]](https://github.com/pre-commit-ci[bot]))
+- Fix versioneer for python >= 3.12 [#86](https://github.com/MIPLabCH/nigsp/pull/86) ([@mscheltienne](https://github.com/mscheltienne) [@pre-commit-ci[bot]](https://github.com/pre-commit-ci[bot]))
+
+#### Authors: 2
+
+- [@pre-commit-ci[bot]](https://github.com/pre-commit-ci[bot])
+- Mathieu Scheltienne ([@mscheltienne](https://github.com/mscheltienne))
+
+---
+
 # 0.18.3 (Tue Dec 12 2023)
 
 #### 🐛 Bug Fix
