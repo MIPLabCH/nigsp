@@ -1,3 +1,22 @@
+# 0.19.0 (Thu Apr 25 2024)
+
+#### 💥 Breaking Change during development
+
+- Numpy 2.0 + scipy + matplotlib pre-release workflow [#89](https://github.com/MIPLabCH/nigsp/pull/89) ([@mscheltienne](https://github.com/mscheltienne) [@pre-commit-ci[bot]](https://github.com/pre-commit-ci[bot]))
+
+#### 🏠 Internal
+
+- [pre-commit.ci] pre-commit autoupdate [#94](https://github.com/MIPLabCH/nigsp/pull/94) ([@pre-commit-ci[bot]](https://github.com/pre-commit-ci[bot]))
+- Add auto PR labeler [#93](https://github.com/MIPLabCH/nigsp/pull/93) ([@mscheltienne](https://github.com/mscheltienne) [@smoia](https://github.com/smoia))
+
+#### Authors: 3
+
+- [@pre-commit-ci[bot]](https://github.com/pre-commit-ci[bot])
+- Mathieu Scheltienne ([@mscheltienne](https://github.com/mscheltienne))
+- Stefano Moia ([@smoia](https://github.com/smoia))
+
+---
+
 # 0.18.5 (Tue Apr 09 2024)
 
 #### 🐛 Bug Fix
