@@ -15,14 +15,14 @@ orbs:
 # Define a job to be invoked later in a workflow.
 # See: https://circleci.com/docs/2.0/configuration-reference/#jobs
 jobs:
-  test37: # This is the name of the job, feel free to change it to better match what you're trying to do!
+  test39: # This is the name of the job, feel free to change it to better match what you're trying to do!
     # These next lines defines a Docker executors: https://circleci.com/docs/2.0/executor-types/
     # You can specify an image from Dockerhub or use one of the convenience images from CircleCI's Developer Hub
     # A list of available CircleCI Docker convenience images are available here: https://circleci.com/developer/images/image/cimg/python
     # The executor is the environment in which the steps below will be executed - below will use a python 3.6.14 container
     # Change the version below to your required version of python
     docker:
-      - image: cimg/python:3.7
+      - image: cimg/python:3.9
     working_directory: /tmp/src/nigsp
     resource_class: medium
     # Checkout the code as the first step. This is a dedicated CircleCI step.
@@ -58,9 +58,9 @@ jobs:
           paths:
             - src/coverage/.coverage.py37
 
-  test310:
+  test312:
     docker:
-      - image: cimg/python:3.10
+      - image: cimg/python:3.12
     working_directory: /tmp/src/nigsp
     resource_class: medium
     steps:
@@ -85,7 +85,7 @@ jobs:
 
   style_check:
     docker:
-      - image: cimg/python:3.7
+      - image: cimg/python:3.11
     working_directory: /tmp/src/nigsp
     resource_class: small
     steps:
@@ -105,7 +105,7 @@ jobs:
   merge_coverage:
     working_directory: /tmp/src/nigsp
     docker:
-      - image: cimg/python:3.10
+      - image: cimg/python:3.11
     resource_class: small
     steps:
       - attach_workspace:
@@ -133,13 +133,13 @@ workflows:
     # Inside the workflow, you define the jobs you want to run.
     jobs:
       - style_check
-      - test37:
+      - test39:
           requires:
             - style_check
-      - test310:
+      - test312:
           requires:
             - style_check
       - merge_coverage:
           requires:
-            - test37
-            - test310
+            - test39
+            - test312

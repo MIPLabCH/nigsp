@@ -17,7 +17,7 @@ LGR
 import logging
 from copy import deepcopy
 
-from nigsp import operations
+from . import operations
 
 LGR = logging.getLogger(__name__)
 

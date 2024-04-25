@@ -1,10 +1,10 @@
 codecov:
   branch: master
   strict_yaml_branch: master
-  require_ci_to_pass: yes
+  require_ci_to_pass: true
   bot: "codecov-io"
   max_report_age: 48
-  disable_default_path_fixes: no
+  disable_default_path_fixes: false
 
 coverage:
   precision: 2
@@ -40,4 +40,4 @@ ignore:
 comment:
   layout: "reach,diff,flags,tree"
   behavior: default
-  require_changes: no
+  require_changes: false

@@ -287,6 +287,14 @@ def graph_fourier_transform(timeseries, eigenvec, energy=False, mean=False):
         return proj
 
 
+def _trapezoid_compat(*args, **kwargs):
+    """Compatibility for numpy 1.xx <-> numpy 2.xx."""
+    if hasattr(np, "trapezoid"):
+        return np.trapezoid(*args, **kwargs)
+    else:
+        return np.trapz(*args, **kwargs)
+
+
 def median_cutoff_frequency_idx(energy):
     """
     Find the frequency that splits the energy of a timeseries in two roughly equal parts.
@@ -318,7 +326,7 @@ def median_cutoff_frequency_idx(energy):
 
     if energy.ndim == 2:
         energy = energy.mean(axis=-1)
-    half_tot_auc = np.trapz(energy, axis=0) / 2
+    half_tot_auc = _trapezoid_compat(energy, axis=0) / 2
     LGR.debug(f"Total AUC = {half_tot_auc*2}, targeting half of total AUC")
 
     # Compute the AUC from first to one to last frequency,
@@ -329,10 +337,10 @@ def median_cutoff_frequency_idx(energy):
     for freq_idx in range(1, energy.size):
         LGR.debug(
             f"Frequency idx {freq_idx}, "
-            f"AUC = {np.trapz(energy[:freq_idx])}, "
+            f"AUC = {_trapezoid_compat(energy[:freq_idx])}, "
             f"target AUC = {half_tot_auc}"
         )
-        if np.trapz(energy[:freq_idx]) >= half_tot_auc:
+        if _trapezoid_compat(energy[:freq_idx]) >= half_tot_auc:
             break
 
     LGR.info(f"Found {freq_idx} as splitting index")

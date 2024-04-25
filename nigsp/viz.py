@@ -22,7 +22,7 @@ import logging
 
 import numpy as np
 
-from nigsp.operations.timeseries import resize_ts
+from .operations.timeseries import resize_ts
 
 LGR = logging.getLogger(__name__)
 SET_DPI = 100
