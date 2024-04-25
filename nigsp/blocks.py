@@ -68,7 +68,7 @@ def export_metric(scgraph, outext, outprefix):
     """
     if outext in io.EXT_NIFTI:
         try:
-            import nibabel as _
+            import nibabel as _  # noqa: F401
         except ImportError:
             LGR.warning(
                 "The necessary library for nifti export (nibabel) "
@@ -118,7 +118,6 @@ def plot_metric(scgraph, outprefix, atlas=None, thr=None):
     """
     # Check that atlas format is supported.
     try:
-        atlas.header
         atlas_plot = atlas
     except AttributeError:
         try:

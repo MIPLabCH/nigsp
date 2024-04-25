@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
 `nigsp` main workflow and related functions.
 
@@ -75,7 +74,7 @@ def nigsp(
     atlasname=None,
     outname=None,
     outdir=None,
-    comp_metric=[],
+    comp_metric=[],  # noqa: B006
     index="median",
     surr_type=None,
     n_surr=1000,
@@ -91,17 +90,20 @@ def nigsp(
     ----------
     fname : str or os.PathLike
         Path to the timeseries data file. It can be a text, nifti, or matlab file
-        (and variants). To see the full list of support, check the general documentation.
+        (and variants). To see the full list of support, check the general
+        documentation.
     scname : str or os.PathLike
-        Path to the structural connectivity data file. It can be a text, nifti, or matlab file
-        (and variants). To see the full list of support, check the general documentation.
+        Path to the structural connectivity data file. It can be a text, nifti, or
+        matlab file (and variants). To see the full list of support, check the general
+        documentation.
     atlasname : str, os.PathLike, or None, optional
         Path to the atlas data file. It can be a text, nifti, or matlab file
-        (and variants). To see the full list of support, check the general documentation.
+        (and variants). To see the full list of support, check the general
+        documentation.
     outname : str, os.PathLike, or None, optional
-        Path to the output file - or just its full name. It can be a text, nifti, or matlab file
-        (and variants). If an extension is *not* declared, or if it is not currently
-        supported, the program will automatically export a csv file.
+        Path to the output file - or just its full name. It can be a text, nifti, or
+        matlab file (and variants). If an extension is *not* declared, or if it is not
+        currently supported, the program will automatically export a csv file.
         To see the full list of support, check the general documentation.
         It is *not* necessary to declare both this and `outdir` - the full path can
         be specified here.
@@ -260,7 +262,7 @@ def nigsp(
             atlas_is[k], _ = io.check_ext(io.EXT_DICT[k], atlasname)
 
     # Check that other inputs are supported
-    if index != "median" and type(index) is not int:
+    if index != "median" and not isinstance(index, int):
         raise ValueError(f"Index {index} of type {type(index)} is not valid.")
     if method not in surr.STAT_METHOD and method is not None:
         raise NotImplementedError(
@@ -403,7 +405,7 @@ def nigsp(
     # If possible, create plots!
     try:
         import matplotlib as _
-        import nilearn as _
+        import nilearn as _  # noqa: F811
 
         # Plot original SC and Laplacian
         LGR.info("Plot laplacian matrix.")
@@ -455,7 +457,7 @@ def nigsp(
 
             try:
                 import matplotlib as _
-                import nilearn as _
+                import nilearn as _  # noqa: F811, F401
 
                 if atlasname is not None:
                     LGR.info(f"Plot {metric_name} markerplot.")

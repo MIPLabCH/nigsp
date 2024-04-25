@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Tests for operations.surrogates."""
+
 import numpy as np
 from numpy.random import default_rng, rand
 from pytest import raises

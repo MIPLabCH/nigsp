@@ -1,11 +1,11 @@
 [tool.ruff]
-extend-exclude = ['docs',]
+extend-exclude = ['docs', 'versioneer.py', 'setup.py']
 line-length = 88
 target-version = 'py37'
 
 [tool.ruff.format]
 docstring-code-format = true
-line-ending = "lf"
+line-ending = 'lf'
 
 [tool.ruff.lint]
 ignore = []

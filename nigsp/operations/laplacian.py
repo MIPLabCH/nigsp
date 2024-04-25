@@ -45,7 +45,8 @@ def compute_laplacian(mtx, negval="absolute", selfloops=False):
     numpy.ndarray
         The laplacian of mtx
     numpy.ndarray
-        The degree matrix of mtx as a (mtx.ndim-1)D array, updated with selfloops in case.
+        The degree matrix of mtx as a (mtx.ndim-1)D array, updated with selfloops in
+        case.
 
     Raises
     ------
@@ -104,8 +105,7 @@ def compute_laplacian(mtx, negval="absolute", selfloops=False):
 
 
 def normalisation(lapl, degree, norm="symmetric", fix_zeros=True):
-    """
-    Normalise a Laplacian (L) matrix using either symmetric or random walk normalisation.
+    """Normalise a Laplacian (L) matrix using either symmetric or random walk normalisation.
 
     Parameters
     ----------
@@ -125,8 +125,8 @@ def normalisation(lapl, degree, norm="symmetric", fix_zeros=True):
           It normalises the outflow, i.e. it is column-optimised (each column = 0).
           Normally used in e.g. physical distribution networks.
     fix_zeros : bool, optional
-        Whether to change 0 elements in the degree matrix to 1 to avoid multiplying by 0.
-        Default is to do so.
+        Whether to change 0 elements in the degree matrix to 1 to avoid multiplying by
+        0. Default is to do so.
 
     Returns
     -------
@@ -145,7 +145,7 @@ def normalisation(lapl, degree, norm="symmetric", fix_zeros=True):
     Notes
     -----
     https://en.wikipedia.org/wiki/Laplacian_matrix
-    """
+    """  # noqa: E501
     deg = deepcopy(degree)
     if lapl.ndim - deg.ndim > 1:
         raise NotImplementedError(

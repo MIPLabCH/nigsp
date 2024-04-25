@@ -130,7 +130,7 @@ class SCGraph:
         )
         return self
 
-    def split_graph(self, index=None, keys=["low", "high"]):
+    def split_graph(self, index=None, keys=["low", "high"]):  # noqa: B006
         """Implement timeseries.median_cutoff_frequency_idx as class method."""
         if index is None:
             index = self.index
@@ -138,7 +138,7 @@ class SCGraph:
         if index == "median":  # pragma: no cover
             index = operations.median_cutoff_frequency_idx(self.energy)
 
-        elif type(index) is not int:
+        elif not isinstance(index, int):
             raise ValueError(
                 f"Unknown option {index} for frequency split index. "
                 "Declared index must be either an integer or 'median'"

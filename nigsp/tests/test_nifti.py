@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Tests for operations.nifti."""
+
 from numpy import asarray, prod, unique, zeros
 from numpy.random import rand
 from pytest import raises
@@ -108,11 +109,11 @@ def test_unfold_atlas():
     dm = zeros((6, 10), dtype="float32")
     label = unique(a)
     label = label[label > 0]
-    for n, l in enumerate(label):
-        da[a == l] = c[n, :]
+    for n, label_ in enumerate(label):
+        da[a == label_] = c[n, :]
     label = label[label > 1]
-    for n, l in enumerate(label):
-        dm[a == l] = cm[n, :]
+    for n, label_ in enumerate(label):
+        dm[a == label_] = cm[n, :]
 
     r = nifti.unfold_atlas(c, a)
     rm = nifti.unfold_atlas(cm, a, mask=m)

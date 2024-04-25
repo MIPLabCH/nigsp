@@ -175,9 +175,11 @@ def apply_atlas(data, atlas, mask=None):
     data : numpy.ndarray
         A 3- or 4- D matrix (normally nifti data) of timeseries.
     atlas : numpy.ndarray
-        A 2- or 3- D matrix representing the atlas, each parcel represented by a different int.
+        A 2- or 3- D matrix representing the atlas, each parcel represented by a
+        different int.
     mask : None or numpy.ndarray, optional
-        A 2- or 3- D matrix representing a mask, all voxels == 0 are excluded from the computation.
+        A 2- or 3- D matrix representing a mask, all voxels == 0 are excluded from the
+        computation.
 
     Returns
     -------
@@ -230,8 +232,8 @@ def apply_atlas(data, atlas, mask=None):
     parcels = np.empty([len(labels), data.shape[-1]], dtype="float32")
 
     # Compute averages
-    for n, l in enumerate(labels):
-        parcels[n, :] = data[atlas == l].mean(axis=0)
+    for n, label in enumerate(labels):
+        parcels[n, :] = data[atlas == label].mean(axis=0)
 
     return parcels
 
@@ -302,8 +304,8 @@ def unfold_atlas(data, atlas, mask=None):
         if data.shape[ax] > 1:
             out = out[..., np.newaxis].repeat(data.shape[ax], axis=-1)
 
-    for n, l in enumerate(labels):
-        out[atlas == l] = data[n, ...]
+    for n, label in enumerate(labels):
+        out[atlas == label] = data[n, ...]
 
     return out
 

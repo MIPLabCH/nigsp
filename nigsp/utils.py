@@ -85,7 +85,7 @@ def change_var_type(var, dtype, varname="an input variable", stop=True, silent=F
     elif dtype is ndarray:
         tmpvar = asarray(var)
     elif dtype is list:
-        if type(var) is list:
+        if isinstance(var, list):
             tmpvar = var
         else:
             tmpvar = [var]
