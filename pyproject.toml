@@ -1,7 +1,25 @@
+[tool.coverage.report]
+exclude_lines = [
+  'if __name__ == .__main__.:',
+  'if TYPE_CHECKING:',
+  'pragma: no cover',
+]
+precision = 2
+
+[tool.coverage.run]
+branch = true
+cover_pylib = false
+omit = [
+  '**/__init__.py',
+  '**/conftest.py',
+  '**/nigsp/_version.py',
+  '**/nigsp/cli/*',
+  '**/tests/**',
+]
+
 [tool.isort]
 extend_skip_glob = [
   'docs/*',
-  'nigsp/_version.py',
   'setup.py',
   'tutorials/*',
 ]
