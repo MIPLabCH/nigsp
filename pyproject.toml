@@ -1,3 +1,15 @@
+[tool.isort]
+extend_skip_glob = [
+  'docs/*',
+  'nigsp/_version.py',
+  'setup.py',
+  'tutorials/*',
+]
+line_length = 88
+multi_line_output = 3
+profile = 'black'
+py_version = 37
+
 [tool.ruff]
 extend-exclude = ['docs', 'versioneer.py', 'setup.py']
 line-length = 88
