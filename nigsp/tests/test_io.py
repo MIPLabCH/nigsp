@@ -48,7 +48,7 @@ def test_check_ext():
 
         assert has_ext is False
         assert fname_out == fname
-        assert ext_out == None
+        assert ext_out is None
 
 
 @mark.parametrize("data", [(rand(3, 4)), (rand(3, 4, 1)), (rand(3, 1, 4))])

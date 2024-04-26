@@ -99,8 +99,7 @@ jobs:
           name: Check style
           command: |
             isort --check .
-            black --check nigsp
-            flake8 ./nigsp
+            ruff check nigsp
 
   merge_coverage:
     working_directory: /tmp/src/nigsp

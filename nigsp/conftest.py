@@ -59,7 +59,7 @@ def fetch_file(osf_id, path, filename):
             )
         )
         ssl._create_default_https_context = ssl._create_unverified_context
-    url = "https://osf.io/{}/download".format(osf_id)
+    url = f"https://osf.io/{osf_id}/download"
     full_path = os.path.join(path, filename)
     if not os.path.isfile(full_path):
         urlretrieve(url, full_path)

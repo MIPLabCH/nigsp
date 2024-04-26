@@ -297,7 +297,8 @@ def _trapezoid_compat(*args, **kwargs):
 
 def median_cutoff_frequency_idx(energy):
     """
-    Find the frequency that splits the energy of a timeseries in two roughly equal parts.
+    Find the frequency that splits the energy of a timeseries in two roughly equal
+    parts.
 
     Parameters
     ----------
@@ -347,7 +348,7 @@ def median_cutoff_frequency_idx(energy):
     return freq_idx
 
 
-def graph_filter(timeseries, eigenvec, freq_idx, keys=["low", "high"]):
+def graph_filter(timeseries, eigenvec, freq_idx, keys=["low", "high"]):  # noqa: B006
     """
     Filter a graph decomposition into two parts based on freq_idx.
 

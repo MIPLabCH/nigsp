@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Parser for crispy-octo-broccoli."""
 
 import argparse

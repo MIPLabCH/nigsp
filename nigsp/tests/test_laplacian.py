@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Tests for operations.laplacian."""
+
 from copy import deepcopy as dc
 
 import numpy as np

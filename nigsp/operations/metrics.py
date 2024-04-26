@@ -206,7 +206,8 @@ def functional_connectivity(timeseries, mean=False):
         timeseries : numpy.ndarray
             A 2- or 3-D matrix containing timeseries along axis 1.
         mean : bool, optional
-            If timeseries is 3D and this is True, return the average FC along the last axis.
+            If timeseries is 3D and this is True, return the average FC along the last
+            axis.
 
         Returns
         -------
@@ -236,7 +237,7 @@ def functional_connectivity(timeseries, mean=False):
                 fcorr = fcorr.mean(axis=2).squeeze()
             return fcorr
 
-    if type(timeseries) is dict:
+    if isinstance(timeseries, dict):
         fc = dict()
         for k in timeseries.keys():
             fc[k] = _fc(timeseries[k], mean)
