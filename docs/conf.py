@@ -13,6 +13,7 @@
 import os
 import sys
 
+from intersphinx_registry import get_intersphinx_mapping
 from sphinx_gallery.sorting import FileNameSortKey
 
 import nigsp
@@ -138,11 +139,9 @@ html_theme_options = {
 htmlhelp_basename = "nigsp"
 
 # -- intersphinx -------------------------------------------------------------
-intersphinx_mapping = {
-    "nibabel": ("https://nipy.org/nibabel/", None),
-    "numpy": ("https://numpy.org/doc/stable", None),
-    "python": ("https://docs.python.org/3", None),
-}
+intersphinx_mapping = get_intersphinx_mapping(
+    only={"matplotlib", "nibabel", "numpy", "python", "scipy"}
+)
 intersphinx_timeout = 5
 
 # -- sphinx-issues -----------------------------------------------------------
