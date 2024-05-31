@@ -140,7 +140,7 @@ htmlhelp_basename = "nigsp"
 
 # -- intersphinx -------------------------------------------------------------
 intersphinx_mapping = get_intersphinx_mapping(
-    only={"matplotlib", "nibabel", "numpy", "python", "scipy"}
+    packages={"matplotlib", "nibabel", "numpy", "python", "scipy"}
 )
 intersphinx_timeout = 5
 
