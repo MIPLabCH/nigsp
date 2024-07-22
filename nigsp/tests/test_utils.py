@@ -28,8 +28,7 @@ def test_change_var_type(var, dtype):
     """Test change_var_type."""
     # #!# Test logger!
     var_out = utils.change_var_type(var, dtype, stop=False)
-
-    assert type(var_out) == dtype
+    assert isinstance(var_out, dtype)
 
 
 # ### Break tests
