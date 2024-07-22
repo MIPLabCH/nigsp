@@ -17,14 +17,13 @@ LGR = logging.getLogger(__name__)
 
 
 def nifti_to_timeseries(fname, atlasname):
-    """
-    Read a nifti file and returns a normalised timeseries from an atlas.
+    """Read a nifti file and returns a normalised timeseries from an atlas.
 
     Parameters
     ----------
-    fname : string or os.PathLike
+    fname : str | os.PathLike
         Filename (and path) of a functional timeseries nifti dataset.
-    atlasname : string or os.PathLike
+    atlasname : str | os.PathLike
         Filename (and path) of an atlas nifti dataset.
 
     Returns
@@ -49,8 +48,7 @@ def nifti_to_timeseries(fname, atlasname):
 
 
 def export_metric(scgraph, outext, outprefix):
-    """
-    Export the metrics computed within the library.
+    """Export the metrics computed within the library.
 
     Parameters
     ----------
@@ -64,7 +62,7 @@ def export_metric(scgraph, outext, outprefix):
     Returns
     -------
     0
-        If everything goes well
+        If everything goes well.
     """
     if outext in io.EXT_NIFTI:
         try:
@@ -100,17 +98,16 @@ def export_metric(scgraph, outext, outprefix):
 
 
 def plot_metric(scgraph, outprefix, atlas=None, thr=None):
-    """
-    If possible, plot metrics as markerplot.
+    """If possible, plot metrics as markerplot.
 
     Parameters
     ----------
     scgraph : SCGraph object
         The internal object containing all data.
     outprefix : str
-        The prefix of the png file to export
-    img : 3DNiftiImage or None, optional
-        The nifti image of the atlas
+        The prefix of the png file to export.
+    img : 3DNiftiImage | None
+        The nifti image of the atlas.
     atlas : 3D Nifti1Image, numpy.ndarray, or None, optional
         Either a nifti image containing a valid atlas or a set of parcel coordinates.
     thr : float or None, optional
