@@ -275,14 +275,14 @@ def plot_edges(mtx, atlas, filename=None, thr=None, closeplot=False):
     ----------
     mtx : numpy.ndarray
         A 2- or 3- D array that contains the value of the nodes.
-    atlas : str, os.PathLike, 3D Nifti1Image, or numpy.ndarray
+    atlas : str | os.PathLike | 3D Nifti1Image | numpy.ndarray
         The 3d nifti image of an atlas, a string or path to its position,
         or a list of coordinates of the center of mass of parcels.
     filename : None, str, or os.PathLike, optional
         The path to save the plot on disk.
     thr : float, str or None, optional
         The threshold to use in plotting the nodes.
-        If `str`, needs to express a percentage.
+        If :class:``str``, needs to express a percentage.
     closeplot : bool, optional
         Whether to close plots after saving or not. Mainly used for debug
         or use with live python/ipython instances.
@@ -302,7 +302,7 @@ def plot_edges(mtx, atlas, filename=None, thr=None, closeplot=False):
 
     Notes
     -----
-    Requires `matplotlib` and `nilearn`
+    Requires ``matplotlib`` and ``nilearn``.
     """
     try:
         import matplotlib.pyplot as plt

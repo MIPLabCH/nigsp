@@ -40,31 +40,30 @@ LGR = logging.getLogger(__name__)
 
 
 def check_ext(all_ext, fname, scan=False, remove=False):
-    """
-    Check which extension a file has, and possibly remove it.
+    """Check which extension a file has, and possibly remove it.
 
     Parameters
     ----------
     all_ext : list
-        All possible extensions to check within
+        All possible extensions to check within.
     fname : str or os.PathLike
-        The filename to check
+        The filename to check.
     scan : bool, optional
         Scan the given path to see if there is a file with that extension
         If True and no path declared, check if fname has a path, if not scan '.'
-        If False, don't scan any folder
+        If False, don't scan any folder.
     remove : bool, optional
-        Remove the extension from fname if it has one
+        Remove the extension from fname if it has one.
 
     Returns
     -------
     obj_return : Uses a list to return variable amount of options.
         has_ext : boolean
-            True if the extension is found, false otherwise
+            True if the extension is found, false otherwise.
         fname : str or os.PathLike
-            If `remove` is True, return (extensionless) fname
+            If ``remove`` is True, return (extensionless) fname.
         ext : str
-            If both `remove` and `has_ext` are True, returns also found extension
+            If both ``remove`` and ``has_ext`` are True, returns also found extension.
     """
     has_ext = False
     all_ext = change_var_type(all_ext, list, stop=False, silent=True)
@@ -96,67 +95,65 @@ def check_ext(all_ext, fname, scan=False, remove=False):
 
 
 def check_nifti_dim(fname, data, dim=4):
-    """
-    Check number of dimensions in nifti file.
+    """Check number of dimensions in nifti file.
 
     Parameters
     ----------
     fname : str
-        The name of the file representing `data`
+        The name of the file representing ``data``.
     data : numpy.ndarray
-        The data which dimensionality needs to be checked
+        The data which dimensionality needs to be checked.
     dim : int, optional
         The amount of dimensions expected/desired in the data.
 
     Returns
     -------
     numpy.ndarray
-        If `data.ndim` = `dim`, returns data.
+        If ``data.ndim = dim``, returns data.
 
     Raises
     ------
     ValueError
-        If `data` has different dimensions than `dim`
+        If ``data`` has different dimensions than ``dim``.
     """
     data = data.squeeze()
 
     if data.ndim != dim:
         raise ValueError(
-            f"A {dim}D nifti file is required, but {fname} is "
-            f"{data.ndim}D. Please check the input file."
+            f"A {dim}D nifti file is required, but {fname} is {data.ndim}D. Please "
+            "check the input file."
         )
 
     return data
 
 
 def check_mtx_dim(fname, data, shape=None):
-    """
-    Check dimensions of a matrix.
+    """Check dimensions of a matrix.
 
     Parameters
     ----------
     fname : str
-        The name of the file representing `data`
+        The name of the file representing ``data``.
     data : np.ndarray
-        The data which dimensionality needs to be checked
-    shape : None, 'square', or 'rectangle'}, str, optional
-        Shape of matrix, if empty, skip shape check
+        The data which dimensionality needs to be checked.
+    shape : None | ``'square'`` | ``'rectangle'``
+        Shape of matrix, if empty, skip shape check.
 
     Returns
     -------
     np.ndarray
-        If `data.ndim` = 2, returns data.
-        If `data.ndim` = 1 and `shape` == 'rectangle',
-        Returns data with added empty axis.
+        If ``data.ndim = 2``, returns data.
+        If ``data.ndim = 1`` and ``shape == 'rectangle'``, returns data with added empty
+        axis.
 
     Raises
     ------
     NotImplementedError
-        If `data` has more than 3 dimensions.
-        If `shape` is not None but `data` is 3D.
+        If ``data`` has more than 3 dimensions.
+        If ``shape`` is not None but `data` is 3D.
     ValueError
-        If `data` is empty
-        If `shape` == 'square' and `data` dimensions have different lengths.
+        If ``data`` is empty
+        If ``shape == 'square'`` and ``data`` dimensions have different lengths.
     """
     data = data.squeeze()
     LGR.info("Checking data shape.")
@@ -187,19 +184,17 @@ def check_mtx_dim(fname, data, shape=None):
 
 
 def load_nifti_get_mask(fname, is_mask=False, ndim=4):
-    """
-    Load a nifti file and returns its data, its image, and a 3d mask.
+    """Load a nifti file and returns its data, its image, and a 3D mask.
 
     Parameters
     ----------
     fname : str
-        The filename to read in
+        The filename to read in.
     is_mask : bool, optional
-        If the file contains a mask.
-        Default: False
+        If the file contains a mask. Default to ``False``.
     ndim : int or None, optional
         The number of dimensions expected in the data.
-        If None (default), 4 dimensions are expected, unless is_mask=True.
+        If None (default), 4 dimensions are expected, unless ``is_mask=True``.
         In the latter case, 3 dimensions will be checked.
 
     Returns
@@ -207,10 +202,10 @@ def load_nifti_get_mask(fname, is_mask=False, ndim=4):
     data : numpy.ndarray
         Data from nifti file.
     mask : numpy.ndarray
-        If `is_mask` is False, numpy.ndarray of one dimension less than data,
+        If ``is_mask`` is ``False``, numpy.ndarray of one dimension less than data,
         in which any element that has at least a value different from zero
-        in the last dimension of `data` is True.
-        If `is_mask` is True, mask is a boolean representation of data.
+        in the last dimension of ``data`` is True.
+        If ``is_mask`` is ``True``, mask is a boolean representation of data.
     img : nib.img
         Image object from nibabel.
 
@@ -219,8 +214,8 @@ def load_nifti_get_mask(fname, is_mask=False, ndim=4):
         import nibabel as nib
     except ImportError:
         raise ImportError(
-            "nibabel is required to import nifti files. "
-            "Please see install instructions."
+            "nibabel is required to import nifti files. Please see install "
+            "instructions."
         )
 
     LGR.info(f"Loading {fname}.")
@@ -243,20 +238,19 @@ def load_nifti_get_mask(fname, is_mask=False, ndim=4):
 
 
 def load_txt(fname, shape=None):
-    """
-    Read files in textual format.
+    """Read files in textual format.
 
     Parameters
     ----------
-    fname : str or os.PathLike
-        Path to the txt file
-    shape : None, 'square', or 'rectangle', optional
-        Shape of matrix, if empty, skip check
+    fname : str | os.PathLike
+        Path to the txt file.
+    shape : None | ``'square'`` | ``'rectangle'``
+        Shape of matrix, if empty, skip check.
 
     Returns
     -------
     mtx : numpy.ndarray
-        Data matrix
+        Data matrix.
 
     See also
     --------
@@ -283,8 +277,7 @@ def load_txt(fname, shape=None):
 
 
 def load_mat(fname, shape=None):
-    """
-    Read files in matlab format.
+    """Read files in MATLAB format.
 
     Assumes the existence of a matrix/vector in the mat file, rendered as
     a numpy.ndarray. If there is more than a matrix, the one with the largest
@@ -292,19 +285,19 @@ def load_mat(fname, shape=None):
 
     Parameters
     ----------
-    fname : str or os.PathLike
-        Path to the mat file
-    shape : None, 'square', or 'rectangle'}, str, optional
-        Shape of matrix, if empty, skip check
+    fname : str | os.PathLike
+        Path to the ``.mat`` file.
+    shape : None | ``'square'`` | ``'rectangle'``
+        Shape of matrix, if empty, skip check.
 
     Returns
     -------
     mtx : numpy.ndarray
-        Data matrix
+        Data matrix.
 
     Notes
     -----
-    Requires module pymatreader to work
+    Requires module ``pymatreader`` to work.
 
     See also
     --------
@@ -361,19 +354,14 @@ def load_mat(fname, shape=None):
 
 
 def load_xls(fname, shape=""):
-    """
-    Read files in xls format.
+    """Read files in xls format.
 
     Parameters
     ----------
-    fname : str or os.PathLike
-        Path to the mat file
-    shape : None, 'square', or 'rectangle'}, str, optional
-        Shape of matrix, if empty, skip check
-
-    Notes
-    -----
-    Requires module _ to work
+    fname : str | os.PathLike
+        Path to the xls file.
+    shape : None | ``'square'`` | ``'rectangle'``
+        Shape of matrix, if empty, skip check.
 
     See also
     --------
@@ -388,41 +376,35 @@ def load_xls(fname, shape=""):
 
 
 def export_nifti(data, img, fname):
-    """
-    Export a nifti file.
+    """Export a nifti file.
 
     Parameters
     ----------
     data : numpy.ndarray
-        Data to be exported
+        Data to be exported.
     img : nib.img
-        Nibabel image object
-    fname : str or os.PathLike
-        Name of the output file
+        Nibabel image object.
+    fname : str | os.PathLike
+        Name of the output file.
     """
     try:
         import nibabel as nib
     except ImportError:
         raise ImportError(
-            "nibabel is required to export nifti files. "
-            "Please see install instructions."
+            "nibabel is required to export nifti files. Please see install "
+            "instructions."
         )
-
     has_ext, fname, ext = check_ext(EXT_NIFTI, fname, remove=True)
-
     if ext is None:
         ext = ".nii.gz"
-
     LGR.info(f"Exporting nifti data into {fname}{ext}.")
     out_img = nib.Nifti1Image(data, img.affine, img.header)
     out_img.to_filename(f"{fname}{ext}")
-
     return 0
 
 
 def export_txt(data, fname, ext=None):
-    """
-    Export data into a text-like or mat file.
+    """Export data into a text-like or mat file.
 
     Parameters
     ----------
@@ -478,14 +460,13 @@ def export_txt(data, fname, ext=None):
 
 
 def export_mtx(data, fname, ext=None):
-    """
-    Export data into a text-like or mat file.
+    """Export data into a text-like or mat file.
 
     Parameters
     ----------
     data : np.ndarray
         Data to be exported.
-    fname : str or os.PathLike
+    fname : str | os.PathLike
         Name of the output file.
     ext : str or None, optional
         Selected extension for export.
