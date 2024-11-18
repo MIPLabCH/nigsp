@@ -37,7 +37,7 @@ jobs:
       - name: Run pytest
         run: pytest nigsp --cov=nigsp --cov-report=xml --cov-config=setup.cfg
       - name: Upload to codecov
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         with:
           files: ./coverage.xml
           flags: unittests  # optional
@@ -74,7 +74,7 @@ jobs:
       - name: Run pytest
         run: pytest nigsp --cov=nigsp --cov-report=xml --cov-config=setup.cfg
       - name: Upload to codecov
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         with:
           files: ./coverage.xml
           flags: unittests  # optional
