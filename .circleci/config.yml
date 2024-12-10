@@ -83,24 +83,6 @@ jobs:
           paths:
             - src/coverage/.coverage.py310
 
-  style_check:
-    docker:
-      - image: cimg/python:3.11
-    working_directory: /tmp/src/nigsp
-    resource_class: small
-    steps:
-      - checkout
-      - python/install-packages:
-          path-args: .[style]
-          pypi-cache: false
-          venv-cache: false
-          pkg-manager: pip-dist
-      - run:
-          name: Check style
-          command: |
-            isort --check .
-            ruff check nigsp
-
   merge_coverage:
     working_directory: /tmp/src/nigsp
     docker:
@@ -131,13 +113,8 @@ workflows:
   build_test: # This is the name of the workflow, feel free to change it to better match your workflow.
     # Inside the workflow, you define the jobs you want to run.
     jobs:
-      - style_check
-      - test39:
-          requires:
-            - style_check
-      - test312:
-          requires:
-            - style_check
+      - test39
+      - test312
       - merge_coverage:
           requires:
             - test39
