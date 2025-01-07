@@ -10,7 +10,7 @@ LGR
 
 import logging
 
-from numpy import abs
+import numpy as np
 
 LGR = logging.getLogger(__name__)
 
@@ -48,7 +48,7 @@ def nodestrength(mtx, mean=False):
     numpy.ndarray
         The node strength.
     """
-    ns = abs(mtx).sum(axis=0)
+    ns = np.abs(mtx).sum(axis=0)
 
     if mean:
         ns = ns.mean(axis=-1)
