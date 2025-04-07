@@ -162,8 +162,7 @@ def check_mtx_dim(fname, data, shape=None):
         raise ValueError(f"{fname} is empty!")
     if data.ndim > 3:
         raise NotImplementedError(
-            "Only matrices up to 3D are supported, but "
-            f"given matrix is {data.ndim}D."
+            f"Only matrices up to 3D are supported, but given matrix is {data.ndim}D."
         )
     if shape is not None:
         if data.ndim > 2:
@@ -176,8 +175,7 @@ def check_mtx_dim(fname, data, shape=None):
             )
         if shape == "square" and data.shape[0] != data.shape[1]:
             raise ValueError(
-                f"Square matrix required, but {fname} matrix has "
-                f"shape {data.shape}."
+                f"Square matrix required, but {fname} matrix has shape {data.shape}."
             )
 
     return data

@@ -328,7 +328,7 @@ def median_cutoff_frequency_idx(energy):
     if energy.ndim == 2:
         energy = energy.mean(axis=-1)
     half_tot_auc = _trapezoid_compat(energy, axis=0) / 2
-    LGR.debug(f"Total AUC = {half_tot_auc*2}, targeting half of total AUC")
+    LGR.debug(f"Total AUC = {half_tot_auc * 2}, targeting half of total AUC")
 
     # Compute the AUC from first to one to last frequency,
     # skipping first component because AUC(1)=0.
@@ -395,7 +395,7 @@ def graph_filter(timeseries, eigenvec, freq_idx, keys=["low", "high"]):  # noqa:
                 f"eigenvector matrix of shape {eigenvec.shape}."
             )
 
-    LGR.info(f"Splitting graph into {len(freq_idx)+1} parts")
+    LGR.info(f"Splitting graph into {len(freq_idx) + 1} parts")
 
     # Check that there is the right amount of keys
     if len(keys) > len(freq_idx) + 1:
@@ -413,7 +413,7 @@ def graph_filter(timeseries, eigenvec, freq_idx, keys=["low", "high"]):  # noqa:
         )
 
         for i in range(len(keys), len(freq_idx) + 1):
-            keys = keys + [f"key-{i+1:03d}"]
+            keys = keys + [f"key-{i + 1:03d}"]
 
     # Add 0 and None to freq_idx to have full indexes
     freq_idx = [0] + freq_idx + [None]
