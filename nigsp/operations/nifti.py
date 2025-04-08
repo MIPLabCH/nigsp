@@ -100,9 +100,9 @@ def apply_mask(data, mask):
             f"with shape {mask.shape}"
         )
     if (data.ndim - mask.ndim) > 1:
-        LGR.warning(f"Returning volume with {data.ndim-mask.ndim+1} dimensions.")
+        LGR.warning(f"Returning volume with {data.ndim - mask.ndim + 1} dimensions.")
     else:
-        LGR.info(f"Returning {data.ndim-mask.ndim+1}D array.")
+        LGR.info(f"Returning {data.ndim - mask.ndim + 1}D array.")
 
     mask = mask != 0
     return data[mask]
@@ -149,8 +149,7 @@ def unmask(data, mask, shape=None, asdata=None):
 
     if shape[: mask.ndim] != mask.shape:
         raise ValueError(
-            f"Cannot unmask data into shape {shape} using mask "
-            f"with shape {mask.shape}"
+            f"Cannot unmask data into shape {shape} using mask with shape {mask.shape}"
         )
     if data.ndim > 1 and (data.shape[0] != mask.sum()):
         raise ValueError(
@@ -216,10 +215,10 @@ def apply_atlas(data, atlas, mask=None):
             f"with shape {data.shape}"
         )
     if (data.ndim - atlas.ndim) > 1:
-        LGR.warning(f"returning volume with {data.ndim-atlas.ndim+1} dimensions.")
+        LGR.warning(f"returning volume with {data.ndim - atlas.ndim + 1} dimensions.")
     else:
         LGR.info(
-            f"Returning {data.ndim-atlas.ndim+1}D array of signal averages "
+            f"Returning {data.ndim - atlas.ndim + 1}D array of signal averages "
             f"in atlas {atlas}."
         )
 
@@ -297,7 +296,9 @@ def unfold_atlas(data, atlas, mask=None):
             f"with {len(labels)} parcels"
         )
 
-    LGR.info(f"Unmasking data into atlas-like volume of {3+data.ndim-1} dimensions.")
+    LGR.info(
+        f"Unmasking data into atlas-like volume of {3 + data.ndim - 1} dimensions."
+    )
     out = np.zeros_like(atlas, dtype="float32")
 
     for ax in range(1, data.ndim):

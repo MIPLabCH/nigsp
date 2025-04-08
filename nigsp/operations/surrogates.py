@@ -299,7 +299,7 @@ def test_significance(
             raise ValueError(
                 "Provided empirical data and surrogate data shapes "
                 f"do not agree, with shapes {data.shape} and "
-                f"{surr.shape[:data.ndim]} (last axis excluded)"
+                f"{surr.shape[: data.ndim]} (last axis excluded)"
             )
         if not (surr[..., -1] == data).all():
             # Check that data was not appended yet.
@@ -332,16 +332,16 @@ def test_significance(
     LGR.info(f"Adopting {method} testing method.")
     # Testing both tails requires to split p
     if method == "frequentist":
-        LGR.info(f"Testing for p={p} two-tails (p={p/2} each tail)")
+        LGR.info(f"Testing for p={p} two-tails (p={p / 2} each tail)")
         p = p / 2
         # If there aren't enough surrogates, send a warning message on the real p
         # Then update p
         if 1 / surr.shape[-1] > p:
             LGR.warning(
                 "The generated surrogates are not enough to test for "
-                f"the selected p ({p*2} two-tails), since at least "
-                f"{ceil(1/p)-1} surrogates are required for the selected "
-                f"p value. Testing for p={1/surr.shape[-1]} two-tails instead."
+                f"the selected p ({p * 2} two-tails), since at least "
+                f"{ceil(1 / p) - 1} surrogates are required for the selected "
+                f"p value. Testing for p={1 / surr.shape[-1]} two-tails instead."
             )
             p = 1 / surr.shape[-1]
 
@@ -355,7 +355,7 @@ def test_significance(
             LGR.warning(
                 "The provided subjects are not enough to test for "
                 f"p={p_bernoulli} one-tail at the group level, since "
-                f"at least {ceil(1/p_bernoulli)} subjects are required."
+                f"at least {ceil(1 / p_bernoulli)} subjects are required."
             )
             p_bernoulli = 1 / surr.shape[1]
         # If there aren't enough surrogates, send a warning message on the real p
@@ -364,13 +364,13 @@ def test_significance(
             LGR.warning(
                 "The generated surrogates are not enough to test for "
                 f"p={p} two-tails at the subject level. "
-                f"{ceil(1/p)-1} surrogates are required for p={p}."
+                f"{ceil(1 / p) - 1} surrogates are required for p={p}."
             )
             p = 1 / surr.shape[-1]
 
         LGR.info(
             f"Testing for p={p_bernoulli} one-tail at the group level and "
-            f"at p={p*2} two-tails (p={p} each tail) at the subject level."
+            f"at p={p * 2} two-tails (p={p} each tail) at the subject level."
         )
     else:
         raise NotImplementedError(
