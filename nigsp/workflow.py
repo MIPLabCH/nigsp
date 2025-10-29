@@ -84,7 +84,7 @@ def nigsp(
     lgr_degree="info",
 ):
     """
-    Main workflow for nigsp, following the methods described in [1]_.
+    Run main workflow for nigsp, following the methods described in [1]_.
 
     Parameters
     ----------
