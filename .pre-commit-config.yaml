@@ -13,17 +13,6 @@ repos:
           - id: check-case-conflict
           - id: check-merge-conflict
 
-    - repo: https://github.com/pycqa/isort
-      rev: 6.0.1
-      hooks:
-          - id: isort
-
-    - repo: https://github.com/pycqa/pydocstyle
-      rev: 6.3.0
-      hooks:
-          - id: pydocstyle
-
-
     - repo: https://github.com/pre-commit/pygrep-hooks
       rev: v1.10.0
       hooks:

@@ -297,8 +297,7 @@ def _trapezoid_compat(*args, **kwargs):
 
 def median_cutoff_frequency_idx(energy):
     """
-    Find the frequency that splits the energy of a timeseries in two roughly equal
-    parts.
+    Estimate frequency splitting the energy of timeseries in two roughly equal parts.
 
     Parameters
     ----------

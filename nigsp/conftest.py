@@ -3,8 +3,8 @@ from __future__ import annotations  # c.f. PEP 563, PEP 649
 import os
 import ssl
 from typing import TYPE_CHECKING
-from urllib.request import urlretrieve
 
+import requests
 from pytest import fixture
 
 if TYPE_CHECKING:
@@ -62,7 +62,11 @@ def fetch_file(osf_id, path, filename):
     url = f"https://osf.io/{osf_id}/download"
     full_path = os.path.join(path, filename)
     if not os.path.isfile(full_path):
-        urlretrieve(url, full_path)
+        req = requests.get(url, allow_redirects=True)
+        req.raise_for_status()
+        with open(full_path, "wb") as f:
+            f.write(req.content)
+            f.close()
     return full_path
 
 
