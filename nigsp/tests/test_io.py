@@ -8,7 +8,7 @@ from os.path import isfile
 import nibabel
 import pymatreader
 import scipy
-from numpy import asarray, empty, genfromtxt, savetxt
+from numpy import asarray, empty, genfromtxt, ones, savetxt
 from numpy.random import rand
 from pytest import mark, raises
 
@@ -123,7 +123,7 @@ def test_export_nifti(atlas):
     """Test export_nifti."""
     img = nibabel.load(atlas)
     shape = img.get_fdata().shape
-    io.export_nifti(empty(shape), img, "book")
+    io.export_nifti(ones(shape), img, "book")
     assert isfile("book.nii.gz")
     remove("book.nii.gz")
     remove(atlas)
