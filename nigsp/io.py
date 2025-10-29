@@ -250,7 +250,7 @@ def load_txt(fname, shape=None):
     mtx : numpy.ndarray
         Data matrix.
 
-    See also
+    See Also
     --------
     check_mtx_dim
     """
@@ -297,7 +297,7 @@ def load_mat(fname, shape=None):
     -----
     Requires module ``pymatreader`` to work.
 
-    See also
+    See Also
     --------
     check_mtx_dim
 
@@ -361,7 +361,7 @@ def load_xls(fname, shape=""):
     shape : None | ``'square'`` | ``'rectangle'``
         Shape of matrix, if empty, skip check.
 
-    See also
+    See Also
     --------
     check_mtx_dim
 

@@ -7,6 +7,22 @@
             "orcid":"0000-0002-2553-3327",
             "affiliation":"Medical Imaging Processing Lab, Center for Neuroprosthetics, École Polytechnique Fédérale de Lausanne",
             "name":"Stefano Moia"
+        },
+        {
+            "affiliation":"Medical Imaging Processing Lab, Center for Neuroprosthetics, École Polytechnique Fédérale de Lausanne",
+            "name": "Nawal Kinani"
+        },
+        {
+            "affiliation":"Medical Imaging Processing Lab, Center for Neuroprosthetics, École Polytechnique Fédérale de Lausanne",
+            "name": "Mathieu Scheltienne"
+        },
+        {
+            "affiliation":"Medical Imaging Processing Lab, Center for Neuroprosthetics, École Polytechnique Fédérale de Lausanne",
+            "name": "Maria Giulia Preti"
+        },
+        {
+            "affiliation":"Medical Imaging Processing Lab, Center for Neuroprosthetics, École Polytechnique Fédérale de Lausanne",
+            "name": "Dimitri Van De Ville"
         }
     ],
     "access_right":"open"
