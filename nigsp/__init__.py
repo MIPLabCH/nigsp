@@ -1,4 +1,5 @@
 from . import (
+    _version,
     blocks,
     cli,
     due,
@@ -10,7 +11,5 @@ from . import (
     viz,
     workflow,
 )
-from ._version import get_versions
 
-__version__ = get_versions()["version"]
-del get_versions
+__version__ = _version.get_versions()["version"]
