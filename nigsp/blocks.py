@@ -16,7 +16,7 @@ from .operations import nifti
 LGR = logging.getLogger(__name__)
 
 
-def nifti_to_timeseries(fname, atlasname, fill_missing):
+def nifti_to_timeseries(fname, atlasname, fill_missing=False):
     """Read a nifti file and returns a normalised timeseries from an atlas.
 
     Parameters

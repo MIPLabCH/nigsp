@@ -245,7 +245,9 @@ def apply_atlas(data, atlas, mask=None, fill_missing=False):
 
     # Compute averages
     for n, label in enumerate(labels):
-        parcels[n, :] = data[atlas == label].mean(axis=0)
+        ts_mtx = data[atlas == label]
+        if ts_mtx.size > 0:
+            parcels[n, :] = ts_mtx.mean(axis=0)
 
     return parcels
 
