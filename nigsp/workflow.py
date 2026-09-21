@@ -475,8 +475,10 @@ def nigsp(
                 pass
 
     LGR.info(f"End of workflow, find results in {outdir}.")
-    LGR.removeHandler(log_handler)
     log_handler.close()
+    LGR.removeHandler(log_handler)
+    sh.close()
+    LGR.removeHandler(sh)
 
     return 0
 

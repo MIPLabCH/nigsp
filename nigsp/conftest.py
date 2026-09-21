@@ -1,5 +1,6 @@
 from __future__ import annotations  # c.f. PEP 563, PEP 649
 
+import logging
 import os
 import ssl
 from typing import TYPE_CHECKING
@@ -53,10 +54,8 @@ def fetch_file(osf_id, path, filename):
     # this three lines make tests downloads work in windows
     if os.name == "nt":
         orig_sslsocket_init = ssl.SSLSocket.__init__
-        ssl.SSLSocket.__init__ = (
-            lambda *args, cert_reqs=ssl.CERT_NONE, **kwargs: orig_sslsocket_init(
-                *args, cert_reqs=ssl.CERT_NONE, **kwargs
-            )
+        ssl.SSLSocket.__init__ = lambda *args, cert_reqs=ssl.CERT_NONE, **kwargs: (
+            orig_sslsocket_init(*args, cert_reqs=ssl.CERT_NONE, **kwargs)
         )
         ssl._create_default_https_context = ssl._create_unverified_context
     url = f"https://osf.io/{osf_id}/download"
@@ -104,3 +103,19 @@ def sc_mtx(testdir):
 @fixture(scope="function")
 def timeseries(testdir):
     return fetch_file("ay8df", testdir, "func.mat")
+
+
+@fixture(autouse=True)
+def cleanup_logging_handlers():
+    """Close and remove all logging handlers after each test run."""
+    yield
+
+    # Target both the root logger and any package-specific loggers
+    for name in [None, "nigsp"]:
+        logger = logging.getLogger(name)
+        for handler in logger.handlers[:]:
+            handler.close()
+            logger.removeHandler(handler)
+
+    # Flush and close all remaining global logging streams
+    logging.shutdown()
