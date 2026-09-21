@@ -15,14 +15,14 @@ orbs:
 # Define a job to be invoked later in a workflow.
 # See: https://circleci.com/docs/2.0/configuration-reference/#jobs
 jobs:
-  test39: # This is the name of the job, feel free to change it to better match what you're trying to do!
+  test311: # This is the name of the job, feel free to change it to better match what you're trying to do!
     # These next lines defines a Docker executors: https://circleci.com/docs/2.0/executor-types/
     # You can specify an image from Dockerhub or use one of the convenience images from CircleCI's Developer Hub
     # A list of available CircleCI Docker convenience images are available here: https://circleci.com/developer/images/image/cimg/python
     # The executor is the environment in which the steps below will be executed - below will use a python 3.6.14 container
     # Change the version below to your required version of python
     docker:
-      - image: cimg/python:3.9
+      - image: cimg/python:3.11
     working_directory: /tmp/src/nigsp
     resource_class: medium
     # Checkout the code as the first step. This is a dedicated CircleCI step.
@@ -46,7 +46,7 @@ jobs:
           command: |
             pytest --cov=./nigsp
             mkdir /tmp/src/coverage
-            mv ./.coverage /tmp/src/coverage/.coverage.py37
+            mv ./.coverage /tmp/src/coverage/.coverage.py311
       - store_artifacts:
           path: /tmp/src/coverage
       # Persist the specified paths (workspace/echo-output) into the workspace for use in downstream job.
@@ -56,11 +56,11 @@ jobs:
           root: /tmp
           # Must be relative path from root
           paths:
-            - src/coverage/.coverage.py37
+            - src/coverage/.coverage.py311
 
-  test312:
+  test314:
     docker:
-      - image: cimg/python:3.12
+      - image: cimg/python:3.14
     working_directory: /tmp/src/nigsp
     resource_class: medium
     steps:
@@ -75,13 +75,13 @@ jobs:
           command: |
             pytest --cov=./nigsp
             mkdir /tmp/src/coverage
-            mv ./.coverage /tmp/src/coverage/.coverage.py310
+            mv ./.coverage /tmp/src/coverage/.coverage.py314
       - store_artifacts:
           path: /tmp/src/coverage
       - persist_to_workspace:
           root: /tmp
           paths:
-            - src/coverage/.coverage.py310
+            - src/coverage/.coverage.py314
 
   merge_coverage:
     working_directory: /tmp/src/nigsp
@@ -113,9 +113,9 @@ workflows:
   build_test: # This is the name of the workflow, feel free to change it to better match your workflow.
     # Inside the workflow, you define the jobs you want to run.
     jobs:
-      - test39
-      - test312
+      - test311
+      - test314
       - merge_coverage:
           requires:
-            - test39
-            - test312
+            - test311
+            - test314
