@@ -58,8 +58,8 @@ def compute_laplacian(mtx, negval="absolute", selfloops=False):
     -----
     https://en.wikipedia.org/wiki/Laplacian_matrix
     """
-    mtx = deepcopy(mtx)
     if mtx.min() < 0:
+        mtx = deepcopy(mtx)
         if negval == "absolute":
             mtx = abs(mtx)
         elif negval == "remove":

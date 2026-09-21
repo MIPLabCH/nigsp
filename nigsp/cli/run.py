@@ -119,6 +119,15 @@ def _get_parser():
         ),
         default="median",
     )
+    opt_proc.add_argument(
+        "-fill--fill_missing",
+        dest="fill_missing",
+        action="store_true",
+        help=(
+            "Fill missing atlas parcels with timeseries of 0s when extracting "
+            "timeseries. This will not check for a last parcel missing."
+        ),
+    )
 
     opt_out = parser.add_argument_group("Optional Arguments for output")
     opt_out.add_argument(

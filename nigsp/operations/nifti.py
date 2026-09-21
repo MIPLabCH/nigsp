@@ -165,7 +165,7 @@ def unmask(data, mask, shape=None, asdata=None):
     return out
 
 
-def apply_atlas(data, atlas, mask=None):
+def apply_atlas(data, atlas, mask=None, fill_missing=False):
     """
     Extract average timeseries from an atlas.
 
@@ -179,6 +179,8 @@ def apply_atlas(data, atlas, mask=None):
     mask : None or numpy.ndarray, optional
         A 2- or 3- D matrix representing a mask, all voxels == 0 are excluded from the
         computation.
+    fill_missing : bool, optional
+        If True, fill missing atlas parcels with timeseries of 0. Default is False.
 
     Returns
     -------
@@ -228,7 +230,18 @@ def apply_atlas(data, atlas, mask=None):
     labels = labels[labels > 0]
     LGR.info(f"Labels: {labels}, numbers: {len(labels)}")
     # Initialise dataframe and dictionary for series
-    parcels = np.empty([len(labels), data.shape[-1]], dtype="float32")
+
+    if fill_missing:
+        all_labels = np.arange(1, labels[-1] + 1)
+
+        if all_labels.size != labels.size:
+            LGR.warning(
+                f"Found {labels.size} labels, expected {all_labels.size}. Filling "
+                "missing timeseries."
+            )
+            labels = all_labels
+
+    parcels = np.zeros([len(labels), data.shape[-1]], dtype="float32")
 
     # Compute averages
     for n, label in enumerate(labels):
