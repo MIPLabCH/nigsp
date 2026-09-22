@@ -1,3 +1,63 @@
+# 0.20.0 (Tue Sep 22 2026)
+
+#### 🚀 Enhancement
+
+- Update GitHub Actions runner to Ubuntu 22.04 [#134](https://github.com/MIPLabCH/nigsp/pull/134) ([@smoia](https://github.com/smoia))
+- Add possibility to fill missing parcels when extracting timeseries with "fill_missing" flag/argument and bump supported python version to 3.10-3.14 [#133](https://github.com/MIPLabCH/nigsp/pull/133) ([@smoia](https://github.com/smoia))
+- Update versioneer to support python > 3.11 [#130](https://github.com/MIPLabCH/nigsp/pull/130) ([@smoia](https://github.com/smoia))
+
+#### 📝 Documentation
+
+- [pre-commit.ci] pre-commit autoupdate [#101](https://github.com/MIPLabCH/nigsp/pull/101) ([@pre-commit-ci[bot]](https://github.com/pre-commit-ci[bot]) [@mscheltienne](https://github.com/mscheltienne))
+- Use intersphinx registry to build website [#98](https://github.com/MIPLabCH/nigsp/pull/98) ([@mscheltienne](https://github.com/mscheltienne))
+
+#### ⚠️ Tests
+
+- Fix possible test issue on pip pre 3.11 [#129](https://github.com/MIPLabCH/nigsp/pull/129) ([@smoia](https://github.com/smoia))
+- Add auto-merge bot for dependabot and pre-commit.ci PRs [#120](https://github.com/MIPLabCH/nigsp/pull/120) ([@mscheltienne](https://github.com/mscheltienne))
+- [pre-commit.ci] pre-commit autoupdate [#108](https://github.com/MIPLabCH/nigsp/pull/108) ([@pre-commit-ci[bot]](https://github.com/pre-commit-ci[bot]) [@mscheltienne](https://github.com/mscheltienne))
+- Replace black and flake8 by ruff [#95](https://github.com/MIPLabCH/nigsp/pull/95) ([@mscheltienne](https://github.com/mscheltienne))
+
+#### 🏠 Internal
+
+- [pre-commit.ci] pre-commit autoupdate [#127](https://github.com/MIPLabCH/nigsp/pull/127) ([@pre-commit-ci[bot]](https://github.com/pre-commit-ci[bot]) [@smoia](https://github.com/smoia))
+- Bump actions/setup-python from 5 to 6 [#126](https://github.com/MIPLabCH/nigsp/pull/126) ([@dependabot[bot]](https://github.com/dependabot[bot]) [@smoia](https://github.com/smoia))
+- Bump actions/labeler from 5 to 6 [#125](https://github.com/MIPLabCH/nigsp/pull/125) ([@dependabot[bot]](https://github.com/dependabot[bot]) [@smoia](https://github.com/smoia))
+- Run isort and pydocstyle within ruff [#128](https://github.com/MIPLabCH/nigsp/pull/128) ([@smoia](https://github.com/smoia))
+- [pre-commit.ci] pre-commit autoupdate [#123](https://github.com/MIPLabCH/nigsp/pull/123) ([@pre-commit-ci[bot]](https://github.com/pre-commit-ci[bot]))
+- Bump actions/checkout from 4 to 5 [#124](https://github.com/MIPLabCH/nigsp/pull/124) ([@dependabot[bot]](https://github.com/dependabot[bot]) [@smoia](https://github.com/smoia))
+- [pre-commit.ci] pre-commit autoupdate [#122](https://github.com/MIPLabCH/nigsp/pull/122) ([@pre-commit-ci[bot]](https://github.com/pre-commit-ci[bot]))
+- [pre-commit.ci] pre-commit autoupdate [#121](https://github.com/MIPLabCH/nigsp/pull/121) ([@pre-commit-ci[bot]](https://github.com/pre-commit-ci[bot]) [@mscheltienne](https://github.com/mscheltienne))
+- Fix github workflow trigger [#119](https://github.com/MIPLabCH/nigsp/pull/119) ([@mscheltienne](https://github.com/mscheltienne))
+- Bump codecov/codecov-action from 4 to 5 [#118](https://github.com/MIPLabCH/nigsp/pull/118) ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- [pre-commit.ci] pre-commit autoupdate [#117](https://github.com/MIPLabCH/nigsp/pull/117) ([@pre-commit-ci[bot]](https://github.com/pre-commit-ci[bot]) [@mscheltienne](https://github.com/mscheltienne))
+- don't update pre-commit versions too often [#116](https://github.com/MIPLabCH/nigsp/pull/116) ([@mscheltienne](https://github.com/mscheltienne))
+- [pre-commit.ci] pre-commit autoupdate [#115](https://github.com/MIPLabCH/nigsp/pull/115) ([@pre-commit-ci[bot]](https://github.com/pre-commit-ci[bot]))
+- [pre-commit.ci] pre-commit autoupdate [#114](https://github.com/MIPLabCH/nigsp/pull/114) ([@pre-commit-ci[bot]](https://github.com/pre-commit-ci[bot]))
+- [pre-commit.ci] pre-commit autoupdate [#113](https://github.com/MIPLabCH/nigsp/pull/113) ([@pre-commit-ci[bot]](https://github.com/pre-commit-ci[bot]))
+- [pre-commit.ci] pre-commit autoupdate [#112](https://github.com/MIPLabCH/nigsp/pull/112) ([@pre-commit-ci[bot]](https://github.com/pre-commit-ci[bot]))
+- [pre-commit.ci] pre-commit autoupdate [#111](https://github.com/MIPLabCH/nigsp/pull/111) ([@pre-commit-ci[bot]](https://github.com/pre-commit-ci[bot]))
+- [pre-commit.ci] pre-commit autoupdate [#110](https://github.com/MIPLabCH/nigsp/pull/110) ([@pre-commit-ci[bot]](https://github.com/pre-commit-ci[bot]))
+- [pre-commit.ci] pre-commit autoupdate [#109](https://github.com/MIPLabCH/nigsp/pull/109) ([@pre-commit-ci[bot]](https://github.com/pre-commit-ci[bot]))
+- [pre-commit.ci] pre-commit autoupdate [#107](https://github.com/MIPLabCH/nigsp/pull/107) ([@pre-commit-ci[bot]](https://github.com/pre-commit-ci[bot]))
+- [pre-commit.ci] pre-commit autoupdate [#106](https://github.com/MIPLabCH/nigsp/pull/106) ([@pre-commit-ci[bot]](https://github.com/pre-commit-ci[bot]))
+- [pre-commit.ci] pre-commit autoupdate [#105](https://github.com/MIPLabCH/nigsp/pull/105) ([@pre-commit-ci[bot]](https://github.com/pre-commit-ci[bot]))
+- [pre-commit.ci] pre-commit autoupdate [#104](https://github.com/MIPLabCH/nigsp/pull/104) ([@pre-commit-ci[bot]](https://github.com/pre-commit-ci[bot]))
+- [pre-commit.ci] pre-commit autoupdate [#103](https://github.com/MIPLabCH/nigsp/pull/103) ([@pre-commit-ci[bot]](https://github.com/pre-commit-ci[bot]))
+- [pre-commit.ci] pre-commit autoupdate [#102](https://github.com/MIPLabCH/nigsp/pull/102) ([@pre-commit-ci[bot]](https://github.com/pre-commit-ci[bot]))
+- [pre-commit.ci] pre-commit autoupdate [#100](https://github.com/MIPLabCH/nigsp/pull/100) ([@pre-commit-ci[bot]](https://github.com/pre-commit-ci[bot]))
+- [pre-commit.ci] pre-commit autoupdate [#99](https://github.com/MIPLabCH/nigsp/pull/99) ([@pre-commit-ci[bot]](https://github.com/pre-commit-ci[bot]))
+- [pre-commit.ci] pre-commit autoupdate [#97](https://github.com/MIPLabCH/nigsp/pull/97) ([@pre-commit-ci[bot]](https://github.com/pre-commit-ci[bot]) [@mscheltienne](https://github.com/mscheltienne))
+
+#### Authors: 4
+
+- [@dependabot[bot]](https://github.com/dependabot[bot])
+- [@pre-commit-ci[bot]](https://github.com/pre-commit-ci[bot])
+- Mathieu Scheltienne ([@mscheltienne](https://github.com/mscheltienne))
+- Stefano Moia ([@smoia](https://github.com/smoia))
+
+---
+
 # 0.19.0 (Thu Apr 25 2024)
 
 #### 💥 Breaking Change during development
