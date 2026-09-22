@@ -105,6 +105,7 @@ jobs:
           path: /tmp/src/coverage
       - codecov/upload:
           files: /tmp/src/coverage/coverage.xml
+          validate_default: false
 
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
