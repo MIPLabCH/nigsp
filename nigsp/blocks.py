@@ -16,7 +16,7 @@ from .operations import nifti
 LGR = logging.getLogger(__name__)
 
 
-def nifti_to_timeseries(fname, atlasname):
+def nifti_to_timeseries(fname, atlasname, fill_missing=False):
     """Read a nifti file and returns a normalised timeseries from an atlas.
 
     Parameters
@@ -25,6 +25,8 @@ def nifti_to_timeseries(fname, atlasname):
         Filename (and path) of a functional timeseries nifti dataset.
     atlasname : str | os.PathLike
         Filename (and path) of an atlas nifti dataset.
+    fill_missing : bool, optional
+        If True, fill missing atlas parcels with timeseries of 0. Default is False.
 
     Returns
     -------
@@ -42,7 +44,7 @@ def nifti_to_timeseries(fname, atlasname):
     atlas, amask, img = io.load_nifti_get_mask(atlasname, is_mask=True, ndim=3)
     mask *= amask
 
-    timeseries = nifti.apply_atlas(data, atlas, mask)
+    timeseries = nifti.apply_atlas(data, atlas, mask, fill_missing)
 
     return timeseries, atlas, img
 

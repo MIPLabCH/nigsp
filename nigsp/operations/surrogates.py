@@ -65,12 +65,12 @@ def random_sign(eigenvec, n_surr=1000, seed=42, stack=False):
         if eigenvec.ndim < 3:
             r_sign = rng.integers(0, 1, eigenvec.shape[0], endpoint=True)
             r_sign[r_sign == 0] = -1
-            rand_evec[..., i] = eigenvec * r_sign
+            rand_evec[..., i] = (eigenvec * r_sign).real
         else:
             for j in range(eigenvec.shape[2]):
                 r_sign = rng.integers(0, 1, eigenvec.shape[0], endpoint=True)
                 r_sign[r_sign == 0] = -1
-                rand_evec[:, :, j, i] = eigenvec[..., j] * r_sign
+                rand_evec[:, :, j, i] = (eigenvec[..., j] * r_sign).real
 
     if stack:
         rand_evec = np.append(rand_evec, eigenvec[..., np.newaxis], axis=-1)

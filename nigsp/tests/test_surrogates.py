@@ -22,7 +22,7 @@ def test_random_sign():
     for i in range(n_surr):
         r_sign = rng.integers(0, 1, eigenvec.shape[0], endpoint=True)
         r_sign[r_sign == 0] = -1
-        rand_evec[..., i] = eigenvec * r_sign
+        rand_evec[..., i] = (eigenvec * r_sign).real
     rand_evec = np.append(rand_evec, eigenvec[..., np.newaxis], axis=-1)
 
     assert rs.ndim == 2
