@@ -97,7 +97,7 @@ jobs:
           pkg-manager: pip
       - run:
           name: Install gpg (needed for codecov)
-          command: sudo apt-get update && apt-get install -y gpg curl
+          command: sudo apt-get update && sudo apt-get install -y gpg curl
       - run:
           name: Merge coverage files
           command: |
