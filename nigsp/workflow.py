@@ -75,6 +75,7 @@ def nigsp(
     outname=None,
     outdir=None,
     comp_metric=[],  # noqa: B006
+    fill_missing=False,
     index="median",
     surr_type=None,
     n_surr=1000,
@@ -114,6 +115,8 @@ def nigsp(
     comp_metric : list or None, optional
         List of metrics that should be computed. If empty (default), compute all
         metrics available.
+    fill_missing : bool, optional
+        If True, fill missing atlas parcels with timeseries of 0. Default is False.
     index : 'median' or int, optional
         The index of the eigenvector/harmonic of the graph to split the graph in
         multiple parts, or the method to find this index. Currently supports
@@ -334,7 +337,9 @@ def nigsp(
     timeseries = []
     for f in fname:
         if func_is["nifti"] and atlas_is["nifti"]:
-            t, atlas, img = blocks.nifti_to_timeseries(f, atlasname)
+            t, atlas, img = blocks.nifti_to_timeseries(
+                f, atlasname, fill_missing=fill_missing
+            )
         elif func_is["nifti"] and atlas_is["nifti"] is False:
             raise NotImplementedError(
                 "To work with functional file(s) of nifti format, "
@@ -470,8 +475,10 @@ def nigsp(
                 pass
 
     LGR.info(f"End of workflow, find results in {outdir}.")
-    LGR.removeHandler(log_handler)
     log_handler.close()
+    LGR.removeHandler(log_handler)
+    sh.close()
+    LGR.removeHandler(sh)
 
     return 0
 

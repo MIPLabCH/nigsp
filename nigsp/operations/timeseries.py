@@ -264,11 +264,11 @@ def graph_fourier_transform(timeseries, eigenvec, energy=False, mean=False):
     """
     timeseries = timeseries.squeeze()
     if timeseries.ndim < 3:
-        proj = eigenvec.conj().T @ timeseries
+        proj = (eigenvec.conj().T @ timeseries).real
     else:
         temp_ts, proj = prepare_ndim_iteration(timeseries, 2)
         for i in range(temp_ts.shape[-1]):
-            proj[:, :, i] = eigenvec.conj().T @ np.squeeze(temp_ts[:, :, i])
+            proj[:, :, i] = (eigenvec.conj().T @ np.squeeze(temp_ts[:, :, i])).real
         if timeseries.ndim > 3:
             proj = proj.reshape(timeseries.shape)
 

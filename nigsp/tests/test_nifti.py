@@ -99,6 +99,24 @@ def test_apply_atlas():
     assert rm.shape == cm.shape
     assert (rm == cm).all()
 
+    a = asarray([1, 2, 2, 4, 4, 0])
+
+    r = nifti.apply_atlas(d, a, fill_missing=False)
+
+    assert r.shape == c.shape
+    assert (r == c).all()
+
+    c = zeros((4, 10), dtype="float32")
+
+    c[0, :] = d[0, :]
+    c[1, :] = d[1:3, :].mean(axis=0)
+    c[3, :] = d[3:5, :].mean(axis=0)
+
+    r = nifti.apply_atlas(d, a, fill_missing=True)
+
+    assert r.shape == c.shape
+    assert (r == c).all()
+
 
 def test_unfold_atlas():
     m = asarray([0, 1, 1, 1, 1, 1])
